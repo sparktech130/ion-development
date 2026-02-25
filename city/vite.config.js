@@ -1,15 +1,15 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react-swc'
 import eslint from 'vite-plugin-eslint'
-import { url_path_city } from './src/constants/common'
 import path from 'path';
 import svgr from 'vite-plugin-svgr'
 
+const base = process.env.VITE_BASE_PATH || '/city'
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react(), eslint(), svgr()],
-  base: url_path_city+'/',
+  base: base + '/',
   assetsInclude: ["**/*.glb", "**/*.gltf"],
   define: {
     'process.env': process.env,

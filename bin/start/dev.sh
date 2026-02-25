@@ -18,16 +18,19 @@ warn() { echo "[$(date +'%H:%M:%S')] WARN: $*"; }
 # Apache (dentro del contenedor) sirve /city desde /var/www/html/city/.
 # El volumen .:/var/www/html monta monorepo/ en vivo, por lo que basta con
 # copiar el build aquí antes de levantar el contenedor (o incluso después).
-if command -v npm &>/dev/null; then
+# En dev, un fallo de build no es fatal — el backend levanta igualmente.
+if [ ! -d "$ROOT/city/src" ]; then
+    warn "city/src/ no existe — frontend city no construido. Añade el código fuente y re-ejecuta."
+elif command -v npm &>/dev/null; then
     log "Construyendo frontend city..."
     cd "$ROOT/city"
     npm install --legacy-peer-deps --silent 2>/dev/null || true
-    npm run build
-    log "Copiando build de city a monorepo/city/..."
-    rm -rf "$ROOT/monorepo/city"
-    mkdir -p "$ROOT/monorepo/city"
-    cp -r dist/* "$ROOT/monorepo/city/"
-    cat > "$ROOT/monorepo/city/.htaccess" << 'EOF'
+    if npm run build; then
+        log "Copiando build de city a monorepo/city/..."
+        rm -rf "$ROOT/monorepo/city"
+        mkdir -p "$ROOT/monorepo/city"
+        cp -r dist/* "$ROOT/monorepo/city/"
+        cat > "$ROOT/monorepo/city/.htaccess" << 'EOF'
 CGIPassAuth On
 Options -Indexes
 RewriteEngine On
@@ -35,7 +38,10 @@ RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^ index.html [L]
 EOF
-    log "Frontend city → disponible en http://localhost:${FRONTEND_PORT:-8080}/city"
+        log "Frontend city → disponible en http://localhost:${FRONTEND_PORT:-8080}/city"
+    else
+        warn "Build de city fallido — el backend sigue levantando. Revisa city/ y repite el build."
+    fi
 else
     warn "npm no encontrado — frontend city no construido. Construye manualmente: cd city && npm run build"
 fi
