@@ -1,0 +1,74 @@
+/* Página de listas */
+
+.lists {
+    width: 100%;
+}
+
+.box {
+    display: flex;
+    flex-direction: row;
+    gap: 20px
+}
+
+/* Listas */
+.left__section {
+    width: 100%;
+}
+
+/* Vehículos*/
+
+.right__section {
+    display: flex;
+    flex-flow: column nowrap;
+    width: 750px;
+    flex-shrink: 0;
+    margin: -55px -40px -20px 0;
+    padding: 40px 40px 20px 20px;
+    height: 100vh;
+    border-left: 1px solid rgb(var(--color-secondary-rgb), 0.1);
+}
+
+/* General */
+
+.button__wrapper {
+    display: flex;
+    flex-flow: row nowrap;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.table__content {
+    height: calc(100vh - 325px);
+    overflow-y: scroll;
+}
+
+.table__content--small {
+    height: calc(50vh - 305px);
+    overflow-y: scroll;
+}
+
+/* Textos */
+
+.right__section__title {
+    font-family: 'Krona One';
+    font-weight: var(--regular);
+    font-size: 14px;
+    margin-bottom: -3px;
+}
+
+
+@media (max-width: 1500px) {
+    .box {
+        flex-flow: column wrap;
+    }
+
+    .right__section {
+        width: 100% !important;
+        max-width: none;
+        border-left: none;
+        padding: 0;
+        margin-top: 10px;
+        height: auto;
+        padding-bottom: 20px;
+    }
+}

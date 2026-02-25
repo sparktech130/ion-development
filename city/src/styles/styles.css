@@ -1,0 +1,257 @@
+/*Texto*/
+p {
+    font-size: 15px;
+}
+
+.bold {
+    font-weight: var(--bold);
+}
+
+.uppercase {
+    text-transform: uppercase;
+}
+
+/*Titulos*/
+.subtitle {
+    font-weight: var(--regular);
+    letter-spacing: 0.2rem;
+    margin: 1.25rem 0rem;
+    text-transform: uppercase;
+}
+
+/*Botones*/
+.button__red,
+.button {
+    border-left: 1px solid var(--color-secondary);
+    padding: 0.15rem 1rem;
+    width: fit-content;
+    letter-spacing: 0.05rem;
+    transition: all 0.3s ease-in-out;
+    cursor: pointer;
+    max-height: fit-content;
+    outline: none;
+    display: inline-block;
+    font-weight: var(--regular);
+}
+
+.button:focus-visible,
+.button:hover {
+    background-color: var(--color-secondary);
+    color: var(--color-primary);
+    padding: 0.15rem 2rem;
+}
+
+.button__red {
+    border-color: var(--red);
+    color: var(--red);
+}
+
+.button__red:focus-visible,
+.button__red:hover {
+    background-color: var(--red);
+    color: var(--white);
+    padding: 0.15rem 2rem;
+}
+
+.button--selected {
+    background-color: var(--color-secondary);
+    color: var(--color-primary);
+}
+
+
+/*Checkbox*/
+.checkbox {
+    width: 16px;
+    height: 16px;
+    border: 1px solid var(--color-secondary);
+    display: grid;
+    place-content: center;
+    border-radius: 0.2rem;
+    background-color: var(--color-primary);
+}
+
+.checkbox::before {
+    content: "";
+    width: 14px;
+    height: 14px;
+    transform: scale(0);
+    transition: all 0.2s ease-in-out;
+    box-shadow: inset 1em 1em var(--color-secondary);
+    border-radius: 0.1rem;
+}
+
+.checkbox:checked::before {
+    transform: scale(0.6);
+    -webkit-transform: scale(0.6);
+    -moz-transform: scale(0.6);
+    -ms-transform: scale(0.6);
+    -o-transform: scale(0.6);
+}
+.checkbox:focus-visible{
+    outline: 1px solid var(--color-secondary)
+}
+
+/*Asignar colores a texto*/
+.confidence--low {
+    color: var(--red);
+}
+
+.confidence--medium {
+    color: var(--orange);
+}
+
+.confidence--high {
+    color: var(--green);
+}
+
+/*Iconos*/
+.icon {
+    opacity: 0.25;
+    transition: 0.2s ease-in-out;
+    transition-property: opacity;
+}
+
+.icon:hover {
+    opacity: 1 !important;
+}
+
+.icon--selected {
+    opacity: 1 !important;
+}
+
+/*Desactivar scrollbars en la app*/
+::-webkit-scrollbar {
+    display: none;
+}
+
+/*Inputs*/
+
+.input {
+    color: var(--color-secondary);
+    width: 100%;
+    height: 34px;
+    position: relative;
+
+    outline: none;
+    border: 0.75px solid var(--color-border);
+    border-radius: 5px;
+    padding: 0 8px 0 8px;
+
+    font-family: var(--text-font);
+    font-size: 15px;
+    font-weight: var(--regular);
+    line-height: 18px;
+    letter-spacing: 0.05em;
+
+    transition: all 0.3s ease-in-out;
+}
+
+.input:focus-visible,
+.input:hover {
+    border: 0.75px solid rgba(var(--color-secondary-rgb), 0.5);
+}
+
+.input::placeholder {
+    font-family: var(--text-font);
+    font-size: 15px;
+    font-weight: var(--regular);
+    line-height: 18px;
+    letter-spacing: 0.05em;
+}
+
+.input__icon{
+    display: flex;
+    align-items: center;
+    position: absolute;
+    right: 8px;
+    bottom: 9px;
+    height: 15px;
+    width: auto;
+    max-width: 16px;
+    object-fit: contain;
+    object-position: center;
+    opacity: 0.9;
+    transition: all 0.3s ease-in-out;
+}
+
+.input__icon:hover{
+  opacity: 1;
+}
+
+.filterSectionElementHasError .input {
+    border: 0.75px solid #e93636bc;
+    color: var(--red);
+}
+
+.filterSectionElementHasError .input:hover,
+.filterSectionElementHasError .input:focus-visible{
+    border: 0.75px solid var(--red);
+    color: var(--red);
+}
+
+.filterSectionElementHasError .input::placeholder {
+    color: #e936368e;
+}
+
+.filterSectionElementHasError .input__icon{
+    color: var(--red)
+}
+
+/* generales */
+.hide {
+    display: none
+}
+
+/* iconos */
+.icon__red {
+    color: var(--red) !important
+}
+
+.icon__orange {
+    color: var(--orange) !important
+}
+
+/* spinner -  poner en div */
+.small__spinner {
+    border: 3px solid rgba(0, 0, 0, 0.1);
+    border-left-color: var(--color-secondary);
+    border-top-color: var(--color-secondary);
+    border-radius: 50%;
+    width: 19px;
+    height: 19px;
+    animation: smallspin 0.8s linear infinite;
+}
+
+
+/* Para los dots que hay en el componente Slider de la libreria React-Slick */
+ 
+.slick-dots {
+    position: initial;
+}
+
+.slick-dots li button:before,
+.slick-dots li.slick-active button:before {
+    color: var(--color-secondary);
+}
+
+/* cursor svg */
+.custom-cursor * {
+    cursor: var(--cursor-url) !important;
+}
+
+/* separators */
+.separator{
+    border-left: 1px solid var(--color-border);
+    height: 19px;
+}
+
+
+@keyframes smallspin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
