@@ -1,0 +1,95 @@
+.alerts__wrapper{
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    position: absolute;
+    bottom: 30px;
+    right: 40px;
+    z-index: 22;
+}
+
+.alert{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    padding: 22px;
+    padding-left: 60px;
+    width: 450px;
+    height: 140px;
+    border-radius: 5px;
+    background-color: rgba(var(--color-primary-rgb), 0.75);
+    border: 1px solid var(--color-border);
+    font-family: var(--text-font);
+    cursor: pointer;
+    overflow: auto;
+    backdrop-filter: blur(4px);
+}
+
+.close{
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    padding: 11px;
+    width: 36px;
+    height: 36px;
+    opacity: 0.8;
+    transition: all 0.3s ease-in-out;
+}
+.close:hover{
+    opacity: 1;
+}
+
+.alertIcon{
+    position: absolute;
+    top: 25px;
+    left: 15px;
+    width: 32px;
+    height: auto;
+    color: var(--red);
+    opacity: 0.8;
+    cursor: pointer;
+}
+.alertIcon svg{
+    width: 32px;
+    height: auto;
+}
+
+.alert h2{
+    font-size: 20px;
+    font-weight: var(--bold);
+    color: var(--red);
+    text-transform: uppercase;
+}
+.alert h3{
+    font-size: 14px;
+    font-weight: var(--regular);    
+}
+.alert p{
+    font-size: 14px;
+    font-weight: var(--light);  
+    opacity: 0.75;  
+}
+
+.blocks__wrapper{
+    display: flex;
+    flex-direction: row;
+    gap: 12px;
+    justify-content: space-between;
+}
+
+.blocks__wrapper div:last-child{
+    text-align: right;
+}
+
+.block{
+    display: flex;
+    flex-direction: column;
+}
+
+.block p{
+    white-space: nowrap;
+    max-width:  230px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

@@ -1,0 +1,96 @@
+.wrapper{
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    min-height: 500px;
+    overflow-y: scroll;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Logo */
+
+.logo{
+    position: absolute;
+    top:0;
+    left:0;
+    padding: 30px 20px;
+}
+.logo svg{
+    height: 45px;
+}
+
+/* Info */
+
+.info{
+    display: flex;
+    flex-direction: column;
+    gap: 20px
+}
+
+.info h2{
+    font-family: Krona One;
+    font-weight: var(--regular);
+    font-size: 24px;
+}
+
+.info p{
+    font-family: var(--text-font);
+    font-weight: var(--regular);
+    font-size: 16px;
+    opacity: 0.9;
+}
+
+.info button{
+    align-self: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 320px;
+    height: 40px;
+    border-radius: 10px;
+    border: 0.75px solid var(--color-border);
+    padding: 20px;
+    cursor: pointer;
+    margin-top: 80px;
+    transition: all 0.3s ease-in-out;
+
+    font-family: var(--text-font);
+    font-weight: var(--regular);
+    font-size: 16px;
+}
+
+.info button:hover,
+.info button:focus-visible {
+    background-color: var(--color-secondary);
+    color: var(--color-primary);
+    outline: none
+}
+
+.row{
+    display: flex;
+    align-items: center;
+    gap: 12px
+}
+.row img{
+    width: 30px;
+}
+
+/* Footer */
+
+.footer{
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 30px 20px;
+}
+
+.footer p{
+    text-transform: uppercase;
+    font-weight: var(--regular);
+    font-size: 16px;
+}

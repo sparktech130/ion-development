@@ -1,0 +1,17 @@
+.wrapper{
+    width: 900px;
+    height: 570px;
+    overflow: scroll;
+}
+
+.button__wrapper{
+    margin-top: 20px;
+    margin-bottom: 20px;
+    display: flex;
+    flex-flow: row nowrap;
+    gap: 10px;
+}
+
+.table{
+   height: 360px;
+}
