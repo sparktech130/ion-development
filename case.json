@@ -3,7 +3,6 @@
     "frontend": 80,
     "backend": 80,
     "database": 3306,
-    "city": 5173,
     "trafficsocket": 8101
   }
 }

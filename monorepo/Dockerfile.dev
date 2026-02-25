@@ -89,8 +89,10 @@ RUN mkdir -p /var/lib/ionsmart \
 
 WORKDIR /var/www/html
 
-# Primero solo composer.* para cachear dependencias
+# Primero solo composer.* + módulo core para cachear dependencias
+# core/ es una path-dependency de composer y debe estar presente antes del install
 COPY composer.json composer.lock* /var/www/html/
+COPY core ./core
 
 # Instalar dependencias
 RUN set -eux; \

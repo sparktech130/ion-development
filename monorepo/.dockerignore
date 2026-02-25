@@ -1,0 +1,23 @@
+# Dependencias instaladas en la imagen por Composer — no sobreescribir el install fresco
+vendor/
+
+# Secretos y configuración de entorno — se monta como volumen en runtime
+.env
+.env.*
+
+# Control de versiones
+.git/
+.gitignore
+.gitmodules
+
+# Docker — no tiene sentido incluirlos en la imagen
+docker-compose*.yml
+Dockerfile*
+.dockerignore
+
+# Documentación
+*.md
+
+# Artefactos de build del frontend (si los hubiera en monorepo)
+node_modules/
+dist/

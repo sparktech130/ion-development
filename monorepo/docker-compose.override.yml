@@ -67,8 +67,8 @@ services:
   # Controlado por ENABLED_DBS (ej: "core,city" o "core,industry")
   goose-migrate:
     build:
-      context: ./docker/goose
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: docker/goose/Dockerfile
     image: ghcr.io/ion-smart/goose_migrations:latest
     container_name: ionsmart_goose_migrate
     depends_on:

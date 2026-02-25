@@ -168,7 +168,7 @@ ALTER TABLE usuarios DROP COLUMN telefono;
 ### Documentación Completa
 
 Para más información sobre migraciones, consulta:
-- [Guía de Migraciones Goose](docker/db/GOOSE.md)
+- [Guía de Migraciones Goose](docker/goose/README.md)
 - [README de Migraciones](migrations/README.md)
 
 ---
@@ -193,7 +193,7 @@ Módulo de Smart City que incluye:
 - Investigaciones
 - Listas (blancas/negras)
 
-📖 [Documentación Frontend City](front/city/README.md)
+📖 [Documentación Frontend City](../city/README.md)
 
 ### ION Industry
 Módulo de Smart Industry que incluye:
@@ -203,7 +203,7 @@ Módulo de Smart Industry que incluye:
 - Sistema de llamadas
 - Picking y logística
 
-📖 [Documentación Frontend Industry](front/industry/README.md)
+📖 [Documentación Frontend Industry](../city/README.md)
 
 ---
 
@@ -394,7 +394,7 @@ chmod +x build-fronts.sh
 ## Documentación
 
 ### General
-- [Guía de Migraciones Goose](docker/db/GOOSE.md)
+- [Guía de Migraciones Goose](docker/goose/README.md)
 - [Migraciones README](migrations/README.md)
 
 ### Backend
@@ -403,8 +403,7 @@ chmod +x build-fronts.sh
 - [Documentación Técnica](core/TECNICO.md)
 
 ### Frontend
-- [City Frontend](front/city/README.md)
-- [Industry Frontend](front/industry/README.md)
+- [City Frontend](../city/README.md)
 
 ### API
 - [Documentación API](docs/api/)
