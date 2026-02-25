@@ -1,0 +1,16 @@
+.wrapper{
+    width: 65vw;
+    height: 65vh;
+    overflow: hidden;
+    padding-top: 17px;
+    display: flex;
+    flex-direction: column;
+    gap: 17px
+}
+
+.files{
+    display: flex;
+    flex-wrap: wrap;
+    overflow: scroll;
+    gap: 10px
+}
