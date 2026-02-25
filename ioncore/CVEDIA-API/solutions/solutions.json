@@ -1,0 +1,22 @@
+[
+    {
+        "code": "crowd-estimation",
+        "name": "Estimación de aforo"
+    },
+    {
+        "code": "its",
+        "name": "Sistema de Tráfico Inteligente"
+    },
+    {
+        "code": "pva-detection",
+        "name": "Detección Persona-Vehiculo-Animal"
+    },
+    {
+        "code": "securt",
+        "name": "ION Secur (Seguridad)"
+    },
+    {
+        "code": "uav-detection",
+        "name": "Detección UAV"
+    }
+]

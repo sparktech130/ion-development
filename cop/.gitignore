@@ -1,0 +1,27 @@
+node_modules/
+.gradle/
+local.properties
+*.jks
+*.keystore
+dist/
+build/
+.DS_Store
+.env
+.env.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
+*.orig
+coverage/
+.nyc_output/
+Pods/
+ios/Pods/
+.watchman*
+
+# Android C++ build files
+.cxx/

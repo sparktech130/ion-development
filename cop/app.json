@@ -1,0 +1,8 @@
+{
+  "name": "ION COP",
+  "displayName": "ION COP",
+  "version": "0.0.1",
+  "description": "Aplicación móvil policial para lectura de matrículas",
+  "author": "ION Smart",
+  "license": "MIT"
+}

@@ -1,0 +1,24 @@
+
+> ion-suite@0.0.0 dev
+> vite --host
+
+✘ [ERROR] Could not resolve "./src/constants/common"
+
+    vite.config.js:4:30:
+      4 │ import { url_path_city } from './src/constants/common'
+        ╵                               ~~~~~~~~~~~~~~~~~~~~~~~~
+
+failed to load config from /home/spark/devel/ion/city/vite.config.js
+error when starting dev server:
+Error: Build failed with 1 error:
+vite.config.js:4:30: ERROR: Could not resolve "./src/constants/common"
+    at failureErrorWithLog (/home/spark/devel/ion/city/node_modules/esbuild/lib/main.js:1472:15)
+    at /home/spark/devel/ion/city/node_modules/esbuild/lib/main.js:945:25
+    at runOnEndCallbacks (/home/spark/devel/ion/city/node_modules/esbuild/lib/main.js:1315:45)
+    at buildResponseToResult (/home/spark/devel/ion/city/node_modules/esbuild/lib/main.js:943:7)
+    at /home/spark/devel/ion/city/node_modules/esbuild/lib/main.js:970:16
+    at responseCallbacks.<computed> (/home/spark/devel/ion/city/node_modules/esbuild/lib/main.js:622:9)
+    at handleIncomingPacket (/home/spark/devel/ion/city/node_modules/esbuild/lib/main.js:677:12)
+    at Socket.readFromStdout (/home/spark/devel/ion/city/node_modules/esbuild/lib/main.js:600:7)
+    at Socket.emit (node:events:508:28)
+    at addChunk (node:internal/streams/readable:559:12)

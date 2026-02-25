@@ -1,0 +1,26 @@
+# https://git-scm.com/docs/gitignore
+# https://help.github.com/articles/ignoring-files
+# Example.gitignore files : https://github.com/github/gitignore
+_notes/
+/bower_components/
+/node_modules/
+
+*errors.log
+*.log
+*.env
+*.txt
+*.wav
+sh.exe.stackdump
+
+/vendor/
+composer.phar
+
+ws/**/post*.json
+
+.ftpquota
+
+/fotos*/**/*.jp*g*
+/fotos*/**/*.png*
+
+/vms/videos/miniaturas/**/*.jp*g*
+/vms/videos/miniaturas/**/*.png*

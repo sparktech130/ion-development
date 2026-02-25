@@ -1,0 +1,85 @@
+-- +goose Up
+
+CREATE TABLE IF NOT EXISTS `sensor_estado` (
+  `cod_registro` int(11) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT,
+  `fecha` date NOT NULL,
+  `hora` time NOT NULL,
+  `cmd` varchar(50) DEFAULT NULL,
+  `seqno` int(11) DEFAULT NULL,
+  `EUI` varchar(50) NOT NULL,
+  `ts` int(11) DEFAULT NULL,
+  `fcnt` int(11) DEFAULT NULL,
+  `PORT` int(11) DEFAULT NULL,
+  `freq` int(11) DEFAULT NULL,
+  `toa` int(11) DEFAULT NULL,
+  `dr` varchar(50) DEFAULT NULL,
+  `ack` tinyint(1) DEFAULT NULL,
+  `gws_rssi` int(11) DEFAULT NULL,
+  `gws_snr` float DEFAULT NULL,
+  `gws_ts` int(11) DEFAULT NULL,
+  `gws_time` varchar(50) DEFAULT NULL,
+  `gws_gweui` varchar(50) DEFAULT NULL,
+  `gws_ant` int(11) DEFAULT NULL,
+  `bat` int(11) DEFAULT NULL,
+  `battery` int(3) DEFAULT NULL,
+  `temperature` float DEFAULT NULL,
+  `humidity` int(11) DEFAULT NULL,
+  `pir` int(50) DEFAULT NULL,
+  `light_level` int(11) DEFAULT NULL,
+  `co2` int(11) DEFAULT NULL,
+  `tvoc` float DEFAULT NULL,
+  `pressure` float DEFAULT NULL,
+  `hcho` float DEFAULT NULL,
+  `pm2_5` int(11) DEFAULT NULL,
+  `pm10` int(11) DEFAULT NULL,
+  `gws_lat` float DEFAULT NULL,
+  `gws_lon` float DEFAULT NULL,
+  `commandCode` int(11) DEFAULT NULL,
+  `targetTemperature` float DEFAULT NULL,
+  `sensorTemperature` float DEFAULT NULL,
+  `sensorHumidity` float DEFAULT NULL,
+  `motorPosition` int(11) DEFAULT NULL,
+  `motorRange` int(11) DEFAULT NULL,
+  `batteryVoltage` int(11) DEFAULT NULL,
+  `childLock` tinyint(1) DEFAULT NULL,
+  `openWindow` tinyint(1) DEFAULT NULL,
+  `statusFlags` int(11) DEFAULT NULL,
+  `rotaryEncoderEnabled` int(11) DEFAULT NULL,
+  `data` varchar(200) DEFAULT NULL,
+
+  PRIMARY KEY (`cod_registro`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+CREATE TABLE IF NOT EXISTS `sensor_estado_distancia` (
+  `cod_registro` int(11) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT,
+  `fecha` date NOT NULL,
+  `hora` time NOT NULL,
+  `cmd` varchar(50) DEFAULT NULL,
+  `seqno` int(11) NOT NULL,
+  `EUI` varchar(50) NOT NULL,
+  `ts` int(11) NOT NULL,
+  `fcnt` int(11) NOT NULL,
+  `PORT` int(11) NOT NULL,
+  `freq` int(11) NOT NULL,
+  `toa` int(11) NOT NULL,
+  `dr` varchar(50) NOT NULL,
+  `ack` tinyint(1) NOT NULL,
+  `gws_rssi` int(11) NOT NULL,
+  `gws_snr` float NOT NULL,
+  `gws_ts` int(11) NOT NULL,
+  `gws_time` varchar(50) NOT NULL,
+  `gws_gweui` varchar(50) NOT NULL,
+  `gws_ant` int(11) NOT NULL,
+  `bat` int(11) DEFAULT NULL,
+  `battery` int(3) NOT NULL,
+  `distance` int(10) NOT NULL,
+  `position` enum('normal','tilt') NOT NULL,
+  `data` varchar(200) DEFAULT NULL,
+
+  PRIMARY KEY (`cod_registro`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
+-- +goose Down
+DROP TABLE IF EXISTS `sensor_estado_distancia`;
+DROP TABLE IF EXISTS `sensor_estado`;

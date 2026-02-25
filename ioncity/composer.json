@@ -1,0 +1,20 @@
+{
+  "name": "ionsmart/city",
+  "description": "ION City project",
+  "type": "project",
+  "require": {
+    "ionsmart/core": "*",
+    "firebase/php-jwt": "^6.10"
+  },
+  "authors": [
+    {
+      "name": "gaspar-ion",
+      "email": "gaspar@ionsmart.eu"
+    },
+    {
+      "name": "ion",
+      "email": "info@ionsmart.eu"
+    }
+  ],
+  "license": "proprietary"
+}

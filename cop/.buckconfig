@@ -1,0 +1,17 @@
+{
+  "name": "ION COP",
+  "displayName": "ION COP",
+  "appIdentifier": "com.ioncop.app",
+  "version": "0.0.1",
+  "description": "Aplicación móvil policial para lectura de matrículas",
+  "author": "ION Smart",
+  "license": "MIT",
+  "root": true,
+  "extends": "@react-native/eslint-config",
+  "parser": "@typescript-eslint/parser",
+  "plugins": ["@typescript-eslint"],
+  "parserOptions": {
+    "ecmaVersion": "latest",
+    "sourceType": "module"
+  }
+}

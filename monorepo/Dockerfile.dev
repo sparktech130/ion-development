@@ -1,0 +1,120 @@
+FROM ubuntu:24.04
+
+ENV DEBIAN_FRONTEND=noninteractive \
+    TZ=Europe/Madrid \
+    APACHE_RUN_USER=www-data \
+    APACHE_RUN_GROUP=www-data
+
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends \
+      apache2 \
+      libapache2-mod-php8.3 \
+      php8.3 \
+      php8.3-cli \
+      php8.3-common \
+      php8.3-curl \
+      php8.3-gd \
+      php8.3-intl \
+      php8.3-mbstring \
+      php8.3-mysql \
+      php8.3-xml \
+      php8.3-zip \
+      php8.3-opcache \
+      php8.3-apcu \
+      ca-certificates \
+      curl \
+      unzip \
+      composer \
+ && rm -rf /var/lib/apt/lists/*
+
+RUN set -eux; \
+   phpenmod -v 8.3 -s apache2 apcu; \
+   phpenmod -v 8.3 -s cli apcu
+
+# Logs en Docker (stdout/stderr): Apache + PHP
+RUN set -eux; \
+    ln -sf /proc/self/fd/1 /var/log/apache2/access.log; \
+    ln -sf /proc/self/fd/2 /var/log/apache2/error.log; \
+    printf '%s\n' \
+      'log_errors=On' \
+      'error_log=/proc/self/fd/2' \
+      'display_errors=Off' \
+      > /etc/php/8.3/apache2/conf.d/zz-docker-logs.ini; \
+    printf '%s\n' \
+      'log_errors=On' \
+      'error_log=/proc/self/fd/2' \
+      'display_errors=Off' \
+      > /etc/php/8.3/cli/conf.d/zz-docker-logs.ini
+
+# OPcache + caches de paths (mejoran mucho en apps con muchos ficheros)
+# En DEV: validate_timestamps=1
+# En PROD: cambia validate_timestamps=0 (y rebuild al desplegar)
+RUN set -eux; \
+    printf '%s\n' \
+      '; ---- Performance ----' \
+      'opcache.enable=0' \
+      '' \
+      '; Realpath cache (autoload/framework)' \
+      'realpath_cache_size=4096K' \
+      'realpath_cache_ttl=600' \
+      > /etc/php/8.3/apache2/conf.d/zz-opcache.ini; \
+    cp /etc/php/8.3/apache2/conf.d/zz-opcache.ini /etc/php/8.3/cli/conf.d/zz-opcache.ini
+
+# APCu config
+RUN set -eux; \
+    printf '%s\n' \
+      '; ---- APCu ----' \
+      'apc.enabled=1' \
+      'apc.shm_size=32M' \
+      'apc.ttl=0' \
+      'apc.enable_cli=0' \
+      > /etc/php/8.3/apache2/conf.d/zz-apcu.ini; \
+    cp /etc/php/8.3/apache2/conf.d/zz-apcu.ini /etc/php/8.3/cli/conf.d/zz-apcu.ini
+
+# Apache: habilitar rewrite y permitir .htaccess (AllowOverride All)
+RUN a2enmod rewrite headers expires \
+ && printf '%s\n' \
+    'ServerName localhost' \
+    '<Directory /var/www/html>' \
+    '    AllowOverride All' \
+    '    Require all granted' \
+    '</Directory>' \
+    > /etc/apache2/conf-available/ionsmart.conf \
+ && a2enconf ionsmart
+
+# Creación carpeta volumen local
+RUN mkdir -p /var/lib/ionsmart \
+ && chown -R www-data:www-data /var/lib/ionsmart \
+ && chmod 700 /var/lib/ionsmart
+
+WORKDIR /var/www/html
+
+# Primero solo composer.* para cachear dependencias
+COPY composer.json composer.lock* /var/www/html/
+
+# Instalar dependencias
+RUN set -eux; \
+    if [ -f composer.json ]; then \
+      COMPOSER_ALLOW_SUPERUSER=1 composer install \
+        --no-interaction \
+        --no-dev \
+        --no-progress \
+        --prefer-dist \
+        --optimize-autoloader; \
+    fi;
+
+# Copia el resto del código (ya filtrado por .dockerignore)
+COPY . /var/www/html/
+
+# Autoload + permisos
+RUN set -eux; \
+    if [ -f composer.json ]; then \
+      COMPOSER_ALLOW_SUPERUSER=1 composer dump-autoload -o; \
+    fi; \
+    chown -R www-data:www-data /var/www/html
+
+VOLUME ["/var/lib/ionsmart"]
+
+EXPOSE 80
+CMD ["apachectl", "-D", "FOREGROUND"]
+

@@ -1,0 +1,140 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ghcr.io/ion-smart/ionsmart_app:latest
+    dns:
+      - 1.1.1.1
+      - 1.1.0.0
+    volumes:
+      - ionsmart_data:/var/lib/ionsmart
+      - /var/www/html/vendor
+      - .env:/var/www/html/.env
+    env_file:
+      - .env
+    ports:
+      - "${APP_PORT:-8080}:80"
+    environment:
+      APP_ENV: production
+      # Dentro de Docker, el host de MySQL es el nombre del servicio ("db")
+      MYSQL_HOST: db
+      MYSQL_PORT: 3306
+      # Compatibilidad por si alguna parte usa nombres DB_*
+      DB_HOST: db
+      DB_PORT: 3306
+    depends_on:
+      - db
+    restart: unless-stopped
+    networks:
+      - ionsmart_net
+
+  # Contenedor dedicado para tareas CRON
+  # cron:
+  #   image: ghcr.io/ion-smart/ionsmart_app_cron:latest
+  #   env_file:
+  #     - .env
+  #   environment:
+  #     # Mismas variables que app para acceso a base de datos
+  #     MYSQL_HOST: db
+  #     MYSQL_PORT: 3306
+  #     DB_HOST: db
+  #     DB_PORT: 3306
+  #   volumes:
+  #     # Compartir código con app (solo lectura)
+  #     - ./:/var/www/html:ro
+  #     # Directorio de fotos compartido con app (escritura para eliminar)
+  #     - ionsmart_data:/var/lib/ionsmart
+  #     # Logs de cron (opcional, para persistir)
+  #     - ionsmart_cron_logs:/var/log/ionsmart-cron
+  #   depends_on:
+  #     - db
+  #     - app
+  #   restart: unless-stopped
+  #   networks:
+  #     - ionsmart_net
+  #
+  db:
+    image: mariadb:10.11
+    environment:
+      # Recomendado definirlo en .env; dejo fallback por si no existe
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root_password}
+      # MariaDB también usa MYSQL_DATABASE para crear la BD principal
+      MYSQL_DATABASE: ${CORE_DB_NAME:-core}
+      MYSQL_USER: ${MYSQL_USER:-mysql_user}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-mysql_password}
+      # Para el init script (crear varias BDs)
+      CORE_DB_NAME: ${CORE_DB_NAME:-core}
+      INDUSTRY_DB_NAME: ${INDUSTRY_DB_NAME:-industry}
+      CITY_DB_NAME: ${CITY_DB_NAME:-city}
+      SKI_DB_NAME: ${SKI_DB_NAME:-ski}
+    volumes:
+      - ionsmart_db_data:/var/lib/mysql
+      - ./docker/mysql/init:/docker-entrypoint-initdb.d:ro
+    ports:
+      - "${MYSQL_PORT:-3306}:3306"
+    restart: unless-stopped
+    networks:
+      - ionsmart_net
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "mariadb-admin ping -h 127.0.0.1 -uroot -p$$MYSQL_ROOT_PASSWORD --silent",
+        ]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+
+  # Aplica migraciones con Goose de forma automática e idempotente
+  # Controlado por ENABLED_DBS (ej: "core,city" o "core,industry")
+  goose-migrate:
+    build:
+      context: .
+      dockerfile: docker/goose/Dockerfile
+    image: ghcr.io/ion-smart/goose_migrations:latest
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      MYSQL_HOST: db
+      MYSQL_PORT: 3306
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root_password}
+      CORE_DB_NAME: ${CORE_DB_NAME:-core}
+      CITY_DB_NAME: ${CITY_DB_NAME:-city}
+      INDUSTRY_DB_NAME: ${INDUSTRY_DB_NAME:-industry}
+      SKI_DB_NAME: ${SKI_DB_NAME:-ski}
+      IONADMIN_DB_NAME: ${IONADMIN_DB_NAME:-ionadmin}
+      # Controla qué módulos cargar (core siempre se aplica)
+      ENABLED_DBS: ${ENABLED_DBS:-core}
+      # Comando de goose: up, down, status, etc.
+      GOOSE_CMD: ${GOOSE_CMD:-up}
+    entrypoint: ["bash"]
+    command: ["/goose-runner.sh"]
+    restart: "no"
+    networks:
+      - ionsmart_net
+
+  phpmyadmin:
+    image: phpmyadmin:latest
+    depends_on:
+      - db
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      # Login con usuario/clave MySQL (root o MYSQL_USER)
+      UPLOAD_LIMIT: 512M
+    ports:
+      - "${PHPMYADMIN_PORT:-8081}:80"
+    restart: unless-stopped
+    networks:
+      - ionsmart_net
+
+volumes:
+  ionsmart_db_data:
+  ionsmart_data:
+  ionsmart_cron_logs:
+
+networks:
+  ionsmart_net:
+    driver: bridge

@@ -1,0 +1,226 @@
+{
+  "ERR_000": {
+    "message": {
+      "es": "Se ha producido un error",
+      "ca": "S'ha produït un error",
+      "en": "An error has occurred"
+    },
+    "status": 500
+  },
+  "ERR_001": {
+    "message": {
+      "es": "No tienes los permisos necesarios",
+      "ca": "No tens els permisos necesaris",
+      "en": ""
+    },
+    "status": 401
+  },
+  "ERR_002": {
+    "message": {
+      "es": "Usuario no autorizado",
+      "ca": "Usuari no autoritzat",
+      "en": "Unauthorized"
+    },
+    "status": 401
+  },
+  "ERR_003": {
+    "message": {
+      "es": "Usuario inválido",
+      "ca": "Usuari invàlid",
+      "en": "Invalid user"
+    },
+    "status": 401
+  },
+  "ERR_004": {
+    "message": {
+      "es": "Token expirado o inválido",
+      "ca": "Token expirat o invàlid",
+      "en": "Expired or invalid token"
+    },
+    "status": 498
+  },
+  "ERR_005": {
+    "message": {
+      "es": "Sesión desconocida",
+      "ca": "Sessió desconeguda",
+      "en": "Unknown session"
+    },
+    "status": 500
+  },
+  "ERR_006": {
+    "message": {
+      "es": "El usuario o contraseña no coinciden",
+      "ca": "L'usuari o la contrasenya no coincideixen",
+      "en": "Username or password do not match"
+    },
+    "status": 500
+  },
+  "ERR_007": {
+    "message": {
+      "es": "Código de acción inválido",
+      "ca": "",
+      "en": ""
+    },
+    "status": 500
+  },
+  "ERR_008": {
+    "message": {
+      "es": "Email no encontrado",
+      "ca": "",
+      "en": ""
+    },
+    "status": 500
+  },
+  "ERR_009": {
+    "message": {
+      "es": "Error al obtener datos",
+      "ca": "",
+      "en": ""
+    },
+    "status": 500
+  },
+  "ERR_010": {
+    "message": {
+      "es": "Error al insertar",
+      "ca": "",
+      "en": ""
+    },
+    "status": 500
+  },
+  "ERR_011": {
+    "message": {
+      "es": "Error al modificar",
+      "ca": "",
+      "en": ""
+    },
+    "status": 500
+  },
+  "ERR_012": {
+    "message": {
+      "es": "Error al eliminar",
+      "ca": "",
+      "en": ""
+    },
+    "status": 500
+  },
+  "ERR_013": {
+    "message": {
+      "es": "Error de validación",
+      "ca": "",
+      "en": ""
+    },
+    "status": 500
+  },
+  "ERR_014": {
+    "message": {
+      "es": "Es necesario enviar un cod_usuario",
+      "ca": "",
+      "en": ""
+    },
+    "status": 500
+  },
+  "ERR_015": {
+    "message": {
+      "es": "No se ha recibido un código válido",
+      "ca": "",
+      "en": ""
+    },
+    "status": 500
+  },
+  "ERR_016": {
+    "message": {
+      "es": "No se ha recibido ningún campo a modificar",
+      "ca": "",
+      "en": ""
+    },
+    "status": 500
+  },
+  "ERR_017": {
+    "message": {
+      "es": "No se han encontrado datos de usuario",
+      "ca": "",
+      "en": ""
+    },
+    "status": 500
+  },
+  "ERR_018": {
+    "message": {
+      "es": "No se han encontrado datos de grid para el usuario",
+      "ca": "",
+      "en": ""
+    },
+    "status": 204
+  },
+  "ERR_019": {
+    "message": {
+      "es": "No se ha podido acceder al cloud",
+      "ca": "",
+      "en": ""
+    },
+    "status": 500
+  },
+  "ERR_020": {
+    "message": {
+      "es": "Coordenadas inválidas",
+      "ca": "",
+      "en": ""
+    },
+    "status": 500
+  },
+  "ERR_021": {
+    "message": {
+      "es": "Modelo inválido",
+      "ca": "",
+      "en": ""
+    },
+    "status": 500
+  },
+  "ERR_022": {
+    "message": {
+      "es": "Error al obtener el token de Nx",
+      "ca": "",
+      "en": ""
+    },
+    "status": 500
+  },
+  "ERR_023": {
+    "message": {
+      "es": "No se ha podido insertar el dispositivo en Nx",
+      "ca": "",
+      "en": ""
+    },
+    "status": 500
+  },
+  "ERR_024": {
+    "message": {
+      "es": "Cloud no encontrado",
+      "ca": "",
+      "en": ""
+    },
+    "status": 500
+  },
+  "ERR_025": {
+    "message": {
+      "es": "Dispositivo inexistente",
+      "ca": "",
+      "en": ""
+    },
+    "status": 500
+  },
+  "ERR_026": {
+    "message": {
+      "es": "Dispositivo(s) no encontrado(s)",
+      "ca": "",
+      "en": ""
+    },
+    "status": 500
+  },
+  "ERR_027": {
+    "message": {
+      "es": "Dispositivo no recibido",
+      "ca": "",
+      "en": ""
+    },
+    "status": 500
+  }
+}
