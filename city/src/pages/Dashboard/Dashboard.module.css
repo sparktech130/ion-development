@@ -1,0 +1,10 @@
+.dashboard{
+    display: flex;
+}
+
+.sections__wrapper{
+    width: 100%;
+    padding: 40px 40px 20px 40px;
+    max-height: 100vh;
+    overflow-y: auto;
+}

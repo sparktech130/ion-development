@@ -1,0 +1,122 @@
+.wrapper{
+    position: absolute;
+    z-index: 5;
+    width: 0px;
+    height: 100vh;
+    margin-left: -40px;
+    margin-top: -40px;
+
+    backdrop-filter: blur(var(--blur-overlay));
+    background-color: var(--color-primary-overlay);
+    transition: width 0.4s ease-in-out;
+    overflow: hidden;
+    border-right: 0px solid transparent;
+    transform: skewX(-0.01deg)
+}
+/* transform: skewX(-0.01deg) evita el bug de dejar lineas al cerrarse el menú */
+
+.wrapper--open{
+    transform: skewX(0deg);
+    width: 537px;
+    border-right: 1px solid var(--color-border)
+}
+
+.content{
+    padding: 20px;
+    opacity: 0;
+    transition: opacity 0.4s ease-in-out;
+}
+.wrapper--open .content{
+    opacity: 1;
+}
+
+.close{
+    float:right;
+    width: 25px;
+    height: auto;
+    padding: 5px;
+    cursor: pointer;
+    opacity: 0.8;
+    transition: opacity 0.2s ease-in-out;
+}
+.close:hover{
+    opacity: 1;
+}
+
+.no__data{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width:100%;
+    height: 50vh;
+}
+
+.no__data p{
+    white-space: nowrap;
+    font-size: 16px;
+}
+
+.notifications{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-top: 20px;
+    overflow: scroll;
+    height: calc(100vh - 95px);
+}
+
+.notification{
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    padding: 20px;
+    height: 123px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    width: 496px;
+    gap: 5px;
+}
+.notification--closed{
+    background-color: var(--color-primary-hover);
+}
+
+.notification:hover{
+    background-color: var(--color-primary-hover);
+}
+
+.notification__img__wraper svg{
+    position: absolute;
+    top: 0;
+    right: -5px !important;
+    width: 18px;
+    height: auto;
+    right: 15px;
+    bottom: 90px;
+}
+
+/* estilos textos */
+
+.wrapper h2{
+    font-size: 17px;
+    font-weight: var(--regular);
+    margin-top: 30px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.notification h3{
+    font-size: 16px;
+    font-weight: var(--regular);
+}
+.notification h4{
+    font-size: 14px;
+    font-weight: var(--regular);
+}
+.notification p{
+    font-size: 15px;
+    font-weight: var(--regular);
+    opacity: 0.8;
+}

@@ -1,0 +1,50 @@
+.wrapper {
+    width: 100%;
+}
+
+.box{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.title{
+    font-weight: var(--regular);
+    margin: 1.25rem 0 15px 0;
+}
+
+.list{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-bottom: 10px;
+}
+
+.block{
+    display: flex;
+    flex-direction: column;
+    gap: 7px
+}
+
+.line{
+    display: flex;
+    flex-direction: row;
+    gap: 7px
+}
+
+.list a{
+    width: fit-content;
+    font-size: 15px !important;
+    font-weight: var(--bold);
+    transition: 0.2s all ease-in-out;
+}
+
+.list a:hover{
+    color: var(--red)
+}
+
+.list h3{
+    font-size: 15px !important;
+    font-weight: var(--regular);
+    opacity: 0.9;
+}
