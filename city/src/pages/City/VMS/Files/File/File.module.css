@@ -1,0 +1,159 @@
+.wrapper{
+    flex-grow: 1;
+    min-width: 350px;
+    height: fit-content;
+    opacity: 0.8;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    outline:none;
+    border-radius: 5px;
+}
+.wrapper:focus-visible{
+    border: 1px solid var(--color-secondary)
+}
+
+.wrapper:hover{
+    opacity: 1;
+}
+
+.noDisponible{
+    cursor: default;
+}
+
+.wrapper:hover .image{
+    transform: scale(1.1);
+}
+
+.image__wrapper{
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16/9;
+    overflow: hidden;
+    border-radius: 5px;
+    color: var(--white)
+}
+.image{
+    transition: all 0.3s ease-in-out;
+}
+
+.no-image {
+    display: flex;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    align-items: center;
+    justify-content: center;
+    color: var(--red);
+    background-color: #000000;
+    font-size: 16px;
+    text-transform: uppercase;
+}
+
+.image-details {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 10px;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    background: linear-gradient( 0deg, rgba(0, 0, 0, 0.75) 0%,rgba(0, 0, 0, 0.5) 50%, rgba(0, 0, 0, 0) 100%);
+    width: 100%;
+}
+
+.time__details {
+    display: flex;
+    flex-flow: column nowrap;
+    gap: 3px;
+
+}
+
+.share__details {
+    margin-left: auto;
+    display: flex;
+    flex-flow: row nowrap;
+    gap: 10px;
+
+}
+
+.share__details img,
+.share__details svg{
+    height: 20px;
+    width: auto;
+    object-fit: contain;
+}
+
+.info{
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding-top: 10px;
+    height: 85px;
+    width: 100%;
+}
+
+.info h2{
+    font-family: var(--text-font);
+    font-size: 15px;
+    font-weight: var(--bold);
+    letter-spacing: 0.05em;
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.info p{
+    font-family: var(--text-font);
+    font-size: 14px;
+    font-weight: var(--regular);
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.caducado{
+    color: var(--red)
+}
+
+.close{
+    height: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: row-reverse;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    cursor: pointer;
+    background: linear-gradient( 0deg, rgba(0, 0, 0, 0) 0%,rgba(0, 0, 0, 0.5) 50%, rgba(0, 0, 0, 0.75) 100%);
+    transition: all 0.2s ease-in-out;
+}
+.close img,
+.close svg{
+    color: var(--white);
+    width: 29px;
+    height: 29px;
+    padding: 7px;
+    border-radius: 5px;
+    opacity: 0.75;
+    transition: all 0.2s ease-in-out;
+    outline: none;
+    border: 1px solid transparent;
+}
+
+.wrapper:hover .close,
+.wrapper:focus-within .close{
+    height: 30px;
+}
+
+.close img:focus-visible,
+.close svg:focus-visible{
+    border: 1px solid var(--color-secondary);
+    opacity: 1;
+}
+
+.wrapper:hover img:hover,
+.wrapper:hover svg:hover{
+    opacity: 1;
+}
