@@ -1,0 +1,168 @@
+/*
+  animations.css
+  Librería de animaciones UI reutilizables.
+  - Clases: `animation-xxx` (ej: `animation-fade-in`)
+  - Usar la clase base `animation` para aplicar variables globales
+  - Variables CSS por defecto: --anim-duration, --anim-delay, --anim-easing, --anim-fill
+  - Respeta la preferencia `prefers-reduced-motion`
+*/
+
+:root{
+  --anim-duration: 400ms;
+  --anim-delay: 0ms;
+  --anim-easing: cubic-bezier(.2,.9,.3,1);
+  --anim-fill: both;
+}
+
+/* Clase base para aplicar variables por defecto. Añade esta clase junto a la animation-xxx si quieres personalizar. */
+.animation{
+  animation-duration: var(--anim-duration);
+  animation-delay: var(--anim-delay);
+  animation-timing-function: var(--anim-easing);
+  animation-fill-mode: var(--anim-fill);
+}
+
+/* Utilidades rápidas */
+.anim-fast{ --anim-duration: 180ms; }
+.anim-medium{ --anim-duration: 360ms; }
+.anim-slow{ --anim-duration: 600ms; }
+.anim-delay-sm{ --anim-delay: 80ms; }
+.anim-delay-md{ --anim-delay: 160ms; }
+.anim-delay-lg{ --anim-delay: 320ms; }
+.anim-infinite{ animation-iteration-count: infinite; }
+.anim-once{ animation-iteration-count: 1; }
+
+/* Accesibilidad: desactivar animaciones para usuarios que lo prefieren */
+@media (prefers-reduced-motion: reduce){
+  .animation{
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+/* --------------------------- Keyframes y clases --------------------------- */
+
+@keyframes fadeIn{
+  from{ opacity: 0; }
+  to{ opacity: 1; }
+}
+.animation-fade-in{ animation-name: fadeIn; }
+
+@keyframes fadeOut{
+  from{ opacity: 1; }
+  to{ opacity: 0; }
+}
+.animation-fade-out{ animation-name: fadeOut; }
+
+@keyframes slideInLeft{
+  from{ transform: translateX(-16px); opacity: 0; }
+  to{ transform: translateX(0); opacity: 1; }
+}
+.animation-slide-in-left{ animation-name: slideInLeft; }
+
+@keyframes slideInRight{
+  from{ transform: translateX(16px); opacity: 0; }
+  to{ transform: translateX(0); opacity: 1; }
+}
+.animation-slide-in-right{ animation-name: slideInRight; }
+
+@keyframes slideInUp{
+  from{ transform: translateY(12px); opacity: 0; }
+  to{ transform: translateY(0); opacity: 1; }
+}
+.animation-slide-in-up{ animation-name: slideInUp; }
+
+@keyframes slideInDown{
+  from{ transform: translateY(-12px); opacity: 0; }
+  to{ transform: translateY(0); opacity: 1; }
+}
+.animation-slide-in-down{ animation-name: slideInDown; }
+
+@keyframes slideOutLeft{
+  from{ transform: translateX(0); opacity: 1; }
+  to{ transform: translateX(-12px); opacity: 0; }
+}
+.animation-slide-out-left{ animation-name: slideOutLeft; }
+
+@keyframes slideOutRight{
+  from{ transform: translateX(0); opacity: 1; }
+  to{ transform: translateX(12px); opacity: 0; }
+}
+.animation-slide-out-right{ animation-name: slideOutRight; }
+
+@keyframes scaleUp{
+  from{ transform: scale(.75); opacity: 0; }
+  to{ transform: scale(1); opacity: 1; }
+}
+.animation-scale-up{ animation-name: scaleUp; }
+
+@keyframes scaleDown{
+  from{ transform: scale(1.04); opacity: 1; }
+  to{ transform: scale(1); opacity: 0; }
+}
+.animation-scale-down{ animation-name: scaleDown; }
+
+@keyframes pop{
+  0%{ transform: scale(.85); opacity: 0; }
+  60%{ transform: scale(1.06); opacity: 1; }
+  100%{ transform: scale(1); }
+}
+.animation-pop{ animation-name: pop; }
+
+@keyframes bounceY{
+  0%{ transform: translateY(0); }
+  25%{ transform: translateY(-6px); }
+  50%{ transform: translateY(0); }
+  75%{ transform: translateY(-3px); }
+  100%{ transform: translateY(0); }
+}
+.animation-bounce{ animation-name: bounceY; }
+
+@keyframes shakeX{
+  0%{ transform: translateX(0); }
+  20%{ transform: translateX(-6px); }
+  40%{ transform: translateX(6px); }
+  60%{ transform: translateX(-4px); }
+  80%{ transform: translateX(4px); }
+  100%{ transform: translateX(0); }
+}
+.animation-shake{ animation-name: shakeX; }
+
+@keyframes pulseOpacity{
+  0%{ opacity: 1; }
+  50%{ opacity: .6; }
+  100%{ opacity: 1; }
+}
+.animation-pulse{ animation-name: pulseOpacity; }
+
+@keyframes rotateIn{
+  from{ transform: rotate(-18deg) scale(.98); opacity: 0; }
+  to{ transform: rotate(0deg) scale(1); opacity: 1; }
+}
+.animation-rotate-in{ animation-name: rotateIn; }
+
+@keyframes flipIn{
+  from{ transform: perspective(600px) rotateY(-90deg); opacity: 0; }
+  60%{ transform: perspective(600px) rotateY(10deg); opacity: 1; }
+  to{ transform: perspective(600px) rotateY(0deg); }
+}
+.animation-flip-in{ animation-name: flipIn; }
+
+/* Subtle highlight/shine useful for hover-in effects */
+@keyframes shine{
+  from{ background-position: -200% 0; }
+  to{ background-position: 200% 0; }
+}
+.animation-shine{
+  animation-name: shine;
+  background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0) 100%);
+  background-size: 200% 100%;
+}
+
+/* Ejemplo de uso compuesto: animar la entrada con delay escalonado (stagger) mediante variables en línea */
+.animation-stagger{
+  animation-name: slideInUp;
+}
+
+/* Nota: combina `animation` para aplicar variables y `animation-xxx` para elegir la animación. */

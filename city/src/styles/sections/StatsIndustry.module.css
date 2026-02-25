@@ -1,0 +1,235 @@
+/* Estructura */
+
+.wrapper {
+    display: flex;
+    flex-direction: row;
+    gap: 20px
+}
+
+.left__section {
+    width: 100%;
+    height: calc(100vh - 40px);
+    margin-bottom: -20px;
+    padding-bottom: 20px;
+    overflow-y: scroll;
+}
+
+.right__section {
+    display: flex;
+    flex-flow: column nowrap;
+    gap: 20px;
+    width: 559px;
+    flex-shrink: 0;
+    margin: -40px -40px -20px 0;
+    padding: 40px 20px 20px 20px;
+    border-left: 1px solid rgb(var(--color-secondary-rgb), 0.1);
+}
+
+/* Buttons */
+
+.button__wrapper {
+    display: flex;
+    flex-flow: row nowrap;
+    gap: 10px;
+    height: 36px;
+    margin-top: 16px;
+    margin-bottom: 10px;
+}
+
+/* Left Section */
+
+.grid {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    gap: 10px;
+    height: calc(100vh - 140px);
+    overflow-y: scroll;
+}
+
+.graph {
+    width: calc(50% - 5px);
+    height: calc(33% - 5px);
+    min-height: 277px;
+}
+
+.graph100 {
+    width: 100%;
+    height: calc(33% - 5px);
+    min-height: 277px;
+}
+
+.graph--long {
+    width: 100%;
+}
+
+.graph__column50{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: calc(50% - 5px);
+    height: fit-content;
+}
+
+.row{
+    display: flex;
+    gap: 10px;
+    width: 100%;
+}
+
+/* Right section */
+
+.list__header {
+    display: flex;
+    justify-content: space-between;
+}
+
+.list__header img {
+    width: 22px;
+    height: 14px;
+    opacity: 0.8;
+    cursor: pointer;
+    transition: opacity 0.2s ease-in-out;
+}
+
+.list__header img:hover {
+    opacity: 1 !important;
+}
+
+.list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    height: calc(100vh - 100px);
+    overflow-y: scroll;
+    padding-bottom: 15px;
+    min-height: 300px;
+}
+
+.list__noData {
+    height: 300px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 16px;
+}
+
+.alert__title{
+    font-weight: var(--regular) !important;
+    font-size: 14px !important;
+}   
+
+.alert__text{
+    font-weight: var(--bold) !important;
+    font-size: 14px !important;
+}
+
+/* Textos */
+
+.right__section__title {
+    font-family: 'Krona One';
+    font-weight: var(--regular);
+    font-size: 14px;
+    margin-bottom: -4px;
+}
+
+/* Gráficos Right Section*/
+.compacted__chart {
+    background-color: var(--color-visualization);
+    border-radius: 10px;
+    padding: 15px;
+    height: auto;
+    width: 100%;
+    display: flex;
+    flex-flow: column nowrap;
+    gap: 20px;
+}
+
+.compacted__chart .compacted__header {
+    width: 100%;
+    display: flex;
+    flex-flow: row nowrap;
+    gap: 15px;
+    align-items: center;
+}
+
+.compacted__chart .compacted__header span {
+    width: 1px;
+    height: 100%;
+    background-color: var(--color-border)
+}
+
+.compacted__chart .compacted__header h3 {
+    font-weight: var(--bold);
+    font-size: 15px;
+    max-width: 140px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.compacted__chart .compacted__header h4 {
+    font-weight: var(--regular);
+    font-size: 15px;
+    max-width: 260px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.compacted__chart .compacted__header .arrow {
+    width: 15px;
+    height: auto;
+    object-fit: contain;
+    opacity: 0.75;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+}
+
+.compacted__chart .compacted__header .arrow--dropped {
+    transform: rotate(-180deg);
+}
+
+.compacted__chart .compacted__header .arrow:hover {
+    opacity: 1;
+}
+
+
+/* Queries */
+
+@media(max-width:1600px) {
+    .graph,
+    .graph__column50{
+        width: 100%;
+    }
+}
+
+@media(max-width:1300px) {
+
+    .wrapper {
+        flex-wrap: wrap;
+    }
+
+    .grid {
+        height: auto;
+    }
+
+    .left__section {
+        height: auto;
+    }
+
+    .right__section {
+        width: 100%;
+        height: auto;
+        border-left: none;
+        padding: 0;
+        margin-top: 10px;
+        background: none;
+    }
+
+    .list {
+        height: auto !important
+    }
+
+}
