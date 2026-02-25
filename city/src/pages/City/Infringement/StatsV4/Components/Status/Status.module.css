@@ -1,0 +1,54 @@
+/* Estructura */
+
+.wrapper{
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    padding-bottom: 10px;
+}
+
+.donut__wrapper{
+    width: 134px;
+    height: 134px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.table__wrapper{
+    display: flex;
+    align-items: center;
+    height: 134px;
+}
+
+/* Table */
+
+.table{
+    width: auto;     
+    table-layout: auto;
+    border-collapse: separate;
+    border-spacing: 10px 10px;
+}
+
+.table td {
+  width: auto;
+  vertical-align: middle;
+}
+
+.square{
+    width: 13px;
+    height: 13px;
+    margin-right: 5px;
+}
+
+/* Fuentes */
+
+.table td h2{
+    font-weight: var(--regular);
+    font-size: 14px;
+}
+
+.table td p{
+    font-weight: var(--bold);
+    font-size: 14px;
+}

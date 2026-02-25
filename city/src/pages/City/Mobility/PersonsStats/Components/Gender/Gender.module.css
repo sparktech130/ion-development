@@ -1,0 +1,62 @@
+.wrapper{
+    display: flex;
+    align-items: center;
+    height: 220px;
+    padding-bottom: 25px;
+}
+
+/* Info */
+
+.info{
+    width: 60%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.row{
+    display: flex;
+    gap: 7px;
+    align-items: center;
+    margin-bottom: 3px;
+}
+.row--small{
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.row img,
+.row svg{
+    height: 20px;
+    width: 20px;
+    object-fit: contain;
+}
+.row--small img,
+.row--small svg{
+    height: 15px;
+    width: 15px;
+    object-fit: contain;
+}
+
+.info h3{
+    font-weight: var(--regular);
+    font-size: 32px;
+}
+
+.info h4{
+    font-weight: var(--regular);
+    font-size: 14px;
+    opacity: 0.8;
+}
+
+/* Chart */
+
+.donut__wrapper{
+    width: 40%;
+    height: 150px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
