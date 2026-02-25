@@ -1,0 +1,91 @@
+openapi: 3.0.0
+info:
+  title: ion-industry-api
+  description: |
+    ION Smart Industry API<br/><br/>
+    El token de autenticación se recibe en comprobar2FA de la API Core
+  version: 0.3.0
+
+servers:
+  - description: ION Industry Test
+    url: "https://ionsmartest.eu/ionindustry"
+
+  - description: ION Smart Development
+    url: "http://localhost:8101/ionindustry"
+
+tags:
+  - name: Naves
+    description: Operaciones de gestión de las naves industriales.
+  - name: Consumos
+    description: Obtención de consumos de la nave industrial. Utiliza la API de Datadis.
+  - name: Dispositivos
+    description: Operaciones de gestión de los dispositivos usados en el módulo.
+  - name: Alertas Máquinas
+    description: Obtención de alertas recibidas en las máquinas industriales registradas.
+
+paths:
+  # ===== Naves industriales =====
+  /naves/insertar:
+    $ref: "paths/industry/naves.yaml#/components/x-routes/Insertar"
+
+  /naves/obtener:
+    $ref: "paths/industry/naves.yaml#/components/x-routes/Obtener"
+
+  /naves/modificar:
+    $ref: "paths/industry/naves.yaml#/components/x-routes/Modificar"
+
+  /naves/planos/modificar:
+    $ref: "paths/industry/naves.yaml#/components/x-routes/ModificarPlanos"
+
+  /naves/eliminar:
+    $ref: "paths/industry/naves.yaml#/components/x-routes/Eliminar"
+
+  # ===== Consumo Nave industrial =====
+  /consumo/obtener:
+    $ref: "paths/industry/consumos.yaml#/components/x-routes/Obtener"
+
+  /consumo/obtener24:
+    $ref: "paths/industry/consumos.yaml#/components/x-routes/Obtener24"
+
+  # ===== Dispositivos =====
+  /dispositivos/insertar:
+    $ref: "paths/industry/dispositivos.yaml#/components/x-routes/Insertar"
+
+  /dispositivos/obtener:
+    $ref: "paths/industry/dispositivos.yaml#/components/x-routes/Obtener"
+
+  /dispositivos/modificar:
+    $ref: "paths/industry/dispositivos.yaml#/components/x-routes/Modificar"
+
+  /dispositivos/mover:
+    $ref: "paths/industry/dispositivos.yaml#/components/x-routes/Mover"
+
+  /dispositivos/eliminar:
+    $ref: "paths/industry/dispositivos.yaml#/components/x-routes/Eliminar"
+
+  # ===== Alertas máquinas =====
+  /dispositivos/alertas_maquina/obtenerTipos:
+    $ref: "paths/industry/maquinas.yaml#/components/x-routes/ObtenerTipos"
+
+  /dispositivos/alertas_maquina/obtener:
+    $ref: "paths/industry/maquinas.yaml#/components/x-routes/Obtener"
+
+  /dispositivos/alertas_maquina/obtener24:
+    $ref: "paths/industry/maquinas.yaml#/components/x-routes/Obtener24"
+
+  /dispositivos/alertas_maquina/group:
+    $ref: "paths/industry/maquinas.yaml#/components/x-routes/Group"
+
+  /dispositivos/alertas_maquina/group24:
+    $ref: "paths/industry/maquinas.yaml#/components/x-routes/Group24"
+
+  # ===== Estados máquinas =====
+  # ===== Estados sensores =====
+  # ===== Actividad muelles =====
+
+components:
+  securitySchemes:
+    bearerAuth:
+      $ref: "utils/fields.yaml#/components/securitySchemes/bearerAuth"
+    userAndPassword:
+      $ref: "utils/fields.yaml#/components/securitySchemes/userAndPassword"

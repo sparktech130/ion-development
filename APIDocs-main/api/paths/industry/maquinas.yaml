@@ -1,0 +1,470 @@
+openapi: 3.0.0
+info:
+  title: Operaciones de maquinas
+  version: 1.0.0
+paths:
+components:
+  x-routes:
+    ObtenerTipos:
+      post:
+        tags:
+          - Alertas Máquinas
+        description: Obtiene los tipos de alertas
+        summary: Obtener tipos de alertas
+        operationId: obtenerTiposAlertasMaquinas
+        parameters: []
+        requestBody:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/alertas_tipos_obtener_body"
+        responses:
+          "200":
+            description: Successful operation
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/AlertTypesInfo"
+          "401":
+            description: Usuario inválido o no autorizado
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "498":
+            description: Token expirado o inválido
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "500":
+            description: Unexpected error
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+        security:
+          - bearerAuth: []
+
+    Obtener:
+      post:
+        tags:
+          - Alertas Máquinas
+        description: Obtiene las alertas de las máquinas de producción
+        summary: Obtener
+        operationId: obtenerAlertasMaquinas
+        parameters: []
+        requestBody:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/alertas_obtener_body"
+        responses:
+          "200":
+            description: Successful operation
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    rows:
+                      type: array
+                      items:
+                        $ref: "#/components/schemas/AlertInfo"
+                    total:
+                      type: integer
+          "401":
+            description: Usuario inválido o no autorizado
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "498":
+            description: Token expirado o inválido
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "500":
+            description: Unexpected error
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+        security:
+          - bearerAuth: []
+
+    Obtener24:
+      post:
+        tags:
+          - Alertas Máquinas
+        description: Obtiene las alertas de las máquinas de producción
+        summary: Obtener 24h
+        operationId: obtenerAlertasMaquinas24
+        parameters: []
+        requestBody:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/alertas_obtener24_body"
+        responses:
+          "200":
+            description: Successful operation
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    rows:
+                      type: array
+                      items:
+                        $ref: "#/components/schemas/AlertInfo"
+                    total:
+                      type: integer
+          "401":
+            description: Usuario inválido o no autorizado
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "498":
+            description: Token expirado o inválido
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "500":
+            description: Unexpected error
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+        security:
+          - bearerAuth: []
+
+    Group:
+      post:
+        tags:
+          - Alertas Máquinas
+        description: Obtiene las alertas de las máquinas de producción agrupadas
+        summary: Agrupación
+        operationId: obtenerAlertasMaquinasGroup
+        parameters: []
+        requestBody:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/alertas_group_body"
+        responses:
+          "200":
+            description: Successful operation
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    rows:
+                      type: array
+                      items:
+                        $ref: "#/components/schemas/AlertGroupInfo"
+                    alertas_media:
+                      type: number
+                      format: float
+                      example: 2.55
+          "401":
+            description: Usuario inválido o no autorizado
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "498":
+            description: Token expirado o inválido
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "500":
+            description: Unexpected error
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+        security:
+          - bearerAuth: []
+
+    Group24:
+      post:
+        tags:
+          - Alertas Máquinas
+        description: Obtiene las alertas de las máquinas de producción agrupadas
+        summary: Agrupación
+        operationId: obtenerAlertasMaquinasGroup24
+        parameters: []
+        requestBody:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/alertas_group24_body"
+        responses:
+          "200":
+            description: Successful operation
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    rows:
+                      type: array
+                      items:
+                        $ref: "#/components/schemas/AlertGroupInfo"
+                    alertas_media:
+                      type: number
+                      format: float
+                      example: 2.55
+          "401":
+            description: Usuario inválido o no autorizado
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "498":
+            description: Token expirado o inválido
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "500":
+            description: Unexpected error
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+        security:
+          - bearerAuth: []
+
+  schemas:
+    alertas_tipos_obtener_body:
+      type: object
+      properties:
+        id:
+          type: integer
+        group_id:
+          type: integer
+
+    AlertTypesInfo:
+      type: array
+      items:
+        type: object
+        properties:
+          group_id:
+            type: integer
+          group_es:
+            type: string
+          group_ca:
+            type: string
+          group_en:
+            type: string
+          group_fr:
+            type: string
+          tipos:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: integer
+                id_text:
+                  type: string
+                es:
+                  type: string
+                ca:
+                  type: string
+                en:
+                  type: string
+                fr:
+                  type: string
+
+    alertas_obtener_body:
+      type: object
+      properties:
+        cod_nave:
+          type: string
+          example: "000001"
+        cod_maquina:
+          $ref: "../../utils/fields.yaml#/components/schemas/CodDispositivo"
+        deviceId:
+          type: string
+          format: uuid
+        tipo:
+          type: integer
+        group_id:
+          type: integer
+        fecha_ini:
+          $ref: "../../utils/fields.yaml#/components/schemas/Fecha"
+        fecha_fin:
+          $ref: "../../utils/fields.yaml#/components/schemas/Fecha"
+        hora_ini:
+          $ref: "../../utils/fields.yaml#/components/schemas/Hora"
+        hora_fin:
+          $ref: "../../utils/fields.yaml#/components/schemas/Hora"
+        estado:
+          type: string
+          enum:
+            - "Solucionada"
+            - "No solucionada"
+        limit:
+          type: integer
+
+    alertas_obtener24_body:
+      type: object
+      properties:
+        cod_nave:
+          type: string
+          example: "000001"
+        cod_maquina:
+          $ref: "../../utils/fields.yaml#/components/schemas/CodDispositivo"
+        deviceId:
+          type: string
+          format: uuid
+        tipo:
+          type: integer
+        group_id:
+          type: integer
+        estado:
+          type: string
+          enum:
+            - "Solucionada"
+            - "No solucionada"
+        limit:
+          type: integer
+
+    AlertInfo:
+      type: object
+      properties:
+        cod_maquina:
+          type: string
+        nombre_maquina:
+          type: string
+        cod_camara:
+          type: string
+        nombre_camara:
+          type: string
+        cod_alerta:
+          type: string
+          format: uuid
+        tipo:
+          type: string
+        manipulador:
+          type: string
+          example: "0"
+        deviceId:
+          type: string
+          example: "Mk2"
+        imagen:
+          type: string
+          example: "dispositivos/alertas_maquina/fotos/imagen.jpg"
+        fecha_ini:
+          $ref: "../../utils/fields.yaml#/components/schemas/Fecha"
+        fecha_fin:
+          $ref: "../../utils/fields.yaml#/components/schemas/Fecha"
+        hora_ini:
+          $ref: "../../utils/fields.yaml#/components/schemas/Hora"
+        hora_fin:
+          $ref: "../../utils/fields.yaml#/components/schemas/Hora"
+        id_tipo:
+          type: integer
+        group_id:
+          type: integer
+        descripcion:
+          type: string
+        descripcion_grupo:
+          type: string
+
+    alertas_group_body:
+      type: object
+      required:
+        - group
+      properties:
+        group:
+          type: array
+          items:
+            type: string
+            enum:
+              - fecha
+              - hora
+              - nave
+              - maquina
+              - tipo
+          example: ["fecha", "hora"]
+        cod_nave:
+          type: string
+          example: "000001"
+        cod_maquina:
+          $ref: "../../utils/fields.yaml#/components/schemas/CodDispositivo"
+        deviceId:
+          type: string
+        tipo:
+          type: integer
+        group_id:
+          type: integer
+        estado:
+          type: string
+          enum:
+            - "Solucionada"
+            - "No solucionada"
+
+    alertas_group24_body:
+      type: object
+      required:
+        - group
+      properties:
+        group:
+          type: array
+          items:
+            type: string
+            enum:
+              - fecha
+              - hora
+              - nave
+              - maquina
+              - tipo
+          example: ["fecha", "hora"]
+        cod_nave:
+          type: string
+          example: "000001"
+        cod_maquina:
+          $ref: "../../utils/fields.yaml#/components/schemas/CodDispositivo"
+        deviceId:
+          type: string
+        tipo:
+          type: integer
+        group_id:
+          type: integer
+        estado:
+          type: string
+          enum:
+            - "Solucionada"
+            - "No solucionada"
+
+    AlertGroupInfo:
+      type: object
+      properties:
+        tipo:
+          type: string
+        fecha:
+          $ref: "../../utils/fields.yaml#/components/schemas/Fecha"
+        hora:
+          type: integer
+        cod_nave:
+          type: string
+        nombre_nave:
+          type: string
+        cups:
+          type: string
+        coordenadas:
+          $ref: "../../utils/fields.yaml#/components/schemas/Coordenadas"
+        deviceId:
+          type: string
+          example: "Mk2"
+        total:
+          type: integer

@@ -1,0 +1,398 @@
+openapi: 3.0.0
+info:
+  title: Operaciones de modulos
+  version: 1.0.0
+
+components:
+  x-routes:
+    Obtener:
+      post:
+        tags:
+          - Licencias
+        summary: Obtiene las licencias activas locales
+        description: |
+          Obtiene las licencias activas del sistema desde el token JWT local almacenado 
+          en `/var/lib/ionsmart/license.token`. No requiere conexión al servidor cloud.
+          
+          Este endpoint lee directamente el token multi-licencia y devuelve todas las 
+          licencias contenidas en él, incluyendo información de expiración e installation_id.
+          
+          Soporta tanto tokens antiguos (single-license) como nuevos (multi-license).
+        operationId: obtenerLicencias
+        security:
+          - bearerAuth: []
+        requestBody:
+          content:
+            application/json:
+              schema:
+                type: object
+                description: No requiere parámetros en el cuerpo de la petición
+        responses:
+          "200":
+            description: Successful operation
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/LicenciasLocalesInfo"
+          "401":
+            description: Usuario inválido o no autorizado
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "498":
+            description: Token expirado o inválido
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "500":
+            description: Unexpected error
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+
+    ObtenerCanales:
+      post:
+        tags:
+          - Licencias
+        summary: Obtiene los canales disponibles para cada módulo
+        description: |
+          Obtiene un resumen de canales agrupados por módulo desde las licencias locales.
+          
+          Para cada módulo licenciado, devuelve:
+          - Canales totales (suma de todas las licencias)
+          - Canales válidos (excluyendo licencias expiradas)
+          - Canales en uso (dispositivos activos)
+          - Dispositivos en prórroga
+          - Dispositivos asignados al módulo
+          
+          Lee información desde el token local y la base de datos de dispositivos.
+          No requiere parámetros de entrada.
+        operationId: obtenerCanales
+        security:
+          - bearerAuth: []
+        requestBody:
+          content:
+            application/json:
+              schema:
+                type: object
+                description: No requiere parámetros en el cuerpo de la petición
+        responses:
+          "200":
+            description: Successful operation - Array de información de canales por módulo
+            content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/CanalesInfo"
+          "401":
+            description: Usuario inválido o no autorizado
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "498":
+            description: Token expirado o inválido
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "500":
+            description: Unexpected error
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+
+    AgregarLicencia:
+      post:
+        tags:
+          - Licencias
+        summary: Activa una nueva licencia en el sistema
+        description: |
+          Activa una licencia utilizando su clave única y la asocia al installation_id del servidor.
+          
+          El proceso de activación:
+          1. Envía la clave de licencia al servidor cloud junto con el installation_id
+          2. Recibe un token JWT multi-licencia con TODAS las licencias activas
+          3. Guarda el token en `/var/lib/ionsmart/license.token`
+          4. Guarda el estado en `/var/lib/ionsmart/license.state`
+          5. Si tiene éxito, regenera el token para refrescar el estado
+          6. Ejecuta el proceso de cambio de estado de licencias para actualizar canales
+          
+          **Nota importante**: El token resultante contiene todas las licencias activas del 
+          installation_id, no solo la que se está activando. Si hay error pero existe un token 
+          parcial, se guarda para no perder licencias existentes.
+          
+          **Efectos secundarios**:
+          - Escribe archivos en `/var/lib/ionsmart/`
+          - Puede activar dispositivos si hay canales disponibles
+          - Actualiza estados de dispositivos (activo/prórroga/caducado)
+        operationId: agregarLicencia
+        security:
+          - bearerAuth: []
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - clave_licencia
+                properties:
+                  clave_licencia:
+                    type: string
+                    description: Clave única de la licencia a activar
+                    example: "XXXX-XXXX-XXXX-XXXX"
+        responses:
+          "200":
+            description: Licencia activada correctamente o con advertencias
+            content:
+              application/json:
+                schema:
+                  oneOf:
+                    - type: boolean
+                      description: true si la activación fue completamente exitosa
+                    - type: object
+                      description: Objeto con información detallada si hubo advertencias
+                      properties:
+                        error:
+                          type: boolean
+                          description: true si hubo error parcial
+                        message:
+                          type: string
+                          description: Mensaje de error o advertencia
+                        token:
+                          type: string
+                          description: Token JWT con licencias (puede existir aún con error parcial)
+                        licenses_count:
+                          type: integer
+                          description: Número total de licencias en el token
+          "401":
+            description: Usuario inválido o no autorizado
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "498":
+            description: Token expirado o inválido
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "500":
+            description: Unexpected error
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+
+    CambiarEstadoLicencias:
+      post:
+        tags:
+          - Licencias
+        summary: Gestiona estados de dispositivos según canales disponibles
+        description: |
+          Endpoint diseñado para ejecutarse periódicamente (vía CRON) para sincronizar 
+          el estado de los dispositivos con los canales de licencia disponibles.
+          
+          **Proceso de gestión de estados**:
+          
+          1. **Activación de dispositivos**: Si hay canales válidos disponibles, activa 
+             dispositivos que estén en prórroga o caducados.
+          
+          2. **Prórroga de dispositivos**: Si hay canales totales pero algunos están expirados, 
+             pone dispositivos en prórroga (7 días) en lugar de caducarlos inmediatamente.
+          
+          3. **Caducación de dispositivos**: Si no hay suficientes canales, caduca dispositivos 
+             activos o en prórroga. También caduca dispositivos cuya fecha de prórroga haya expirado.
+          
+          4. **Regeneración de token**: Después de realizar cambios, regenera el token local 
+             para reflejar el estado actualizado de canales en uso.
+          
+          5. **Limpieza de caché**: Limpia cachés APCu relacionados con licencias.
+          
+          **Estados de canal**:
+          - `activo`: Dispositivo con canal válido asignado
+          - `prorroga`: Dispositivo en período de gracia (7 días)
+          - `caducado`: Dispositivo sin canal disponible
+          
+          **Uso recomendado**: Ejecutar cada hora vía CRON para mantener sincronizados 
+          los estados de dispositivos con las licencias disponibles.
+          
+          **Nota**: No requiere parámetros de entrada. Lee información de licencias desde 
+          el token local y el servidor cloud.
+        operationId: cambiarEstadoLicencias
+        security:
+          - bearerAuth: []
+        requestBody:
+          content:
+            application/json:
+              schema:
+                type: object
+                description: No requiere parámetros en el cuerpo de la petición
+        responses:
+          "200":
+            description: Proceso ejecutado correctamente
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Mensaje de confirmación
+                      example: "licenses changed"
+          "401":
+            description: Usuario inválido o no autorizado
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "498":
+            description: Token expirado o inválido
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "500":
+            description: Unexpected error
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+
+  schemas:
+    LicenciasLocalesInfo:
+      type: object
+      description: Información de licencias obtenidas del token local
+      properties:
+        licenses:
+          type: array
+          description: Array de licencias activas
+          items:
+            type: object
+            properties:
+              activation_id:
+                type: string
+                description: ID único de activación
+                example: "uuid-activation-123"
+              clave_licencia:
+                type: string
+                description: Clave de la licencia
+                example: "XXXX-XXXX-XXXX-XXXX"
+              cod_modulo:
+                type: string
+                description: Código del módulo licenciado
+                example: "0015"
+              nombre_modulo:
+                type: string
+                description: Nombre del módulo
+                example: "Traffic"
+              cod_sector:
+                type: string
+                description: Código del sector
+                example: "000001"
+              canales:
+                type: integer
+                description: Número de canales de esta licencia
+                example: 100
+              fecha_expiracion:
+                type: string
+                format: date-time
+                description: Fecha de expiración de la licencia (null si es perpetua)
+                example: "2025-12-31 23:59:59"
+                nullable: true
+        installation_id:
+          type: string
+          description: ID único de la instalación
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        exp:
+          type: integer
+          description: Timestamp de expiración del token JWT
+          example: 1735689600
+        iat:
+          type: integer
+          description: Timestamp de emisión del token JWT
+          example: 1704153600
+        error:
+          type: boolean
+          description: true si hubo error al leer el token
+        message:
+          type: string
+          description: Mensaje de error si error=true
+      x-examples:
+        Example 1:
+          licenses:
+            - activation_id: "act-123-456"
+              clave_licencia: "ABCD-1234-EFGH-5678"
+              cod_modulo: "0015"
+              nombre_modulo: "Traffic"
+              cod_sector: "000001"
+              canales: 100
+              fecha_expiracion: "2025-12-31 23:59:59"
+            - activation_id: "act-789-012"
+              clave_licencia: "IJKL-9012-MNOP-3456"
+              cod_modulo: "0011"
+              nombre_modulo: "Parking"
+              cod_sector: "000002"
+              canales: 50
+              fecha_expiracion: null
+          installation_id: "550e8400-e29b-41d4-a716-446655440000"
+          exp: 1735689600
+          iat: 1704153600
+
+    CanalesInfo:
+      type: object
+      description: Información de canales disponibles para un módulo
+      properties:
+        canales_totales:
+          type: integer
+          description: Total de canales sumando todas las licencias del módulo
+          example: 150
+        canales_validos:
+          type: integer
+          description: Canales de licencias no expiradas
+          example: 100
+        cod_sector:
+          type: string
+          example: "000001"
+        cod_modulo:
+          type: string
+          example: "0015"
+        nombre_modulo:
+          type: string
+          example: "Traffic"
+        canales_en_uso:
+          type: integer
+          description: Número de dispositivos activos consumiendo canales
+          example: 85
+        dispositivos_prorroga:
+          type: array
+          description: Dispositivos en período de prórroga (7 días)
+          items:
+            type: object
+            properties:
+              cod_dispositivo:
+                $ref: "../../utils/fields.yaml#/components/schemas/CodDispositivo"
+              cod_modulo:
+                type: string
+                example: "0015"
+              estado_canal:
+                type: string
+                example: "prorroga"
+                enum:
+                  - activo
+                  - prorroga
+                  - caducado
+              coordenadas:
+                $ref: "../../utils/fields.yaml#/components/schemas/Coordenadas"
+              fecha_fin_prorroga:
+                $ref: "../../utils/fields.yaml#/components/schemas/Fecha"
+        dispositivos_asignados:
+          type: integer
+          description: Total de dispositivos asignados al módulo (todos los estados)
+          example: 90

@@ -1,0 +1,57 @@
+openapi: 3.0.0
+info:
+  title: API Pública de Clientes
+  version: 1.0.0
+  description: Endpoints públicos para consultas de clientes (sin autenticación)
+
+components:
+  x-routes:
+    Coordenadas:
+      post:
+        tags:
+          - API Clientes
+        summary: Obtiene las coordenadas de un cliente por su servidor
+        description: |
+          Consulta las coordenadas geográficas (latitud, longitud) de un cliente 
+          identificado por la URL de su servidor.
+
+          Útil para que los clientes obtengan su ubicación geográfica 
+          almacenada en el cloud central.
+
+          **Sin autenticación**: Endpoint público accesible desde el cliente.
+        operationId: obtenerCoordenadasCliente
+        security: []
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - servidor
+                properties:
+                  servidor:
+                    type: string
+                    description: URL del servidor del cliente
+                    example: "https://cliente.ionsmart.eu"
+        responses:
+          "200":
+            description: Coordenadas del cliente
+            content:
+              application/json:
+                schema:
+                  $ref: "../../ionadmin.yaml#/components/schemas/CoordenadasInfo"
+          "400":
+            description: Falta el parámetro servidor o está vacío
+            content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    type: object
+                  description: Array vacío si no se proporciona servidor
+                  example: []
+          "404":
+            description: Cliente no encontrado para ese servidor
+          "500":
+            description: Error del servidor

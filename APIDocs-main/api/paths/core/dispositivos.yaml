@@ -1,0 +1,817 @@
+openapi: 3.0.0
+info:
+  title: Operaciones de dispositivos
+  version: 1.0.0
+
+components:
+  x-routes:
+    Obtener:
+      post:
+        tags:
+          - Dispositivos
+        summary: Obtener
+        description: Devuelve todos los dispositivos registrados
+        operationId: obtenerDispositivos
+        security:
+          - bearerAuth: []
+        parameters: []
+        requestBody:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  nom_dispositivo:
+                    $ref: "../../utils/fields.yaml#/components/schemas/NomDispositivo"
+                  coordenadas:
+                    $ref: "../../utils/fields.yaml#/components/schemas/Coordenadas"
+                  cp:
+                    type: string
+                    example: "08000"
+                  serial_number:
+                    type: string
+                    example: 123912es
+                  cod_modelo:
+                    type: string
+                    example: "000001"
+                  ip_dispositivo:
+                    $ref: "../../utils/fields.yaml#/components/schemas/IP"
+                  direccion_mac:
+                    $ref: "../../utils/fields.yaml#/components/schemas/MAC"
+                  modulos:
+                    type: array
+                    items:
+                      type: string
+                      example: "000015"
+                  cod_cloud:
+                    type: string
+                    example: "000015"
+                  deviceId:
+                    type: string
+                    format: uuid
+                    example: 0b8d289a-34ec-4838-9f20-6cc986e6f9e0
+        responses:
+          "200":
+            description: Successful operation
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/DeviceInfo"
+          "401":
+            description: Usuario inválido o no autorizado
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "498":
+            description: Token expirado o inválido
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "500":
+            description: Unexpected error
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+
+    Existe:
+      post:
+        tags:
+          - Dispositivos
+        summary: Existe
+        description: Comprueba si existe un dispositivo registrado a partir de su `deviceId`.
+        operationId: existeDispositivo
+        parameters: []
+        requestBody:
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - deviceId
+                properties:
+                  deviceId:
+                    type: string
+                    format: uuid
+                    example: 0b8d289a-34ec-4838-9f20-6cc986e6f9e0
+        responses:
+          "200":
+            description: Successful operation
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/DeviceExistsInfo"
+          "400":
+            description: deviceId inválido
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "500":
+            description: Unexpected error
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+        security: []
+
+    Insertar:
+      post:
+        tags:
+          - Dispositivos
+        summary: Insertar
+        description: Inserta un dispositivo con los datos indicados
+        operationId: insertarDispositivos
+        security:
+          - bearerAuth: []
+        parameters: []
+        requestBody:
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - cod_cloud
+                  - cod_modelo
+                  - cod_nave
+                  - coordenadas
+                  - deviceId
+                  - direccion_mac
+                  - modulos
+                  - nom_dispositivo
+                properties:
+                  nom_dispositivo:
+                    $ref: "../../utils/fields.yaml#/components/schemas/NomDispositivo"
+                  coordenadas:
+                    $ref: "../../utils/fields.yaml#/components/schemas/Coordenadas"
+                  cp:
+                    type: string
+                    example: "08000"
+                  serial_number:
+                    type: string
+                    example: 123912es
+                  cod_modelo:
+                    type: string
+                    example: "000001"
+                  ip_dispositivo:
+                    $ref: "../../utils/fields.yaml#/components/schemas/IP"
+                  direccion_mac:
+                    $ref: "../../utils/fields.yaml#/components/schemas/MAC"
+                  modulos:
+                    type: array
+                    items:
+                      type: string
+                      example: "000015"
+                  cod_cloud:
+                    type: string
+                    example: "000015"
+                  deviceId:
+                    type: string
+                    format: uuid
+                    example: 0b8d289a-34ec-4838-9f20-6cc986e6f9e0
+        responses:
+          "200":
+            description: Successful operation
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/DeviceInfo"
+          "401":
+            description: Usuario inválido o no autorizado
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "498":
+            description: Token expirado o inválido
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "500":
+            description: Unexpected error
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+
+    Modificar:
+      post:
+        tags:
+          - Dispositivos
+        summary: Modificar
+        description: Modifica el dispositivo
+        operationId: modificarDispositivos
+        security:
+          - bearerAuth: []
+        parameters: []
+        requestBody:
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - cod_dispositivo
+                properties:
+                  cod_dispositivo:
+                    $ref: "../../utils/fields.yaml#/components/schemas/CodDispositivo"
+                  nom_dispositivo:
+                    $ref: "../../utils/fields.yaml#/components/schemas/NomDispositivo"
+                  coordenadas:
+                    $ref: "../../utils/fields.yaml#/components/schemas/Coordenadas"
+                  cp:
+                    type: string
+                    example: "08000"
+                  serial_number:
+                    type: string
+                    example: 123912es
+                  cod_modelo:
+                    type: string
+                    example: "000001"
+                  ip_dispositivo:
+                    $ref: "../../utils/fields.yaml#/components/schemas/IP"
+                  direccion_mac:
+                    $ref: "../../utils/fields.yaml#/components/schemas/MAC"
+                  modulos:
+                    type: array
+                    items:
+                      type: string
+                      example: "000015"
+                  cod_cloud:
+                    type: string
+                    example: "000015"
+                  deviceId:
+                    type: string
+                    format: uuid
+                    example: 0b8d289a-34ec-4838-9f20-6cc986e6f9e0
+        responses:
+          "200":
+            description: Successful operation
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ActionResult"
+          "401":
+            description: Usuario inválido o no autorizado
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "498":
+            description: Token expirado o inválido
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "500":
+            description: Unexpected error
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+
+    Eliminar:
+      post:
+        tags:
+          - Dispositivos
+        summary: Eliminar
+        description: Elimina el dispositivo
+        operationId: eliminarDispositivos
+        security:
+          - bearerAuth: []
+        parameters: []
+        requestBody:
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - cod_dispositivo
+                properties:
+                  cod_dispositivo:
+                    $ref: "../../utils/fields.yaml#/components/schemas/CodDispositivo"
+                  nom_dispositivo:
+                    $ref: "../../utils/fields.yaml#/components/schemas/NomDispositivo"
+                  coordenadas:
+                    $ref: "../../utils/fields.yaml#/components/schemas/Coordenadas"
+                  cp:
+                    type: string
+                    example: "08000"
+                  serial_number:
+                    type: string
+                    example: 123912es
+                  cod_modelo:
+                    type: string
+                    example: "000001"
+                  ip_dispositivo:
+                    $ref: "../../utils/fields.yaml#/components/schemas/IP"
+                  direccion_mac:
+                    $ref: "../../utils/fields.yaml#/components/schemas/MAC"
+                  modulos:
+                    type: array
+                    items:
+                      type: string
+                      example: "000015"
+                  cod_cloud:
+                    type: string
+                    example: "000015"
+                  deviceId:
+                    type: string
+                    format: uuid
+                    example: 0b8d289a-34ec-4838-9f20-6cc986e6f9e0
+        responses:
+          "200":
+            description: Successful operation
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ActionResult"
+          "401":
+            description: Usuario inválido o no autorizado
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "498":
+            description: Token expirado o inválido
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "500":
+            description: Unexpected error
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+
+    ActualizarUbicacion:
+      post:
+        tags:
+          - Dispositivos
+        summary: Actualizar ubicación
+        description: Actualiza la ubicación (coordenadas y dirección) de un dispositivo. Si solo se proporcionan coordenadas, la dirección se obtiene automáticamente.
+        operationId: actualizarUbicacionDispositivos
+        security:
+          - bearerAuth: []
+        parameters: []
+        requestBody:
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - cod_dispositivo
+                properties:
+                  deviceId:
+                    type: string
+                    format: uuid
+                  coordenadas:
+                    $ref: "../../utils/fields.yaml#/components/schemas/Coordenadas"
+                  direccion:
+                    type: string
+                    example: "Calle Principal 123, Barcelona"
+        responses:
+          "200":
+            description: Successful operation
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ActionResult"
+          "401":
+            description: Usuario inválido o no autorizado
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "498":
+            description: Token expirado o inválido
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "500":
+            description: Unexpected error
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+
+    ObtenerImagen:
+      post:
+        tags:
+          - Dispositivos
+        summary: Obtener imagen
+        description: Obtiene la imagen de un momento concreto
+        operationId: obtenerImagenDispositivo
+        security:
+          - bearerAuth: []
+        requestBody:
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - cod_dispositivo
+                  - timestampMs
+                properties:
+                  cod_dispositivo:
+                    $ref: "../../utils/fields.yaml#/components/schemas/CodDispositivo"
+                  timestamp:
+                    $ref: "../../utils/fields.yaml#/components/schemas/TimestampMs"
+        responses:
+          "200":
+            description: Successful operation
+            content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/ObtenerImagenInfo"
+          "401":
+            description: Usuario inválido o no autorizado
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "498":
+            description: Token expirado o inválido
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "500":
+            description: Unexpected error
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+
+    ObtenerMiniaturas:
+      post:
+        tags:
+          - Dispositivos
+        summary: Obtener imagenes dispositivo
+        description: Obtiene la imagen de un momento concreto
+        operationId: obtenerMiniaturas
+        security:
+          - bearerAuth: []
+        requestBody:
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - cod_dispositivo
+                  - timestamp
+                properties:
+                  cod_dispositivo:
+                    $ref: "../../utils/fields.yaml#/components/schemas/CodDispositivo"
+                  timestamp:
+                    $ref: "../../utils/fields.yaml#/components/schemas/TimestampMs"
+        responses:
+          "200":
+            description: Successful operation
+            content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/ObtenerImagenInfo"
+          "401":
+            description: Usuario inválido o no autorizado
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "498":
+            description: Token expirado o inválido
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "500":
+            description: Unexpected error
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+
+    ObtenerTipoGrabacion:
+      post:
+        tags:
+          - Dispositivos
+        summary: Obtener tipo grabación
+        description: Obtiene el tipo de grabación de un dispositivo
+        operationId: obtenerTipoGrabacion
+        security:
+          - bearerAuth: []
+        requestBody:
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - cod_dispositivo
+                  - pos
+                properties:
+                  cod_dispositivo:
+                    $ref: "../../utils/fields.yaml#/components/schemas/CodDispositivo"
+                  pos:
+                    $ref: "../../utils/fields.yaml#/components/schemas/TimestampMs"
+                  durationMs:
+                    type: integer
+        responses:
+          "200":
+            description: Successful operation
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    tipos:
+                      $ref: "#/components/schemas/TiposGrabacion"
+          "401":
+            description: Usuario inválido o no autorizado
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "498":
+            description: Token expirado o inválido
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "500":
+            description: Unexpected error
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+
+    ObtenerStreamNx:
+      post:
+        tags:
+          - Dispositivos
+        summary: Obtener tipo grabación
+        description: Obtiene datos de stream de un dispositivo de categoría Cámara.
+        operationId: obtenerStreamNx
+        security:
+          - bearerAuth: []
+        requestBody:
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - cod_dispositivo
+                properties:
+                  cod_dispositivo:
+                    $ref: "../../utils/fields.yaml#/components/schemas/CodDispositivo"
+                  pos:
+                    $ref: "../../utils/fields.yaml#/components/schemas/TimestampMs"
+                  durationMs:
+                    type: integer
+                  getThumbnail:
+                    type: boolean
+                    description: Campo para obtener la miniatura del momento
+        responses:
+          "200":
+            description: Successful operation
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/DeviceStreamInfo"
+          "401":
+            description: Usuario inválido o no autorizado
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "498":
+            description: Token expirado o inválido
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "500":
+            description: Unexpected error
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+
+  schemas:
+    DeviceExistsInfo:
+      type: object
+      properties:
+        exists:
+          type: boolean
+      x-examples:
+        Example:
+          exists: true
+
+    DeviceInfo:
+      type: object
+      properties:
+        cod_dispositivo:
+          $ref: "../../utils/fields.yaml#/components/schemas/CodDispositivo"
+        deviceId:
+          type: string
+          format: uuid
+        nom_dispositivo:
+          $ref: "../../utils/fields.yaml#/components/schemas/NomDispositivo"
+        direccion:
+          type: string
+        cp:
+          type: string
+        coordenadas:
+          $ref: "../../utils/fields.yaml#/components/schemas/Coordenadas"
+        cod_provincia:
+          type: string
+        cod_poblacion:
+          type: string
+        serial_number:
+          type: string
+          nullable: true
+        cod_nodo:
+          type: string
+          nullable: true
+        puerta_enlace:
+          type: string
+          nullable: true
+        servidor_dhcp:
+          type: string
+          nullable: true
+        mascara_red:
+          type: string
+          nullable: true
+        protocolo_ip:
+          type: string
+          nullable: true
+        ip_dispositivo:
+          $ref: "../../utils/fields.yaml#/components/schemas/IP"
+        direccion_mac:
+          $ref: "../../utils/fields.yaml#/components/schemas/MAC"
+        deveui:
+          type: string
+          nullable: true
+        appeui:
+          type: string
+        appkey:
+          type: string
+          nullable: true
+        joineui:
+          type: string
+          nullable: true
+        username:
+          nullable: true
+        password:
+          type: string
+        systemId:
+          type: string
+          format: uuid
+        cod_cloud:
+          type: string
+        nombre_cloud:
+          type: string
+        nombre_fabricante:
+          type: string
+        nombre_modelo:
+          type: string
+        nombre_categoria:
+          type: string
+        cod_fabricante:
+          type: string
+        cod_modelo:
+          type: string
+        cod_categoria:
+          type: string
+        modulos:
+          type: array
+          items:
+            type: object
+            properties:
+              cod_modulo:
+                type: string
+              abreviacion:
+                type: string
+              nombre_modulo:
+                type: string
+              cod_sector:
+                type: string
+              nombre_sector:
+                type: string
+              estado_canal:
+                type: string
+              fecha_fin_prorroga:
+                $ref: "../../utils/fields.yaml#/components/schemas/FechaHora"
+                nullable: true
+
+    TiposGrabacion:
+      type: array
+      items:
+        type: string
+      example: ["low", "high"]
+
+    DeviceStreamInfo:
+      type: object
+      properties:
+        cod_dispositivo:
+          $ref: "../../utils/fields.yaml#/components/schemas/CodDispositivo"
+        deviceId:
+          type: string
+          format: uuid
+        nom_dispositivo:
+          $ref: "../../utils/fields.yaml#/components/schemas/NomDispositivo"
+        direccion:
+          type: string
+        cp:
+          type: string
+        coordenadas:
+          $ref: "../../utils/fields.yaml#/components/schemas/Coordenadas"
+        cod_provincia:
+          type: string
+        cod_poblacion:
+          type: string
+        serial_number:
+          type: string
+          nullable: true
+        cod_nodo:
+          type: string
+          nullable: true
+        puerta_enlace:
+          type: string
+          nullable: true
+        servidor_dhcp:
+          type: string
+          nullable: true
+        mascara_red:
+          type: string
+          nullable: true
+        protocolo_ip:
+          type: string
+          nullable: true
+        ip_dispositivo:
+          $ref: "../../utils/fields.yaml#/components/schemas/IP"
+        direccion_mac:
+          $ref: "../../utils/fields.yaml#/components/schemas/MAC"
+        deveui:
+          type: string
+          nullable: true
+        appeui:
+          type: string
+        appkey:
+          type: string
+          nullable: true
+        joineui:
+          type: string
+          nullable: true
+        username:
+          nullable: true
+        password:
+          type: string
+        systemId:
+          type: string
+          format: uuid
+        cod_cloud:
+          type: string
+        id_regla_evento:
+          type: string
+          format: uuid
+          nullable: true
+        streamUrl:
+          type: string
+        ip:
+          $ref: "../../utils/fields.yaml#/components/schemas/IP"
+        puerto:
+          type: integer
+        user:
+          type: string
+        nombre_cloud:
+          type: string
+        tipos_stream:
+          $ref: "#/components/schemas/TiposGrabacion"
+        b64_thumbnail:
+          type: string
+          description: Imagen codificada en Base64
+          nullable: true
+        mkv_url:
+          $ref: "../../utils/fields.yaml#/components/schemas/DeviceInfo_streams"
+        mp4_url:
+          $ref: "../../utils/fields.yaml#/components/schemas/DeviceInfo_streams"
+
+    ObtenerImagenInfo:
+      type: object
+      properties:
+        file:
+          type: string
+          description: Imagen codificada en Base64
+        format:
+          type: string
+          example: "png"
+        time:
+          $ref: "../../utils/fields.yaml#/components/schemas/TimestampMs"

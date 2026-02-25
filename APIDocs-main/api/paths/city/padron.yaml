@@ -1,0 +1,289 @@
+openapi: 3.0.0
+info: { title: Padrón, version: 1.0.0 }
+components:
+  schemas:
+    # ======== INSERTAR ========
+    InsertarPadronRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - matricula
+        - marca
+        - modelo
+        - color
+        - fecha_fin_padron
+      properties:
+        matricula:
+          $ref: "../../utils/fields.yaml#/components/schemas/Matricula"
+        marca:
+          type: string
+        modelo:
+          type: string
+        color:
+          $ref: "../../utils/fields.yaml#/components/schemas/Color"
+        fecha_fin_padron:
+          $ref: "../../utils/fields.yaml#/components/schemas/Fecha"
+
+    # ======== OBTENER ========
+    ObtenerPadronRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        matricula:
+          $ref: "../../utils/fields.yaml#/components/schemas/Matricula"
+        marca:
+          type: string
+        modelo:
+          type: string
+        color:
+          $ref: "../../utils/fields.yaml#/components/schemas/Color"
+        limit:
+          type: integer
+          minimum: 1
+
+    ObtenerPadronItem:
+      type: object
+      additionalProperties: false
+      properties:
+        matricula:
+          $ref: "../../utils/fields.yaml#/components/schemas/Matricula"
+        marca:
+          type: string
+        modelo:
+          type: string
+        color:
+          $ref: "../../utils/fields.yaml#/components/schemas/Color"
+        fecha_fin_padron:
+          $ref: "../../utils/fields.yaml#/components/schemas/Fecha"
+      example:
+        matricula: "2058DRR"
+        marca: ""
+        modelo: ""
+        color: ""
+        fecha_fin_padron: "0000-00-00"
+
+    ObtenerPadronResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        total:
+          type: integer
+        rows:
+          type: array
+          items:
+            $ref: "#/components/schemas/ObtenerPadronItem"
+      example:
+        total: 3
+        rows:
+          - matricula: "2058DRR"
+            marca: ""
+            modelo: ""
+            color: ""
+            fecha_fin_padron: "0000-00-00"
+
+    # ======== MODIFICAR ========
+    ModificarPadronRequest:
+      type: object
+      additionalProperties: false
+      required: [matricula]
+      properties:
+        matricula:
+          $ref: "../../utils/fields.yaml#/components/schemas/Matricula"
+        marca:
+          type: string
+        modelo:
+          type: string
+        color:
+          $ref: "../../utils/fields.yaml#/components/schemas/Color"
+        fecha_fin_padron:
+          $ref: "../../utils/fields.yaml#/components/schemas/Fecha"
+      description: >
+        `matricula` es obligatoria. Además, se debe incluir al menos uno de los
+        campos actualizables (`marca`, `modelo`, `color`, `fecha_fin_padron`).
+      anyOf:
+        - required: [marca]
+        - required: [modelo]
+        - required: [color]
+        - required: [fecha_fin_padron]
+
+    # ======== ELIMINAR ========
+    EliminarPadronRequest:
+      type: object
+      additionalProperties: false
+      required: [matricula]
+      properties:
+        matricula:
+          $ref: "../../utils/fields.yaml#/components/schemas/Matricula"
+
+    # ======== IMPORTAR ========
+    ImportarPadronResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        insert:
+          type: array
+          items:
+            type: string
+        errors:
+          type: array
+          items:
+            type: string
+      example:
+        insert: ["5678DEF"]
+        errors: ["1234ABC"]
+
+  x-routes:
+    Insertar:
+      post:
+        tags: ["Padrón"]
+        summary: Insertar registro de padrón
+        description: Inserta un registro de padrón.
+        operationId: padronInsertar
+        security:
+          - bearerAuth: []
+        parameters: []
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InsertarPadronRequest"
+        responses:
+          "200":
+            description: OK
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ActionResult"
+          "401":
+            $ref: "../../utils/responses.yaml#/components/x-responses/401"
+          "498":
+            $ref: "../../utils/responses.yaml#/components/x-responses/498"
+          "500":
+            $ref: "../../utils/responses.yaml#/components/x-responses/500"
+
+    Obtener:
+      post:
+        tags: ["Padrón"]
+        summary: Obtener registros de padrón
+        description: Devuelve registros de padrón filtrados por los criterios indicados.
+        operationId: padronObtener
+        security:
+          - bearerAuth: []
+        parameters: []
+        requestBody:
+          required: false
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ObtenerPadronRequest"
+        responses:
+          "200":
+            description: OK
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/ObtenerPadronResponse"
+          "401":
+            $ref: "../../utils/responses.yaml#/components/x-responses/401"
+          "498":
+            $ref: "../../utils/responses.yaml#/components/x-responses/498"
+          "500":
+            $ref: "../../utils/responses.yaml#/components/x-responses/500"
+
+    Modificar:
+      post:
+        tags: ["Padrón"]
+        summary: Modificar registro de padrón
+        description: Actualiza un registro de padrón; requiere `matricula`.
+        operationId: padronModificar
+        security:
+          - bearerAuth: []
+        parameters: []
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ModificarPadronRequest"
+        responses:
+          "200":
+            description: OK
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ActionResult"
+          "401":
+            $ref: "../../utils/responses.yaml#/components/x-responses/401"
+          "498":
+            $ref: "../../utils/responses.yaml#/components/x-responses/498"
+          "500":
+            $ref: "../../utils/responses.yaml#/components/x-responses/500"
+
+    Eliminar:
+      post:
+        tags: ["Padrón"]
+        summary: Eliminar registro de padrón
+        description: Elimina un registro de padrón por matrícula.
+        operationId: padronEliminar
+        security:
+          - bearerAuth: []
+        parameters: []
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EliminarPadronRequest"
+        responses:
+          "200":
+            description: OK
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ActionResult"
+          "401":
+            $ref: "../../utils/responses.yaml#/components/x-responses/401"
+          "498":
+            $ref: "../../utils/responses.yaml#/components/x-responses/498"
+          "500":
+            $ref: "../../utils/responses.yaml#/components/x-responses/500"
+
+    Importar:
+      post:
+        tags: ["Padrón"]
+        summary: Importar padrón desde CSV
+        description: >
+          Importa registros de padrón desde un CSV. El CSV debe contener las columnas:
+          `matricula`, `marca`, `modelo`, `color`, `fecha_fin_padron`.
+        operationId: padronImportar
+        security:
+          - bearerAuth: []
+        parameters: []
+        requestBody:
+          required: true
+          content:
+            multipart/form-data:
+              schema:
+                type: object
+                additionalProperties: false
+                required:
+                  - archivo_csv
+                properties:
+                  archivo_csv:
+                    type: string
+                    format: binary
+                    description: Fichero CSV con columnas `matricula`, `marca`, `modelo`, `color`, `fecha_fin_padron`.
+        responses:
+          "200":
+            description: OK
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/ImportarPadronResponse"
+          "401":
+            $ref: "../../utils/responses.yaml#/components/x-responses/401"
+          "498":
+            $ref: "../../utils/responses.yaml#/components/x-responses/498"
+          "500":
+            $ref: "../../utils/responses.yaml#/components/x-responses/500"

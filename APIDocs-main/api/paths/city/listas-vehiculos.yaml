@@ -1,0 +1,289 @@
+openapi: 3.0.0
+info: { title: Vehículos en listas, version: 1.0.0 }
+components:
+  schemas:
+    InsertarVehiculosListasRequest:
+      type: object
+      additionalProperties: false
+      required: [cod_lista, matricula]
+      properties:
+        cod_lista:
+          $ref: "../../utils/fields.yaml#/components/schemas/Cod4Fill"
+        matricula:
+          $ref: "../../utils/fields.yaml#/components/schemas/Matricula"
+        descripcion_vehiculo:
+          type: string
+
+    VehiculoListaItem:
+      type: object
+      additionalProperties: false
+      properties:
+        cod_vehic_lista:
+          $ref: "../../utils/fields.yaml#/components/schemas/Cod6Fill"
+        matricula:
+          $ref: "../../utils/fields.yaml#/components/schemas/Matricula"
+        descripcion_vehiculo:
+          type: string
+        cod_lista:
+          $ref: "../../utils/fields.yaml#/components/schemas/Cod4Fill"
+      example:
+        cod_vehic_lista: "000251"
+        matricula: "1068JSX"
+        descripcion_vehiculo: "HINDAY BLANCO ROBADO 2"
+        cod_lista: "0206"
+
+    ObtenerVehiculosListasRequest:
+      type: object
+      additionalProperties: false
+      required: [cod_vehic_lista]
+      properties:
+        cod_vehic_lista:
+          $ref: "../../utils/fields.yaml#/components/schemas/Cod6Fill"
+        cod_poblacion:
+          $ref: "../../utils/fields.yaml#/components/schemas/Cod6Fill"
+        cod_provincia:
+          $ref: "../../utils/fields.yaml#/components/schemas/Cod2Fill"
+        desc_lista:
+          type: string
+        nombre_lista:
+          type: string
+        tipo_alerta:
+          $ref: "../../utils/fields.yaml#/components/schemas/MultipleCod4Fill"
+
+    ObtenerVehiculosListasResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        rows:
+          type: array
+          items:
+            $ref: "#/components/schemas/VehiculoListaItem"
+        total:
+          type: integer
+      example:
+        rows:
+          - cod_vehic_lista: "000251"
+            matricula: "1068JSX"
+            descripcion_vehiculo: "HINDAY BLANCO ROBADO 2"
+            cod_lista: "0206"
+        total: 1
+
+    ImportarVehiculosListasResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        insert:
+          type: array
+          items:
+            type: string
+        errors:
+          type: array
+          items:
+            type: string
+      example:
+        insert: ["1234ABC"]
+        errors: ["5678DEF"]
+
+    ModificarVehiculosListasRequest:
+      type: object
+      additionalProperties: false
+      required: [cod_vehic_lista]
+      properties:
+        cod_vehic_lista:
+          $ref: "../../utils/fields.yaml#/components/schemas/Cod6Fill"
+        cod_lista:
+          $ref: "../../utils/fields.yaml#/components/schemas/Cod4Fill"
+        matricula:
+          $ref: "../../utils/fields.yaml#/components/schemas/Matricula"
+        descripcion_vehiculo:
+          type: string
+
+    EliminarVehiculosListasRequest:
+      type: object
+      additionalProperties: false
+      required: [cod_vehic_lista]
+      properties:
+        cod_vehic_lista:
+          $ref: "../../utils/fields.yaml#/components/schemas/Cod6Fill"
+
+  x-routes:
+    Insertar:
+      post:
+        tags: ["Vehículos listas"]
+        summary: Insertar vehículo en lista
+        description: |
+          Inserta un nuevo vehículo en una lista.
+
+          **Si la matrícula estaba presente en una lista de tipología contraria 'n'>'b'/'b'>'n', se eliminará de dichas listas**
+
+          **Notificaciones históricas automáticas:**
+          - Respuesta HTTP inmediata tras insertar el vehículo
+          - Post-respuesta: busca reconocimientos de la matrícula en los últimos 30 días
+          - Si hay reconocimientos y destinatarios activos en la lista, envía notificaciones automáticas
+          - Las notificaciones incluyen tabla HTML (email) o resumen (SMS/WhatsApp)
+          - El proceso no bloquea la respuesta de la API
+        operationId: insertarListasVehiculos
+        security:
+          - bearerAuth: []
+        parameters: []
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InsertarVehiculosListasRequest"
+        responses:
+          "200":
+            description: OK - Vehículo insertado. Notificaciones históricas procesándose en background.
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ActionResult"
+          "401":
+            $ref: "../../utils/responses.yaml#/components/x-responses/401"
+          "498":
+            $ref: "../../utils/responses.yaml#/components/x-responses/498"
+          "500":
+            $ref: "../../utils/responses.yaml#/components/x-responses/500"
+
+    Obtener:
+      post:
+        tags: ["Vehículos listas"]
+        summary: Obtener vehículos de lista
+        description: Devuelve vehículos asociados a listas según los filtros.
+        operationId: obtenerListasVehiculos
+        security:
+          - bearerAuth: []
+        parameters: []
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ObtenerVehiculosListasRequest"
+        responses:
+          "200":
+            description: OK
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/ObtenerVehiculosListasResponse"
+          "401":
+            $ref: "../../utils/responses.yaml#/components/x-responses/401"
+          "498":
+            $ref: "../../utils/responses.yaml#/components/x-responses/498"
+          "500":
+            $ref: "../../utils/responses.yaml#/components/x-responses/500"
+
+    Importar:
+      post:
+        tags: ["Vehículos listas"]
+        summary: Importar vehículos a una lista
+        description: |
+          Importa vehículos a una lista desde CSV. El CSV debe contener las columnas:
+          `matricula`, `descripcion_vehiculo`.
+
+          **Notificaciones históricas automáticas:**
+          - Respuesta HTTP inmediata con resultado de importación (éxitos/errores)
+          - Post-respuesta: busca reconocimientos de cada matrícula importada (últimos 30 días)
+          - Si hay reconocimientos y destinatarios activos, envía notificaciones automáticas
+          - Las notificaciones agrupan todos los reconocimientos de los vehículos importados
+          - Contexto: "X vehículos importados a [nombre_lista]"
+          - El proceso no bloquea la respuesta de la API
+
+          **Ventajas:**
+          - Importación masiva eficiente
+          - Notificaciones consolidadas (no una por vehículo)
+          - Logs detallados del proceso
+        operationId: importarListasVehiculos
+        security:
+          - bearerAuth: []
+        parameters: []
+        requestBody:
+          required: true
+          content:
+            multipart/form-data:
+              schema:
+                type: object
+                additionalProperties: false
+                required:
+                  - cod_lista
+                  - archivo_csv
+                properties:
+                  cod_lista:
+                    $ref: "../../utils/fields.yaml#/components/schemas/Cod4Fill"
+                  archivo_csv:
+                    type: string
+                    format: binary
+                    description: Fichero CSV con columnas `matricula`, `descripcion_vehiculo`.
+        responses:
+          "200":
+            description: OK - Importación completada. Notificaciones históricas procesándose en background.
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/ImportarVehiculosListasResponse"
+          "401":
+            $ref: "../../utils/responses.yaml#/components/x-responses/401"
+          "498":
+            $ref: "../../utils/responses.yaml#/components/x-responses/498"
+          "500":
+            $ref: "../../utils/responses.yaml#/components/x-responses/500"
+
+    Modificar:
+      post:
+        tags: ["Vehículos listas"]
+        summary: Modificar vehículo de lista
+        description: Actualiza los datos de un vehículo en una lista.
+        operationId: modificarListasVehiculos
+        security:
+          - bearerAuth: []
+        parameters: []
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ModificarVehiculosListasRequest"
+        responses:
+          "200":
+            description: OK
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ActionResult"
+          "401":
+            $ref: "../../utils/responses.yaml#/components/x-responses/401"
+          "498":
+            $ref: "../../utils/responses.yaml#/components/x-responses/498"
+          "500":
+            $ref: "../../utils/responses.yaml#/components/x-responses/500"
+
+    Eliminar:
+      post:
+        tags: ["Vehículos listas"]
+        summary: Eliminar vehículo de lista
+        description: Elimina un vehículo de lista por su código.
+        operationId: eliminarListasVehiculos
+        security:
+          - bearerAuth: []
+        parameters: []
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EliminarVehiculosListasRequest"
+        responses:
+          "200":
+            description: OK
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ActionResult"
+          "401":
+            $ref: "../../utils/responses.yaml#/components/x-responses/401"
+          "498":
+            $ref: "../../utils/responses.yaml#/components/x-responses/498"
+          "500":
+            $ref: "../../utils/responses.yaml#/components/x-responses/500"

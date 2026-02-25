@@ -1,0 +1,211 @@
+openapi: 3.0.0
+info: { title: Áreas restringidas, version: 1.0.0 }
+components:
+  schemas:
+    InsertarAreasRestringidasRequest:
+      type: object
+      additionalProperties: false
+      required: [nombre_area, tipo_area, coordenadas]
+      properties:
+        nombre_area:
+          type: string
+        tipo_area:
+          type: string
+        cod_infraccion:
+          type: string
+        coordenadas:
+          type: string
+          description: Cadena de coordenadas separadas por ';' que define un área cerrada.
+
+    ObtenerAreasRestringidasRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        cod_area:
+          $ref: "../../utils/fields.yaml#/components/schemas/Cod4Fill"
+        nombre_area:
+          type: string
+        tipo_area:
+          type: string
+
+    ObtenerAreasRestringidasItem:
+      type: object
+      additionalProperties: false
+      properties:
+        cod_area:
+          $ref: "../../utils/fields.yaml#/components/schemas/Cod4Fill"
+        nombre_area:
+          type: string
+        tipo_area:
+          type: string
+        cod_infraccion:
+          type: string
+        coordenadas:
+          type: string
+      example:
+        cod_area: "0158"
+        nombre_area: "ZAR INCA"
+        tipo_area: "ZAR"
+        cod_infraccion: "CIR1234"
+        coordenadas: ""
+
+    ObtenerAreasRestringidasResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        rows:
+          type: array
+          items:
+            $ref: "#/components/schemas/ObtenerAreasRestringidasItem"
+        total:
+          type: integer
+      example:
+        rows:
+          - cod_area: "0158"
+            nombre_area: "ZAR INCA"
+            tipo_area: "ZAR"
+            cod_infraccion: "CIR1234"
+            coordenadas: ""
+        total: 1
+
+    ModificarAreasRestringidasRequest:
+      type: object
+      additionalProperties: false
+      required: [cod_area]
+      properties:
+        cod_area:
+          $ref: "../../utils/fields.yaml#/components/schemas/Cod4Fill"
+        nombre_area:
+          type: string
+        tipo_area:
+          type: string
+        cod_infraccion:
+          type: string
+        coordenadas:
+          type: string
+          description: Cadena de coordenadas separadas por ';' que define un área cerrada.
+
+    EliminarAreasRestringidasRequest:
+      type: object
+      additionalProperties: false
+      required: [cod_area]
+      properties:
+        cod_area:
+          $ref: "../../utils/fields.yaml#/components/schemas/Cod4Fill"
+
+  x-routes:
+    Insertar:
+      post:
+        tags: [Áreas restringidas]
+        summary: Insertar área restringida
+        description: Crea una nueva área restringida.
+        operationId: insertarAreasRestringidas
+        security:
+          - bearerAuth: []
+        parameters: []
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InsertarAreasRestringidasRequest"
+        responses:
+          "200":
+            description: OK
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ActionResult"
+          "401":
+            $ref: "../../utils/responses.yaml#/components/x-responses/401"
+          "498":
+            $ref: "../../utils/responses.yaml#/components/x-responses/498"
+          "500":
+            $ref: "../../utils/responses.yaml#/components/x-responses/500"
+
+    Obtener:
+      post:
+        tags: [Áreas restringidas]
+        summary: Obtener áreas restringidas
+        description: Devuelve las áreas restringidas filtradas por los criterios indicados.
+        operationId: obtenerAreasRestringidas
+        security:
+          - bearerAuth: []
+        parameters: []
+        requestBody:
+          required: false
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ObtenerAreasRestringidasRequest"
+        responses:
+          "200":
+            description: OK
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/ObtenerAreasRestringidasResponse"
+          "401":
+            $ref: "../../utils/responses.yaml#/components/x-responses/401"
+          "498":
+            $ref: "../../utils/responses.yaml#/components/x-responses/498"
+          "500":
+            $ref: "../../utils/responses.yaml#/components/x-responses/500"
+
+    Modificar:
+      post:
+        tags: [Áreas restringidas]
+        summary: Modificar área restringida
+        description: Actualiza los datos de un área restringida.
+        operationId: modificarAreasRestringidas
+        security:
+          - bearerAuth: []
+        parameters: []
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ModificarAreasRestringidasRequest"
+        responses:
+          "200":
+            description: OK
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ActionResult"
+          "401":
+            $ref: "../../utils/responses.yaml#/components/x-responses/401"
+          "498":
+            $ref: "../../utils/responses.yaml#/components/x-responses/498"
+          "500":
+            $ref: "../../utils/responses.yaml#/components/x-responses/500"
+
+    Eliminar:
+      post:
+        tags: [Áreas restringidas]
+        summary: Eliminar área restringida
+        description: Elimina un área restringida por su código.
+        operationId: eliminarAreasRestringidas
+        security:
+          - bearerAuth: []
+        parameters: []
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EliminarAreasRestringidasRequest"
+        responses:
+          "200":
+            description: OK
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ActionResult"
+          "401":
+            $ref: "../../utils/responses.yaml#/components/x-responses/401"
+          "498":
+            $ref: "../../utils/responses.yaml#/components/x-responses/498"
+          "500":
+            $ref: "../../utils/responses.yaml#/components/x-responses/500"

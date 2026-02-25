@@ -1,0 +1,130 @@
+openapi: 3.0.0
+info: { title: Campos comunes, version: 1.0.0 }
+components:
+  schemas:
+    IP:
+      type: string
+      example: 192.168.1.30
+    MAC:
+      type: string
+      example: 00-11-22-CC-AA-BB
+    Coordenadas:
+      type: string
+      example: "43.213123,1.32232"
+    Fecha:
+      type: string
+      format: date # RFC 3339 full-date: YYYY-MM-DD
+      example: "2026-01-01"
+    Hora:
+      type: string
+      format: time
+      example: "12:00:00"
+    FechaHora:
+      type: string
+      format: date-time
+      example: "2026-01-01 12:00:00"
+
+    Foto:
+      type: string
+      example: "imagen.jpg"
+
+    Pais:
+      type: string
+      example: "esp"
+
+    Orientacion:
+      type: string
+      enum:
+        - Away
+        - Approach
+
+    CodReconoc:
+      type: string
+      example: "000001"
+    Color:
+      type: string
+      example: "White"
+    Matricula:
+      type: string
+      example: "1234ABC"
+
+    Cod2Fill:
+      type: string
+      example: "01"
+    Cod4Fill:
+      type: string
+      example: "0001"
+    Cod6Fill:
+      type: string
+      example: "000001"
+    Cod10Fill:
+      type: string
+      example: "0000000001"
+
+    MultipleCod4Fill:
+      type: string
+      example: "0001;0002"
+    MultipleCod6Fill:
+      type: string
+      example: "000001;000002"
+
+    Timestamp:
+      type: integer
+      example: 1757057849
+      description: Unix timestamp
+
+    TimestampMs:
+      type: integer
+      example: 1757057849000
+      description: Unix timestamp en milisegundos
+
+    CodModulo:
+      type: string
+      example: "0015"
+    Modulos:
+      type: array
+      items:
+        $ref: "#/components/schemas/CodModulo"
+      example: ["0015", "0101"]
+    ModulosString:
+      type: string
+      example: "0015;0101"
+
+    CodDispositivo:
+      type: string
+      example: "000001"
+    NomDispositivo:
+      type: string
+      example: CCTV Pasillo principal II
+
+    InstanceId:
+      type: string
+      format: uuid
+    ZoneId:
+      type: string
+      format: uuid
+    UUID:
+      type: string
+      format: uuid
+
+    DeviceInfo_streams:
+      type: object
+      properties:
+        default:
+          type: string
+          format: uri
+        low:
+          type: string
+          format: uri
+        high:
+          type: string
+          format: uri
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    userAndPassword:
+      type: http
+      scheme: basic

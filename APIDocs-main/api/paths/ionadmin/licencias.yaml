@@ -1,0 +1,350 @@
+openapi: 3.0.0
+info:
+  title: Gestión Administrativa de Licencias
+  version: 1.0.0
+  description: Endpoints administrativos para gestión de licencias (requiere autenticación)
+
+components:
+  x-routes:
+    Generar:
+      post:
+        tags:
+          - Licencias Admin
+        summary: Crea nuevas licencias en el sistema
+        description: |
+          Genera una o múltiples licencias en la tabla `licencias_new`.
+
+          Permite especificar:
+          - Módulo a licenciar
+          - Cantidad de licencias a generar
+          - Número de canales por licencia
+          - Duración en días
+          - Máximo de activaciones simultáneas
+          - Cliente propietario (opcional)
+
+          Cada licencia generada se registra en la auditoría automáticamente.
+        operationId: generarLicencias
+        security:
+          - bearerAuth: []
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - nombre_modulo
+                properties:
+                  cod_modulo:
+                    $ref: "../../utils/fields.yaml#/components/schemas/Cod4Fill"
+                  cantidad:
+                    type: integer
+                    description: Número de licencias a generar
+                    default: 1
+                    example: 10
+                  canales:
+                    type: integer
+                    description: Número de canales por licencia
+                    default: 1
+                    example: 100
+                  duracion_dias:
+                    type: integer
+                    description: Duración en días desde la activación
+                    default: 365
+                    example: 365
+                  activaciones_max:
+                    type: integer
+                    description: Máximo de instalaciones simultáneas
+                    default: 1
+                    example: 1
+                  cod_cliente:
+                    $ref: "../../utils/fields.yaml#/components/schemas/Cod4Fill"
+        responses:
+          "200":
+            description: Licencias generadas correctamente
+            content:
+              application/json:
+                schema:
+                  type: array
+                  description: Array con las claves de licencia generadas
+                  items:
+                    type: string
+                    example: "ABCD-1234-EFGH-5678"
+          "400":
+            description: Parámetros inválidos
+          "401":
+            description: Usuario no autenticado
+          "500":
+            description: Error al generar licencias
+
+    ObtenerAdmin:
+      post:
+        tags:
+          - Licencias Admin
+        summary: Obtiene licencias con filtros administrativos
+        description: |
+          Consulta licencias del sistema con filtros avanzados.
+
+          Similar al endpoint público pero con acceso completo a todas las licencias 
+          sin restricción por servidor del cliente.
+
+          Útil para gestión administrativa y auditorías.
+        operationId: obtenerLicenciasAdmin
+        security:
+          - bearerAuth: []
+        requestBody:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  clave_licencia:
+                    type: string
+                    description: Filtrar por clave específica
+                  modulo:
+                    type: string
+                    description: Filtrar por módulo
+                    example: "traffic"
+                  cod_sector:
+                    $ref: "../../utils/fields.yaml#/components/schemas/Cod4Fill"
+                  canales:
+                    type: integer
+                    description: Filtrar por número de canales
+                  estado:
+                    type: array
+                    items:
+                      type: string
+                      enum:
+                        - VALIDA
+                        - EN USO
+                        - EXPIRADA
+                        - REVOCADA
+                        - ELIMINADA
+                  nombre_cliente:
+                    type: string
+                  servidor:
+                    type: string
+                    description: URL del servidor del cliente
+                  fecha_ini:
+                    $ref: "../../utils/fields.yaml#/components/schemas/Fecha"
+                  fecha_fin:
+                    $ref: "../../utils/fields.yaml#/components/schemas/Fecha"
+        responses:
+          "200":
+            description: Licencias encontradas
+            content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    $ref: "../../ionadmin.yaml#/components/schemas/LicenciaInfo"
+          "401":
+            description: Usuario no autenticado
+          "500":
+            description: Error del servidor
+
+    Modificar:
+      post:
+        tags:
+          - Licencias Admin
+        summary: Modifica o renueva una licencia existente
+        description: |
+          Permite modificar la fecha de expiración de una licencia.
+
+          **Modos de uso**:
+          1. Especificar `fecha_expiracion` directamente
+          2. Especificar `duracion_dias` para calcular desde hoy
+
+          **Sistemas soportados**:
+          - `new`: Sistema nuevo (licencias_new) - por defecto
+          - `old`: Sistema antiguo (licencias) - legacy
+          - Auto-detección si no se especifica
+
+          **IMPORTANTE**: El cliente debe regenerar su token después de modificar 
+          para que los cambios se apliquen.
+        operationId: modificarLicencia
+        security:
+          - bearerAuth: []
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - clave_licencia
+                properties:
+                  clave_licencia:
+                    type: string
+                    description: Clave de la licencia a modificar
+                    example: "ABCD-1234-EFGH-5678"
+                  fecha_expiracion:
+                    type: string
+                    format: date-time
+                    description: Nueva fecha de expiración
+                    example: "2025-12-31 23:59:59"
+                  duracion_dias:
+                    type: integer
+                    description: Calcular fecha desde hoy (alternativa a fecha_expiracion)
+                    example: 365
+                  sistema:
+                    type: string
+                    description: Sistema de licencias (new/old)
+                    enum:
+                      - new
+                      - old
+                    example: "new"
+        responses:
+          "200":
+            description: Licencia modificada correctamente
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    success:
+                      type: boolean
+                      example: true
+                    message:
+                      type: string
+                      example: "Licencia modificada correctamente"
+                    nueva_fecha_expiracion:
+                      type: string
+                      format: date-time
+                      example: "2025-12-31 23:59:59"
+                    sistema:
+                      type: string
+                      example: "new"
+                    warning:
+                      type: string
+                      description: Aviso de que el cliente debe regenerar su token
+                      example: "El cliente debe regenerar su token para aplicar los cambios. Installation ID: ..."
+                    installation_id:
+                      type: string
+                      description: ID de instalación del cliente (si existe)
+                    servidor:
+                      type: string
+                      description: URL del servidor del cliente (si existe)
+          "400":
+            description: Parámetros inválidos o faltan datos requeridos
+          "401":
+            description: Usuario no autenticado
+          "404":
+            description: Licencia no encontrada
+          "500":
+            description: Error al modificar
+
+    Eliminar:
+      post:
+        tags:
+          - Licencias Admin
+        summary: Elimina (marca como eliminada) una licencia
+        description: |
+          Marca una licencia como ELIMINADA en el sistema.
+
+          **Nota**: No borra físicamente la licencia, solo cambia su estado a ELIMINADA 
+          para mantener la trazabilidad y auditoría.
+
+          Se registra automáticamente en la auditoría con el motivo especificado.
+        operationId: eliminarLicencia
+        security:
+          - bearerAuth: []
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - clave_licencia
+                properties:
+                  clave_licencia:
+                    type: string
+                    description: Clave de la licencia a eliminar
+                    example: "ABCD-1234-EFGH-5678"
+                  motivo:
+                    type: string
+                    description: Motivo de la eliminación (opcional, para auditoría)
+                    example: "Licencia de prueba"
+        responses:
+          "200":
+            description: Licencia eliminada correctamente
+            content:
+              application/json:
+                schema:
+                  type: boolean
+                  description: true si se eliminó correctamente
+                  example: true
+          "400":
+            description: Falta clave_licencia
+          "401":
+            description: Usuario no autenticado
+          "500":
+            description: Error al eliminar
+
+    Revocar:
+      post:
+        tags:
+          - Licencias Admin
+        summary: Revoca una activación de licencia
+        description: |
+          Marca una activación como revocada en el sistema.
+
+          **Comportamiento**:
+          - Si se especifica `installation_id`: revoca solo esa activación específica
+          - Si NO se especifica `installation_id`: revoca TODAS las activaciones de la licencia
+          - Si no quedan activaciones activas, la licencia vuelve a estado VALIDA
+        operationId: revocarLicencia
+        security:
+          - bearerAuth: []
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - clave_licencia
+                properties:
+                  clave_licencia:
+                    type: string
+                    description: Clave de la licencia a revocar
+                    example: "ABCD-1234-EFGH-5678"
+                  installation_id:
+                    type: string
+                    description: UUID de la instalación (opcional, si se omite revoca todas)
+                    example: "550e8400-e29b-41d4-a716-446655440000"
+                  motivo:
+                    type: string
+                    description: Motivo de la revocación (opcional)
+                    example: "Cliente cambió de servidor"
+        responses:
+          "200":
+            description: Licencia revocada correctamente
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    success:
+                      type: boolean
+                      example: true
+                    message:
+                      type: string
+                      example: "Licencia revocada correctamente"
+                    revoked_count:
+                      type: integer
+                      description: Número de activaciones revocadas
+                      example: 1
+                    remaining_activations:
+                      type: integer
+                      description: Activaciones que quedan activas
+                      example: 0
+                    warning:
+                      type: string
+                      description: Aviso de que debe regenerar el token
+                      example: "El token del cliente debe regenerarse manualmente llamando a regenerarToken"
+          "400":
+            description: Falta clave_licencia
+          "500":
+            description: Error al revocar

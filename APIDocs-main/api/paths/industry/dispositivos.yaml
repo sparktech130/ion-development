@@ -1,0 +1,1761 @@
+openapi: 3.0.0
+info:
+  title: Operaciones de dispositivos
+  version: 1.0.0
+
+components:
+  x-routes:
+    Obtener:
+      post:
+        tags:
+          - Dispositivos
+        summary: Obtener
+        description: Devuelve todos los dispositivos
+        operationId: obtenerDispositivos
+        parameters: []
+        requestBody:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/dispositivos_obtener_body"
+        responses:
+          "200":
+            description: Successful operation
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/DevicesInfo"
+          "401":
+            description: Usuario inválido o no autorizado
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "498":
+            description: Token expirado o inválido
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "500":
+            description: Unexpected error
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+        security:
+          - bearerAuth: []
+
+    Insertar:
+      post:
+        tags:
+          - Dispositivos
+        summary: Insertar
+        description: Registra nuevos dispositivos
+        operationId: insertarDispositivos
+        parameters: []
+        requestBody:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/dispositivos_insertar_body"
+        responses:
+          "200":
+            description: Successful operation
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/SuccessResult"
+          "401":
+            description: Usuario inválido o no autorizado
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "498":
+            description: Token expirado o inválido
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "500":
+            description: Unexpected error
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+        security:
+          - bearerAuth: []
+
+    Modificar:
+      post:
+        tags:
+          - Dispositivos
+        summary: Modificar
+        description: Registra nuevos dispositivos
+        operationId: modificarDispositivos
+        parameters: []
+        requestBody:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/dispositivos_modificar_body"
+        responses:
+          "200":
+            description: Successful operation
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/SuccessResult"
+          "401":
+            description: Usuario inválido o no autorizado
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "498":
+            description: Token expirado o inválido
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "500":
+            description: Unexpected error
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+        security:
+          - bearerAuth: []
+
+    Mover:
+      post:
+        tags:
+          - Dispositivos
+        summary: Mover
+        description: Mueve los dispositivos
+        operationId: moverDispositivos
+        parameters: []
+        requestBody:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  dispositivos:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          format: uuid
+                          description: ID del dispositivo
+                        cod_plano:
+                          type: string
+                        coordenadas_plano:
+                          $ref: "../../utils/fields.yaml#/components/schemas/Coordenadas"
+        responses:
+          "200":
+            description: Successful operation
+            content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      id:
+                        type: boolean
+                  example: '{"3fa85f64-5717-4562-b3fc-2c963f66afa6": true}'
+          "401":
+            description: Usuario inválido o no autorizado
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "498":
+            description: Token expirado o inválido
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "500":
+            description: Unexpected error
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+        security:
+          - bearerAuth: []
+
+    Eliminar:
+      post:
+        tags:
+          - Dispositivos
+        description: Elimina el dispositivo
+        summary: Eliminar
+        operationId: eliminarDispositivos
+        parameters: []
+        requestBody:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/dispositivos_eliminar_body"
+        responses:
+          "200":
+            description: Successful operation
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/SuccessResult"
+          "401":
+            description: Usuario inválido o no autorizado
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "498":
+            description: Token expirado o inválido
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "500":
+            description: Unexpected error
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+        security:
+          - bearerAuth: []
+
+  schemas:
+    DevicesInfo:
+      type: object
+      properties:
+        rows:
+          type: object
+          $ref: "#/components/schemas/DevicesInfo_rows"
+        total:
+          type: integer
+
+    dispositivosinsertar_pasillos:
+      type: object
+      properties:
+        almacen:
+          type: integer
+          example: 1
+        pasillo:
+          type: integer
+          example: 1
+        huecos:
+          type: string
+          example: 25-75
+
+    DeviceInfo_modulo:
+      type: object
+      properties:
+        cod_modulo:
+          type: string
+        abreviacion:
+          type: string
+        nombre_modulo:
+          type: string
+        cod_sector:
+          type: string
+        nombre_sector:
+          type: string
+        estado_canal:
+          type: string
+        fecha_fin_prorroga:
+          $ref: "../../utils/fields.yaml#/components/schemas/FechaHora"
+          nullable: true
+
+    DeviceInfo_details:
+      type: object
+      properties:
+        cod_dispositivo:
+          $ref: "../../utils/fields.yaml#/components/schemas/CodDispositivo"
+        nom_dispositivo:
+          type: string
+        deviceId:
+          type: string
+        direccion_mac:
+          $ref: "../../utils/fields.yaml#/components/schemas/MAC"
+        cod_modelo:
+          type: string
+        nombre_modelo:
+          type: string
+        cod_fabricante:
+          type: string
+        nombre_fabricante:
+          type: string
+        cod_categoria:
+          type: string
+        serial_number:
+          type: string
+        ip_dispositivo:
+          $ref: "../../utils/fields.yaml#/components/schemas/IP"
+        cod_cloud:
+          type: string
+        nombre_cloud:
+          type: string
+        coordenadas:
+          $ref: "../../utils/fields.yaml#/components/schemas/Coordenadas"
+
+    DevicesInfo_rows_camara:
+      type: object
+      properties:
+        id:
+          type: string
+        cod_camara:
+          type: string
+        nombre:
+          type: string
+        cod_modulo:
+          type: array
+          items:
+            type: string
+        cod_dispositivo:
+          $ref: "../../utils/fields.yaml#/components/schemas/CodDispositivo"
+        deviceId:
+          type: string
+        cod_plano:
+          type: string
+        coordenadas_plano:
+          $ref: "../../utils/fields.yaml#/components/schemas/Coordenadas"
+        reconocimientos:
+          type: integer
+        num_pasillos:
+          type: integer
+        cod_nave:
+          type: string
+        nombre_nave:
+          type: string
+        pasillos:
+          type: array
+          items:
+            type: object
+            properties:
+              almacen:
+                type: integer
+                example: 1
+              pasillo:
+                type: integer
+                example: 1
+              huecos:
+                type: string
+                example: 25-75
+        device_info:
+          $ref: "#/components/schemas/DeviceInfo_details"
+        modulos:
+          type: array
+          items:
+            $ref: "#/components/schemas/DeviceInfo_modulo"
+    DevicesInfo_rows_camara_panoramica:
+      type: object
+      properties:
+        cod_camara:
+          type: string
+        nombre_camara:
+          type: string
+        deviceId:
+          type: string
+        cod_modulo:
+          type: array
+          items:
+            type: string
+    DevicesInfo_rows_monitores:
+      type: object
+      properties:
+        id:
+          type: string
+        cod_dispositivo:
+          $ref: "../../utils/fields.yaml#/components/schemas/CodDispositivo"
+        deviceId:
+          type: string
+        nom_dispositivo:
+          type: string
+    DevicesInfo_rows_monitores_full:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        id_estacion:
+          type: string
+          format: uuid
+        cod_nave:
+          type: string
+        cod_monitor:
+          type: string
+        nombre_nave:
+          type: string
+        device_info:
+          $ref: "#/components/schemas/DeviceInfo_details"
+        modulos:
+          type: array
+          items:
+            $ref: "#/components/schemas/DeviceInfo_modulo"
+    DevicesInfo_rows_estacion_trabajo:
+      type: object
+      properties:
+        id:
+          type: string
+        nombre:
+          type: string
+        extension:
+          type: string
+        cod_plano:
+          type: string
+        coordenadas_plano:
+          $ref: "../../utils/fields.yaml#/components/schemas/Coordenadas"
+        cod_departamento:
+          type: string
+        nombre_departamento:
+          type: string
+        cod_nave:
+          type: string
+        nombre_nave:
+          type: string
+        camara_panoramica:
+          $ref: "#/components/schemas/DevicesInfo_rows_camara_panoramica"
+        monitores:
+          type: array
+          items:
+            $ref: "#/components/schemas/DevicesInfo_rows_monitores"
+        llamadas24:
+          type: array
+          items:
+            type: object
+            properties: {}
+    DevicesInfo_rows_dispositivo:
+      type: object
+      properties:
+        cod_maquina:
+          type: string
+        deviceId:
+          type: string
+          format: uuid
+        nom_dispositivo:
+          type: string
+        cod_modelo:
+          type: string
+        nombre_modelo:
+          type: string
+    DevicesInfo_rows_camaras_interiores:
+      type: object
+      properties:
+        cod_camara:
+          type: string
+        nombre_camara:
+          type: string
+        cod_modulo:
+          type: array
+          items:
+            type: string
+        deviceId:
+          type: string
+          format: uuid
+    DevicesInfo_rows_maquina:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        nombre:
+          type: string
+        cod_maquina:
+          type: string
+        cod_plano:
+          type: string
+        coordenadas_plano:
+          $ref: "../../utils/fields.yaml#/components/schemas/Coordenadas"
+        cod_modulo:
+          type: string
+        deviceId:
+          type: string
+          format: uuid
+        nom_dispositivo:
+          type: string
+        nombre_modelo:
+          type: string
+        cod_nave:
+          type: string
+        nombre_nave:
+          type: string
+        device_info:
+          $ref: "#/components/schemas/DeviceInfo_details"
+        modulos:
+          type: array
+          items:
+            $ref: "#/components/schemas/DeviceInfo_modulo"
+    DevicesInfo_rows_estacion_produccion:
+      type: object
+      properties:
+        id:
+          type: string
+        nombre:
+          type: string
+        cod_maquina:
+          type: string
+        cod_plano:
+          type: string
+        coordenadas_plano:
+          $ref: "../../utils/fields.yaml#/components/schemas/Coordenadas"
+        cod_modulo:
+          type: string
+        cod_nave:
+          type: string
+        nombre_nave:
+          type: string
+        dispositivo:
+          $ref: "#/components/schemas/DevicesInfo_rows_dispositivo"
+        camara_panoramica:
+          $ref: "#/components/schemas/DevicesInfo_rows_camara_panoramica"
+        ultimoEstado:
+          type: object
+          properties: {}
+        camaras_interiores:
+          type: array
+          items:
+            $ref: "#/components/schemas/DevicesInfo_rows_camaras_interiores"
+    DevicesInfo_rows_ambiente:
+      type: object
+      properties:
+        cod_sensor:
+          type: string
+        nombre:
+          type: string
+        tipo_sensor:
+          type: string
+        cod_plano:
+          type: string
+        coordenadas_plano:
+          $ref: "../../utils/fields.yaml#/components/schemas/Coordenadas"
+        EUI:
+          type: string
+        cod_modulo:
+          type: array
+          items:
+            type: string
+        cod_nave:
+          type: string
+        nombre_nave:
+          type: string
+        device_info:
+          $ref: "#/components/schemas/DeviceInfo_details"
+        modulos:
+          type: array
+          items:
+            $ref: "#/components/schemas/DeviceInfo_modulo"
+    DevicesInfo_rows_sensor:
+      type: object
+      properties:
+        cod_sensor:
+          type: string
+        nombre_sensor:
+          type: string
+        EUI:
+          type: string
+        cod_modulo:
+          type: array
+          items:
+            type: string
+        device_info:
+          $ref: "#/components/schemas/DeviceInfo_details"
+        modulos:
+          type: array
+          items:
+            $ref: "#/components/schemas/DeviceInfo_modulo"
+    DevicesInfo_rows_materia_prima:
+      type: object
+      properties:
+        id:
+          type: string
+        nombre:
+          type: string
+        cod_plano:
+          type: string
+        coordenadas_plano:
+          $ref: "../../utils/fields.yaml#/components/schemas/Coordenadas"
+        cod_nave:
+          type: string
+        nombre_nave:
+          type: string
+        camara_panoramica:
+          $ref: "#/components/schemas/DevicesInfo_rows_camara_panoramica"
+        sensor:
+          $ref: "#/components/schemas/DevicesInfo_rows_sensor"
+    DevicesInfo_rows_camara_interior:
+      type: object
+      properties:
+        cod_camara:
+          type: string
+        nombre_camara:
+          type: string
+    DevicesInfo_rows_muelle:
+      type: object
+      properties:
+        id:
+          type: string
+        nombre:
+          type: string
+        cod_modulo:
+          type: integer
+        cod_plano:
+          type: string
+        coordenadas_plano:
+          $ref: "../../utils/fields.yaml#/components/schemas/Coordenadas"
+        camara_interior:
+          $ref: "#/components/schemas/DevicesInfo_rows_camara_interior"
+        camara_exterior:
+          $ref: "#/components/schemas/DevicesInfo_rows_camara_interior"
+        cod_nave:
+          type: string
+        nombre_nave:
+          type: string
+    DevicesInfo_rows_almacenaje:
+      type: object
+      properties:
+        id:
+          type: string
+        nombre:
+          type: string
+        cod_plano:
+          type: string
+        coordenadas_plano:
+          $ref: "../../utils/fields.yaml#/components/schemas/Coordenadas"
+        cod_nave:
+          type: string
+        nombre_nave:
+          type: string
+        camara_panoramica:
+          $ref: "#/components/schemas/DevicesInfo_rows_camara_panoramica"
+    DevicesInfo_rows:
+      type: object
+      properties:
+        camara:
+          type: array
+          items:
+            $ref: "#/components/schemas/DevicesInfo_rows_camara"
+        monitor:
+          type: array
+          items:
+            $ref: "#/components/schemas/DevicesInfo_rows_monitores"
+        estacion_trabajo:
+          type: array
+          items:
+            $ref: "#/components/schemas/DevicesInfo_rows_estacion_trabajo"
+        maquina:
+          type: array
+          items:
+            $ref: "#/components/schemas/DevicesInfo_rows_maquina"
+        estacion_produccion:
+          type: array
+          items:
+            $ref: "#/components/schemas/DevicesInfo_rows_estacion_produccion"
+        ambiente:
+          type: array
+          items:
+            $ref: "#/components/schemas/DevicesInfo_rows_ambiente"
+        acceso:
+          type: array
+          items:
+            $ref: "#/components/schemas/DevicesInfo_rows_ambiente"
+        materia_prima:
+          type: array
+          items:
+            $ref: "#/components/schemas/DevicesInfo_rows_materia_prima"
+        muelle:
+          type: array
+          items:
+            $ref: "#/components/schemas/DevicesInfo_rows_muelle"
+        almacenaje:
+          type: array
+          items:
+            $ref: "#/components/schemas/DevicesInfo_rows_almacenaje"
+
+    dispositivos_obtener_body:
+      type: object
+      properties:
+        id:
+          type: string
+        cod_nave:
+          type: string
+        modulos:
+          type: array
+          items:
+            $ref: "../../utils/fields.yaml#/components/schemas/CodModulo"
+        nombre:
+          type: string
+        tipo:
+          type: string
+        minimal:
+          type: boolean
+
+    dispositivos_eliminar_body:
+      type: object
+      required:
+        - id
+        - tipo
+      properties:
+        tipo:
+          type: string
+          example: camara
+          enum:
+            - camara
+            - monitor
+            - estacion_trabajo
+            - ambiente
+            - acceso
+            - ultrasonidos
+            - maquina
+            - estacion_produccion
+            - materia_prima
+            - almacenaje
+            - muelle
+        id:
+          type: string
+          format: uuid
+          example: 0b8d289a-34ec-4838-9f20-6cc986e6f9e0
+
+    dispositivos_insertar_body:
+      required:
+        - cod_nave
+        - tipo
+      type: object
+      properties:
+        tipo:
+          type: string
+          example: camara
+          enum:
+            - camara
+            - monitor
+            - estacion_trabajo
+            - ambiente
+            - acceso
+            - ultrasonidos
+            - maquina
+            - estacion_produccion
+            - materia_prima
+            - almacenaje
+            - muelle
+        cod_nave:
+          type: string
+          example: "000015"
+        nombre:
+          type: string
+          example: Nombre dispositivo
+        cod_camara:
+          type: string
+          description: Código dispositivo de la cámara
+          example: "000015"
+        camara_interior:
+          type: string
+          description: Código dispositivo de la cámara
+          example: "000015"
+        camara_exterior:
+          type: string
+          description: Código dispositivo de la cámara
+          example: "000015"
+        cod_maquina:
+          type: string
+          description: Código dispositivo de la máquina
+          example: "000015"
+        cod_sensor:
+          type: string
+          description: Código dispositivo del sensor
+          example: "000015"
+        cod_departamento:
+          type: string
+          example: "000015"
+        extension:
+          type: string
+          example: "150"
+        dispositivos:
+          type: array
+          items:
+            type: string
+            description: Código dispositivo
+            example: "000015"
+        pasillos:
+          type: array
+          items:
+            $ref: "#/components/schemas/dispositivosinsertar_pasillos"
+        reconocimientos:
+          type: boolean
+          example: true
+          default: false
+        camaras_interiores:
+          type: array
+          items:
+            type: string
+            description: Código dispositivo de la cámara
+            example: "000015"
+        nom_dispositivo:
+          type: string
+          example: CCTV Pasillo principal II
+        coordenadas:
+          $ref: "../../utils/fields.yaml#/components/schemas/Coordenadas"
+        cp:
+          type: string
+          example: "08000"
+        serial_number:
+          type: string
+          example: 123912es
+        cod_modelo:
+          type: string
+          example: "000001"
+        ip_dispositivo:
+          $ref: "../../utils/fields.yaml#/components/schemas/IP"
+        direccion_mac:
+          $ref: "../../utils/fields.yaml#/components/schemas/MAC"
+        modulos:
+          type: array
+          items:
+            $ref: "../../utils/fields.yaml#/components/schemas/CodModulo"
+        cod_cloud:
+          type: string
+          example: "000015"
+        deviceId:
+          type: string
+          format: uuid
+          example: 0b8d289a-34ec-4838-9f20-6cc986e6f9e0
+      discriminator:
+        propertyName: tipo
+      oneOf:
+        - type: object
+          description: Esquema para cámaras
+          required:
+            - cod_cloud
+            - cod_modelo
+            - cod_nave
+            - coordenadas
+            - deviceId
+            - direccion_mac
+            - modulos
+            - nom_dispositivo
+            - pasillos
+            - reconocimientos
+            - tipo
+          properties:
+            tipo:
+              type: string
+              example: camara
+              enum:
+                - camara
+                - monitor
+                - estacion_trabajo
+                - ambiente
+                - acceso
+                - ultrasonidos
+                - maquina
+                - estacion_produccion
+                - materia_prima
+                - almacenaje
+                - muelle
+            nom_dispositivo:
+              type: string
+              example: CCTV Pasillo principal II
+            coordenadas:
+              $ref: "../../utils/fields.yaml#/components/schemas/Coordenadas"
+            cp:
+              type: string
+              example: "08000"
+            serial_number:
+              type: string
+              example: 123912es
+            cod_modelo:
+              type: string
+              example: "000001"
+            ip_dispositivo:
+              $ref: "../../utils/fields.yaml#/components/schemas/IP"
+            direccion_mac:
+              $ref: "../../utils/fields.yaml#/components/schemas/MAC"
+            modulos:
+              type: array
+              items:
+                $ref: "../../utils/fields.yaml#/components/schemas/CodModulo"
+            cod_cloud:
+              type: string
+              example: "000015"
+            deviceId:
+              type: string
+              format: uuid
+              example: 0b8d289a-34ec-4838-9f20-6cc986e6f9e0
+            cod_nave:
+              type: string
+              example: "000015"
+            pasillos:
+              type: array
+              items:
+                type: object
+                properties:
+                  almacen:
+                    type: integer
+                    example: 1
+                  pasillo:
+                    type: integer
+                    example: 1
+                  huecos:
+                    type: string
+                    example: 25-75
+            reconocimientos:
+              type: boolean
+              example: true
+              default: false
+
+        - type: object
+          description: Esquema para monitores
+          required:
+            - cod_cloud
+            - cod_modelo
+            - cod_nave
+            - coordenadas
+            - deviceId
+            - direccion_mac
+            - modulos
+            - nom_dispositivo
+            - tipo
+          properties:
+            tipo:
+              type: string
+              example: monitor
+              enum:
+                - camara
+                - monitor
+                - estacion_trabajo
+                - ambiente
+                - acceso
+                - ultrasonidos
+                - maquina
+                - estacion_produccion
+                - materia_prima
+                - almacenaje
+                - muelle
+            nom_dispositivo:
+              type: string
+              example: Monitor John Doe
+            coordenadas:
+              $ref: "../../utils/fields.yaml#/components/schemas/Coordenadas"
+            cp:
+              type: string
+              example: "08000"
+            serial_number:
+              type: string
+              example: 123912es
+            cod_modelo:
+              type: string
+              example: "000001"
+            ip_dispositivo:
+              $ref: "../../utils/fields.yaml#/components/schemas/IP"
+            direccion_mac:
+              $ref: "../../utils/fields.yaml#/components/schemas/MAC"
+            modulos:
+              type: array
+              items:
+                $ref: "../../utils/fields.yaml#/components/schemas/CodModulo"
+            cod_cloud:
+              type: string
+              example: "000015"
+            deviceId:
+              type: string
+              format: uuid
+              example: 0b8d289a-34ec-4838-9f20-6cc986e6f9e0
+            cod_nave:
+              type: string
+              example: "000015"
+        - type: object
+          description: Esquema para estaciones de trabajo
+          required:
+            - cod_camara
+            - cod_nave
+            - dispositivos
+            - extension
+            - nombre
+            - tipo
+          properties:
+            tipo:
+              type: string
+              example: estacion_trabajo
+              enum:
+                - camara
+                - monitor
+                - estacion_trabajo
+                - ambiente
+                - acceso
+                - ultrasonidos
+                - maquina
+                - estacion_produccion
+                - materia_prima
+                - almacenaje
+                - muelle
+            cod_nave:
+              type: string
+              description: Código de nave
+              example: "000015"
+            nombre:
+              type: string
+              example: ET - John
+            cod_camara:
+              type: string
+              description: Código dispositivo de la cámara
+              example: "000015"
+            dispositivos:
+              type: array
+              items:
+                type: string
+                description: Código dispositivo del monitor
+                example: "000015"
+            extension:
+              type: string
+              description: Extensión telefónica
+              example: "150"
+        - type: object
+          description: Esquema para máquinas
+          required:
+            - tipo
+            - cod_modelo
+            - cod_nave
+            - coordenadas
+            - deviceId
+            - modulos
+            - nom_dispositivo
+          properties:
+            tipo:
+              type: string
+              example: maquina
+              enum:
+                - camara
+                - monitor
+                - estacion_trabajo
+                - ambiente
+                - acceso
+                - ultrasonidos
+                - maquina
+                - estacion_produccion
+                - materia_prima
+                - almacenaje
+                - muelle
+            nom_dispositivo:
+              type: string
+              example: Maquina tapas 2
+            coordenadas:
+              $ref: "../../utils/fields.yaml#/components/schemas/Coordenadas"
+            cod_modelo:
+              type: string
+              example: "000001"
+            ip_dispositivo:
+              $ref: "../../utils/fields.yaml#/components/schemas/IP"
+            modulos:
+              type: array
+              items:
+                $ref: "../../utils/fields.yaml#/components/schemas/CodModulo"
+            deviceId:
+              type: string
+              format: uuid
+              example: 0b8d289a-34ec-4838-9f20-6cc986e6f9e0
+            cod_nave:
+              type: string
+              example: "000015"
+        - type: object
+          description: Esquema para estaciones de producción
+          required:
+            - camaras_interiores
+            - cod_camara
+            - cod_maquina
+            - cod_nave
+            - tipo
+          properties:
+            tipo:
+              type: string
+              example: estacion_produccion
+              enum:
+                - camara
+                - monitor
+                - estacion_trabajo
+                - ambiente
+                - acceso
+                - ultrasonidos
+                - maquina
+                - estacion_produccion
+                - materia_prima
+                - almacenaje
+                - muelle
+            cod_nave:
+              type: string
+              example: "000015"
+            cod_camara:
+              type: string
+              example: "000015"
+            cod_maquina:
+              type: string
+              example: "000015"
+            camaras_interiores:
+              type: array
+              items:
+                type: string
+                example: "000015"
+        - type: object
+          description: Esquema para sensores ambiente, acceso y ultrasonidos
+          required:
+            - cod_modelo
+            - cod_nave
+            - coordenadas
+            - deveui
+            - direccion_mac
+            - modulos
+            - nom_dispositivo
+            - serial_number
+            - tipo
+          properties:
+            tipo:
+              type: string
+              example: ambiente
+              enum:
+                - camara
+                - monitor
+                - estacion_trabajo
+                - ambiente
+                - acceso
+                - ultrasonidos
+                - maquina
+                - estacion_produccion
+                - materia_prima
+                - almacenaje
+                - muelle
+            cod_nave:
+              type: string
+              example: "000015"
+            nom_dispositivo:
+              type: string
+              example: Sensor ambiente
+            coordenadas:
+              $ref: "../../utils/fields.yaml#/components/schemas/Coordenadas"
+            cp:
+              type: string
+              example: "08000"
+            serial_number:
+              type: string
+              example: 123912es
+            cod_modelo:
+              type: string
+              example: "000001"
+            ip_dispositivo:
+              $ref: "../../utils/fields.yaml#/components/schemas/IP"
+            direccion_mac:
+              $ref: "../../utils/fields.yaml#/components/schemas/MAC"
+            modulos:
+              type: array
+              items:
+                $ref: "../../utils/fields.yaml#/components/schemas/CodModulo"
+            deveui:
+              type: string
+              example: "24123123123419"
+
+        - type: object
+          description: Esquema para dispositivos de materia prima
+          required:
+            - cod_camara
+            - cod_nave
+            - cod_sensor
+            - nombre
+            - tipo
+          properties:
+            tipo:
+              type: string
+              example: materia_prima
+              enum:
+                - camara
+                - monitor
+                - estacion_trabajo
+                - ambiente
+                - acceso
+                - ultrasonidos
+                - maquina
+                - estacion_produccion
+                - materia_prima
+                - almacenaje
+                - muelle
+            cod_nave:
+              type: string
+              example: "000015"
+            cod_camara:
+              type: string
+              example: "000015"
+            cod_sensor:
+              type: string
+              example: "000015"
+            nombre:
+              type: string
+              example: Dispositivo materia prima
+
+        - type: object
+          description: Esquema para almacenajes
+          required:
+            - cod_camara
+            - cod_nave
+            - nombre
+            - tipo
+          properties:
+            tipo:
+              type: string
+              example: almacenaje
+              enum:
+                - camara
+                - monitor
+                - estacion_trabajo
+                - ambiente
+                - acceso
+                - ultrasonidos
+                - maquina
+                - estacion_produccion
+                - materia_prima
+                - almacenaje
+                - muelle
+            cod_nave:
+              type: string
+              example: "000015"
+            cod_camara:
+              type: string
+              example: "000015"
+            nombre:
+              type: string
+              example: Almacenaje
+
+        - type: object
+          description: Esquema para muelles de carga
+          required:
+            - camara_exterior
+            - camara_interior
+            - cod_nave
+            - nombre
+            - tipo
+          properties:
+            tipo:
+              type: string
+              example: almacenaje
+              enum:
+                - camara
+                - monitor
+                - estacion_trabajo
+                - ambiente
+                - acceso
+                - ultrasonidos
+                - maquina
+                - estacion_produccion
+                - materia_prima
+                - almacenaje
+                - muelle
+            cod_nave:
+              type: string
+              example: "000015"
+            camara_interior:
+              type: string
+              example: "000015"
+            camara_exterior:
+              type: string
+              example: "000016"
+            nombre:
+              type: string
+              example: Muelle IV
+
+    dispositivos_modificar_body:
+      required:
+        - cod_nave
+        - tipo
+      type: object
+      properties:
+        tipo:
+          type: string
+          example: camara
+          enum:
+            - camara
+            - monitor
+            - estacion_trabajo
+            - ambiente
+            - acceso
+            - ultrasonidos
+            - maquina
+            - estacion_produccion
+            - materia_prima
+            - almacenaje
+            - muelle
+        id:
+          type: string
+          format: uuid
+          example: 0b8d289a-34ec-4838-9f20-6cc986e6f9e0
+        cod_nave:
+          type: string
+          example: "000015"
+        nombre:
+          type: string
+          example: Nombre dispositivo
+        cod_camara:
+          type: string
+          example: "000015"
+        camara_interior:
+          type: string
+          example: "000015"
+        camara_exterior:
+          type: string
+          example: "000015"
+        cod_maquina:
+          type: string
+          example: "000015"
+        cod_sensor:
+          type: string
+          example: "000015"
+        cod_departamento:
+          type: string
+          example: "000015"
+        extension:
+          type: string
+          example: "150"
+        dispositivos:
+          type: array
+          items:
+            type: string
+            example: "000015"
+        pasillos:
+          type: array
+          items:
+            $ref: "#/components/schemas/dispositivosinsertar_pasillos"
+        camaras_interiores:
+          type: array
+          items:
+            type: string
+            example: "000015"
+        nom_dispositivo:
+          type: string
+          example: CCTV Pasillo principal II
+        coordenadas:
+          $ref: "../../utils/fields.yaml#/components/schemas/Coordenadas"
+        cp:
+          type: string
+          example: "08000"
+        serial_number:
+          type: string
+          example: 123912es
+        cod_modelo:
+          type: string
+          example: "000001"
+        ip_dispositivo:
+          $ref: "../../utils/fields.yaml#/components/schemas/IP"
+        direccion_mac:
+          $ref: "../../utils/fields.yaml#/components/schemas/MAC"
+        modulos:
+          type: array
+          items:
+            $ref: "../../utils/fields.yaml#/components/schemas/CodModulo"
+        cod_cloud:
+          type: string
+          example: "000015"
+        deviceId:
+          type: string
+          format: uuid
+          example: 0b8d289a-34ec-4838-9f20-6cc986e6f9e0
+      discriminator:
+        propertyName: tipo
+      oneOf:
+        - type: object
+          description: Esquema para cámaras
+          required:
+            - cod_dispositivo
+            - tipo
+          properties:
+            tipo:
+              type: string
+              example: camara
+              enum:
+                - camara
+                - monitor
+                - estacion_trabajo
+                - ambiente
+                - acceso
+                - ultrasonidos
+                - maquina
+                - estacion_produccion
+                - materia_prima
+                - almacenaje
+                - muelle
+            cod_dispositivo:
+              $ref: "../../utils/fields.yaml#/components/schemas/CodDispositivo"
+            nom_dispositivo:
+              type: string
+              example: CCTV Pasillo principal II
+            coordenadas:
+              $ref: "../../utils/fields.yaml#/components/schemas/Coordenadas"
+            serial_number:
+              type: string
+              example: 123912es
+            ip_dispositivo:
+              $ref: "../../utils/fields.yaml#/components/schemas/IP"
+            direccion_mac:
+              $ref: "../../utils/fields.yaml#/components/schemas/MAC"
+            modulos:
+              type: array
+              items:
+                type: object
+                properties:
+                  cod_modulo:
+                    $ref: "../../utils/fields.yaml#/components/schemas/CodModulo"
+                  eliminar:
+                    type: boolean
+                    example: true
+            cod_cloud:
+              type: string
+              example: "000015"
+            deviceId:
+              type: string
+              format: uuid
+              example: 0b8d289a-34ec-4838-9f20-6cc986e6f9e0
+            cod_nave:
+              type: string
+              example: "000015"
+            pasillos:
+              type: array
+              items:
+                type: object
+                properties:
+                  almacen:
+                    type: integer
+                    example: 1
+                  pasillo:
+                    type: integer
+                    example: 1
+                  huecos:
+                    type: string
+                    example: 25-75
+            reconocimientos:
+              type: boolean
+              example: true
+
+        - type: object
+          description: Esquema para monitores
+          required:
+            - cod_dispositivo
+            - tipo
+          properties:
+            tipo:
+              type: string
+              example: monitor
+              enum:
+                - camara
+                - monitor
+                - estacion_trabajo
+                - ambiente
+                - acceso
+                - ultrasonidos
+                - maquina
+                - estacion_produccion
+                - materia_prima
+                - almacenaje
+                - muelle
+            nom_dispositivo:
+              type: string
+              example: Monitor John Doe
+            coordenadas:
+              $ref: "../../utils/fields.yaml#/components/schemas/Coordenadas"
+            cp:
+              type: string
+              example: "08000"
+            serial_number:
+              type: string
+              example: 123912es
+            cod_modelo:
+              type: string
+              example: "000001"
+            ip_dispositivo:
+              $ref: "../../utils/fields.yaml#/components/schemas/IP"
+            direccion_mac:
+              $ref: "../../utils/fields.yaml#/components/schemas/MAC"
+            modulos:
+              type: array
+              items:
+                $ref: "../../utils/fields.yaml#/components/schemas/CodModulo"
+            cod_cloud:
+              type: string
+              example: "000015"
+            deviceId:
+              type: string
+              format: uuid
+              example: 0b8d289a-34ec-4838-9f20-6cc986e6f9e0
+            cod_nave:
+              type: string
+              example: "000015"
+
+        - type: object
+          description: Esquema para estaciones de trabajo
+          required:
+            - cod_nave
+            - id
+            - tipo
+          properties:
+            tipo:
+              type: string
+              example: estacion_trabajo
+              enum:
+                - camara
+                - monitor
+                - estacion_trabajo
+                - ambiente
+                - acceso
+                - ultrasonidos
+                - maquina
+                - estacion_produccion
+                - materia_prima
+                - almacenaje
+                - muelle
+            id:
+              type: string
+              format: uuid
+              example: 0b8d289a-34ec-4838-9f20-6cc986e6f9e0
+            cod_nave:
+              type: string
+              example: "000015"
+
+        - type: object
+          description: Esquema para máquinas
+          required:
+            - tipo
+            - cod_dispositivo
+          properties:
+            tipo:
+              type: string
+              example: maquina
+              enum:
+                - camara
+                - monitor
+                - estacion_trabajo
+                - ambiente
+                - acceso
+                - ultrasonidos
+                - maquina
+                - estacion_produccion
+                - materia_prima
+                - almacenaje
+                - muelle
+            cod_nave:
+              type: string
+              example: "000015"
+            cod_dispositivo:
+              $ref: "../../utils/fields.yaml#/components/schemas/CodDispositivo"
+            nom_dispositivo:
+              type: string
+              example: "Máquina tapas 2"
+            coordenadas:
+              $ref: "../../utils/fields.yaml#/components/schemas/Coordenadas"
+            ip_dispositivo:
+              $ref: "../../utils/fields.yaml#/components/schemas/IP"
+            modulos:
+              type: array
+              items:
+                type: object
+                properties:
+                  cod_modulo:
+                    $ref: "../../utils/fields.yaml#/components/schemas/CodModulo"
+                  eliminar:
+                    type: boolean
+                    example: true
+            deviceId:
+              type: string
+              example: Mk9000
+
+        - type: object
+          description: Esquema para estaciones de producción
+          required:
+            - camaras_interiores
+            - cod_camara
+            - cod_maquina
+            - cod_nave
+            - tipo
+          properties:
+            tipo:
+              type: string
+              example: estacion_produccion
+              enum:
+                - camara
+                - monitor
+                - estacion_trabajo
+                - ambiente
+                - acceso
+                - ultrasonidos
+                - maquina
+                - estacion_produccion
+                - materia_prima
+                - almacenaje
+                - muelle
+            cod_nave:
+              type: string
+              example: "000015"
+            cod_camara:
+              type: string
+              example: "000015"
+            cod_maquina:
+              type: string
+              example: "000015"
+            camaras_interiores:
+              type: array
+              items:
+                type: string
+                example: "000015"
+
+        - type: object
+          description: Esquema para sensores ambiente y acceso
+          required:
+            - cod_nave
+            - tipo
+          properties:
+            tipo:
+              type: string
+              example: ambiente
+              enum:
+                - camara
+                - monitor
+                - estacion_trabajo
+                - ambiente
+                - acceso
+                - ultrasonidos
+                - maquina
+                - estacion_produccion
+                - materia_prima
+                - almacenaje
+                - muelle
+            cod_nave:
+              type: string
+              example: "000015"
+            nom_dispositivo:
+              type: string
+              example: Sensor ambiente
+            coordenadas:
+              $ref: "../../utils/fields.yaml#/components/schemas/Coordenadas"
+            cp:
+              type: string
+              example: "08000"
+            serial_number:
+              type: string
+              example: 123912es
+            cod_modelo:
+              type: string
+              example: "000001"
+            ip_dispositivo:
+              $ref: "../../utils/fields.yaml#/components/schemas/IP"
+            direccion_mac:
+              $ref: "../../utils/fields.yaml#/components/schemas/MAC"
+            modulos:
+              type: array
+              items:
+                $ref: "../../utils/fields.yaml#/components/schemas/CodModulo"
+            deveui:
+              type: string
+              example: "24123123123419"
+
+        - type: object
+          description: Esquema para dispositivos de materia prima
+          required:
+            - cod_camara
+            - cod_nave
+            - cod_sensor
+            - nombre
+            - tipo
+          properties:
+            tipo:
+              type: string
+              example: materia_prima
+              enum:
+                - camara
+                - monitor
+                - estacion_trabajo
+                - ambiente
+                - acceso
+                - ultrasonidos
+                - maquina
+                - estacion_produccion
+                - materia_prima
+                - almacenaje
+                - muelle
+            cod_nave:
+              type: string
+              example: "000015"
+            cod_camara:
+              type: string
+              example: "000015"
+            cod_sensor:
+              type: string
+              example: "000015"
+            nombre:
+              type: string
+              example: Dispositivo materia prima
+
+        - type: object
+          description: Esquema para almacenajes
+          required:
+            - cod_camara
+            - cod_nave
+            - nombre
+            - tipo
+          properties:
+            tipo:
+              type: string
+              example: almacenaje
+              enum:
+                - camara
+                - monitor
+                - estacion_trabajo
+                - ambiente
+                - acceso
+                - ultrasonidos
+                - maquina
+                - estacion_produccion
+                - materia_prima
+                - almacenaje
+                - muelle
+            cod_nave:
+              type: string
+              example: "000015"
+            cod_camara:
+              type: string
+              example: "000015"
+            nombre:
+              type: string
+              example: Almacenaje
+
+        - type: object
+          description: Esquema para muelles de carga
+          required:
+            - camara_exterior
+            - camara_interior
+            - cod_nave
+            - nombre
+            - tipo
+          properties:
+            tipo:
+              type: string
+              example: almacenaje
+              enum:
+                - camara
+                - monitor
+                - estacion_trabajo
+                - ambiente
+                - acceso
+                - ultrasonidos
+                - maquina
+                - estacion_produccion
+                - materia_prima
+                - almacenaje
+                - muelle
+            cod_nave:
+              type: string
+              example: "000015"
+            camara_interior:
+              type: string
+              example: "000015"
+            camara_exterior:
+              type: string
+              example: "000016"
+            nombre:
+              type: string
+              example: Muelle IV

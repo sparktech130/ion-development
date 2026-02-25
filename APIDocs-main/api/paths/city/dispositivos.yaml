@@ -1,0 +1,122 @@
+openapi: 3.0.0
+info:
+  title: Operaciones de dispositivos city
+  version: 1.0.0
+
+components:
+  schemas:
+    TipoAlerta:
+      type: string
+      example: "mail;sms"
+
+    ObtenerVelocidadLimiteRequest:
+      type: object
+      properties:
+        cod_dispositivo:
+          $ref: "../../utils/fields.yaml#/components/schemas/CodDispositivo"
+
+    ObtenerVelocidadLimiteResponse:
+      type: array
+      items:
+        type: object
+        properties:
+          cod_dispositivo:
+            $ref: "../../utils/fields.yaml#/components/schemas/CodDispositivo"
+          velocidad_max:
+            type: integer
+          cod_infraccion:
+            type: string
+
+    EstablecerVelocidadLimiteRequest:
+      type: object
+      properties:
+        cod_dispositivo:
+          $ref: "../../utils/fields.yaml#/components/schemas/CodDispositivo"
+        velocidad_max:
+          type: integer
+        cod_infraccion:
+          type: string
+
+    EstablecerVelocidadLimiteResponse:
+      type: boolean
+
+  x-routes:
+    ObtenerVelocidadLimite:
+      post:
+        tags: [Dispositivos]
+        summary: Obtener velocidad limite
+        operationId: obtenerVelocidadLimite
+        security: [{ bearerAuth: [] }]
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ObtenerVelocidadLimiteRequest"
+        responses:
+          "200":
+            description: OK
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/ObtenerVelocidadLimiteResponse"
+          "401":
+            description: Usuario inválido o no autorizado
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "498":
+            description: Token expirado o inválido
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "500":
+            description: Unexpected error
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+
+    EstablecerVelocidadLimite:
+      post:
+        tags: [Dispositivos]
+        summary: Obtener velocidad limite
+        operationId: establecerVelocidadLimite
+        security: [{ bearerAuth: [] }]
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EstablecerVelocidadLimiteRequest"
+        responses:
+          "200":
+            description: OK
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/EstablecerVelocidadLimiteResponse"
+          "500":
+            description: No tiene radar
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    tiene_radar:
+                      type: boolean
+                      example: false
+          "401":
+            description: Usuario inválido o no autorizado
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "498":
+            description: Token expirado o inválido
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"

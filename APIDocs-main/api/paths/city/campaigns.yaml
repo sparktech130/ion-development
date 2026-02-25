@@ -1,0 +1,136 @@
+openapi: 3.0.0
+info: { title: Campañas, version: 1.0.0 }
+components:
+  schemas: {}
+  x-routes:
+    Obtener:
+      post:
+        tags: [Campañas]
+        summary: Obtener campañas
+        operationId: campaigns_obtener
+        security: [{ bearerAuth: [] }]
+        requestBody:
+          { content: { application/json: { schema: { type: object } } } }
+        responses:
+          {
+            "200":
+              {
+                description: OK,
+                content:
+                  {
+                    application/json:
+                      { schema: { type: array, items: { type: object } } },
+                  },
+              },
+          }
+
+    Insertar:
+      post:
+        tags: [Campañas]
+        summary: Insertar
+        operationId: campaigns_insertar
+        security: [{ bearerAuth: [] }]
+        requestBody:
+          { content: { application/json: { schema: { type: object } } } }
+        responses: { "200": { description: OK } }
+
+    Modificar:
+      post:
+        tags: [Campañas]
+        summary: Modificar
+        operationId: campaigns_modificar
+        security: [{ bearerAuth: [] }]
+        requestBody:
+          { content: { application/json: { schema: { type: object } } } }
+        responses: { "200": { description: OK } }
+
+    Eliminar:
+      post:
+        tags: [Campañas]
+        summary: Eliminar
+        operationId: campaigns_eliminar
+        security: [{ bearerAuth: [] }]
+        requestBody:
+          {
+            content:
+              {
+                application/json:
+                  {
+                    schema:
+                      { type: object, properties: { id: { type: string } } },
+                  },
+              },
+          }
+        responses: { "200": { description: OK } }
+
+    Busqueda:
+      post:
+        tags: [Campañas]
+        summary: Búsqueda
+        operationId: campaigns_busqueda
+        security: [{ bearerAuth: [] }]
+        requestBody:
+          {
+            content:
+              {
+                application/json:
+                  {
+                    schema:
+                      { type: object, properties: { q: { type: string } } },
+                  },
+              },
+          }
+        responses:
+          {
+            "200":
+              {
+                description: OK,
+                content:
+                  {
+                    application/json:
+                      { schema: { type: array, items: { type: object } } },
+                  },
+              },
+          }
+
+    ObtenerAlertas:
+      post:
+        tags: [Campañas]
+        summary: Alertas por campaña
+        operationId: campaigns_obtenerAlertas
+        security: [{ bearerAuth: [] }]
+        requestBody:
+          { content: { application/json: { schema: { type: object } } } }
+        responses:
+          {
+            "200":
+              {
+                description: OK,
+                content:
+                  {
+                    application/json:
+                      { schema: { type: array, items: { type: object } } },
+                  },
+              },
+          }
+
+    ObtenerReconocimientos:
+      post:
+        tags: [Campañas]
+        summary: Reconocimientos
+        operationId: campaigns_obtenerReconocimientos
+        security: [{ bearerAuth: [] }]
+        requestBody:
+          { content: { application/json: { schema: { type: object } } } }
+        responses:
+          {
+            "200":
+              {
+                description: OK,
+                content:
+                  {
+                    application/json:
+                      { schema: { type: array, items: { type: object } } },
+                  },
+              },
+          }

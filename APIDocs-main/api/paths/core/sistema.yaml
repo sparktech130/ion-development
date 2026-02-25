@@ -1,0 +1,127 @@
+openapi: 3.0.0
+info:
+  title: Operaciones del sistema
+  version: 1.0.0
+
+components:
+  x-routes:
+    ObtenerNotificaciones:
+      post:
+        tags:
+          - Sistema
+        summary: Obtener notificaciones
+        description: Obtiene las notificaciones del sistema con filtros opcionales
+        operationId: obtenerNotificacionesSistema
+        security:
+          - bearerAuth: []
+        parameters: []
+        requestBody:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  tipo:
+                    oneOf:
+                      - type: string
+                        enum:
+                          - email
+                          - sms
+                          - whatsapp
+                          - call
+                      - type: array
+                        items:
+                          type: string
+                          enum:
+                            - email
+                            - sms
+                            - whatsapp
+                            - call
+                    description: Tipo de notificación (puede ser un string o array de strings)
+                    example: "email"
+                  destinatario:
+                    type: string
+                    example: "user@example.com"
+                    description: Destinatario de la notificación
+                  estado:
+                    type: string
+                    enum:
+                      - ok
+                      - ko
+                      - pendiente
+                    example: "ok"
+                    description: Estado de la notificación
+                  fecha_ini:
+                    $ref: "../../utils/fields.yaml#/components/schemas/Fecha"
+                  fecha_fin:
+                    $ref: "../../utils/fields.yaml#/components/schemas/Fecha"
+                  hora_ini:
+                    $ref: "../../utils/fields.yaml#/components/schemas/Hora"
+                  hora_fin:
+                    $ref: "../../utils/fields.yaml#/components/schemas/Hora"
+                  limit:
+                    type: integer
+                    example: 50
+                    description: Límite de resultados por página
+                  page:
+                    type: integer
+                    example: 0
+                    description: Número de página (usado con limit para paginación)
+        responses:
+          "200":
+            description: Successful operation
+            content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/NotificacionInfo"
+          "401":
+            description: Usuario inválido o no autorizado
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "498":
+            description: Token expirado o inválido
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "500":
+            description: Unexpected error
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+
+  schemas:
+    NotificacionInfo:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        tipo:
+          type: string
+          enum:
+            - email
+            - sms
+            - whatsapp
+            - call
+          example: "email"
+        estado:
+          type: string
+          enum:
+            - ok
+            - ko
+            - pendiente
+          example: "ok"
+        destinatario:
+          type: string
+          example: "user@example.com"
+        body:
+          type: string
+          example: "Contenido de la notificación"
+        fecha_hora:
+          $ref: "../../utils/fields.yaml#/components/schemas/FechaHora"

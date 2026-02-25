@@ -1,0 +1,481 @@
+openapi: 3.0.0
+info:
+  title: Operaciones de instancias
+  version: 1.0.0
+components:
+  x-routes:
+    Crear:
+      post:
+        tags:
+          - Instancias
+        summary: Crear una instancia y configurar entrada
+        operationId: crearInstancia
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CrearRequest"
+        responses:
+          "200":
+            description: Creación realizada
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/CrearResponse"
+          "400":
+            $ref: "#/components/responses/BadRequest"
+          "404":
+            $ref: "#/components/responses/NotFound"
+          "500":
+            $ref: "#/components/responses/ServerError"
+
+    Modificar:
+      post:
+        tags:
+          - Instancias
+        summary: Modifica la instancia y sus parámetros
+        operationId: modificarInstancia
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ModificarRequest"
+        responses:
+          "200":
+            description: Resultado de la acción
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/ModificarResponse"
+          "400":
+            $ref: "#/components/responses/BadRequest"
+          "404":
+            $ref: "#/components/responses/NotFound"
+          "500":
+            $ref: "#/components/responses/ServerError"
+
+    Eliminar:
+      post:
+        tags:
+          - Instancias
+        summary: Eliminar una instancia por ID
+        operationId: eliminarInstancia
+        requestBody:
+          $ref: "#/components/requestBodies/InstanceIdBody"
+        responses:
+          "200":
+            description: Eliminación correcta
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/DeleteResponse"
+          "404":
+            $ref: "#/components/responses/NotFound"
+          "500":
+            $ref: "#/components/responses/ServerError"
+    Load:
+      post:
+        tags:
+          - Instancias
+        summary: Cargar recursos de una instancia
+        operationId: loadInstancia
+        requestBody:
+          $ref: "#/components/requestBodies/InstanceIdBody"
+        responses:
+          "200":
+            description: Carga realizada
+            content:
+              application/json:
+                schema:
+                  type: object
+                  additionalProperties: true
+          "404":
+            $ref: "#/components/responses/NotFound"
+          "500":
+            $ref: "#/components/responses/ServerError"
+    Unload:
+      post:
+        tags:
+          - Instancias
+        summary: Descargar recursos de una instancia
+        operationId: unloadInstancia
+        requestBody:
+          $ref: "#/components/requestBodies/InstanceIdBody"
+        responses:
+          "200":
+            description: Descarte realizado
+            content:
+              application/json:
+                schema:
+                  type: object
+                  additionalProperties: true
+          "404":
+            $ref: "#/components/responses/NotFound"
+          "500":
+            $ref: "#/components/responses/ServerError"
+    Start:
+      post:
+        tags:
+          - Instancias
+        summary: Arrancar una instancia
+        operationId: startInstancia
+        requestBody:
+          $ref: "#/components/requestBodies/InstanceIdBody"
+        responses:
+          "200":
+            description: Arranque (true/false)
+            content:
+              application/json:
+                schema:
+                  type: boolean
+          "404":
+            $ref: "#/components/responses/NotFound"
+          "500":
+            $ref: "#/components/responses/ServerError"
+    Stop:
+      post:
+        tags:
+          - Instancias
+        summary: Detener una instancia
+        operationId: stopInstancia
+        requestBody:
+          $ref: "#/components/requestBodies/InstanceIdBody"
+        responses:
+          "200":
+            description: Detención (true/false)
+            content:
+              application/json:
+                schema:
+                  type: boolean
+          "404":
+            $ref: "#/components/responses/NotFound"
+          "500":
+            $ref: "#/components/responses/ServerError"
+    Obtener:
+      post:
+        tags:
+          - Instancias
+        summary: Obtener/listar instancias
+        operationId: obtenerInstancias
+        requestBody:
+          required: false
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ObtenerRequest"
+        responses:
+          "200":
+            description: Listado/instancia
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/ObtenerResponse"
+          "500":
+            $ref: "#/components/responses/ServerError"
+    ObtenerEstado:
+      post:
+        tags:
+          - Instancias
+        summary: Estado de una instancia
+        operationId: estadoInstancia
+        requestBody:
+          $ref: "#/components/requestBodies/InstanceIdBody"
+        responses:
+          "200":
+            description: Objeto de estado
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/Estado"
+          "404":
+            $ref: "#/components/responses/NotFound"
+          "500":
+            $ref: "#/components/responses/ServerError"
+    ObtenerEventos:
+      post:
+        tags:
+          - Instancias
+        summary: Eventos de una instancia
+        operationId: eventosInstancia
+        requestBody:
+          $ref: "#/components/requestBodies/InstanceIdBody"
+        responses:
+          "200":
+            description: Array de eventos
+            content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/Evento"
+          "404":
+            $ref: "#/components/responses/NotFound"
+          "500":
+            $ref: "#/components/responses/ServerError"
+    ObtenerFrame:
+      post:
+        tags:
+          - Instancias
+        summary: Frame de una instancia
+        operationId: frameInstancia
+        requestBody:
+          $ref: "#/components/requestBodies/InstanceIdBody"
+        responses:
+          "200":
+            description: Estructura con el frame/payload
+            content:
+              application/json:
+                schema:
+                  type: object
+                  additionalProperties: true
+          "404":
+            $ref: "#/components/responses/NotFound"
+          "500":
+            $ref: "#/components/responses/ServerError"
+
+    EnableLPR:
+      post:
+        tags:
+          - LPR Instancias
+        summary: Habilita el diagnóstico LPR en la instancia
+        operationId: enableLPR
+        requestBody:
+          $ref: "#/components/requestBodies/InstanceIdBody"
+        responses:
+          "200":
+            $ref: "#/components/responses/ActionResult"
+          "404":
+            $ref: "#/components/responses/NotFound"
+          "500":
+            $ref: "#/components/responses/ServerError"
+
+    DisableLPR:
+      post:
+        tags:
+          - LPR Instancias
+        summary: Deshabilita el diagnóstico LPR en la instancia
+        operationId: disableLPR
+        requestBody:
+          $ref: "#/components/requestBodies/InstanceIdBody"
+        responses:
+          "200":
+            $ref: "#/components/responses/ActionResult"
+          "404":
+            $ref: "#/components/responses/NotFound"
+          "500":
+            $ref: "#/components/responses/ServerError"
+
+    ObtenerLPR:
+      post:
+        tags:
+          - LPR Instancias
+        summary: Obtiene el estado de activación del diagnóstico LPR
+        operationId: obtenerLPR
+        requestBody:
+          $ref: "#/components/requestBodies/InstanceIdBody"
+        responses:
+          "200":
+            description: Estado actual
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    enabled:
+                      type: boolean
+                      example: true
+          "404":
+            $ref: "#/components/responses/NotFound"
+          "500":
+            $ref: "#/components/responses/ServerError"
+
+  responses:
+    ActionResult:
+      description: Resultado de la acción
+      content:
+        application/json:
+          schema:
+            $ref: "../../utils/responses.yaml#/components/schemas/ActionResult"
+    BadRequest:
+      description: Petición inválida
+      content:
+        application/json:
+          schema:
+            $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+
+    NotFound:
+      description: Recurso no encontrado
+      content:
+        application/json:
+          schema:
+            $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+
+    ServerError:
+      description: Error interno
+      content:
+        application/json:
+          schema:
+            $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+
+  requestBodies:
+    InstanceIdBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/InstanceIdRequest"
+  schemas:
+    InstanceIdRequest:
+      type: object
+      required:
+        - instanceId
+      properties:
+        instanceId:
+          $ref: "../../utils/fields.yaml#/components/schemas/InstanceId"
+    CrearRequest:
+      type: object
+      required:
+        - cod_dispositivo
+      properties:
+        cod_dispositivo:
+          $ref: "../../utils/fields.yaml#/components/schemas/CodDispositivo"
+        solutionId:
+          type: string
+          default: securt
+          example: securt
+        streamQuality:
+          type: string
+          enum: ["high", "low"]
+        attributesExtraction:
+          type: string
+          enum: ["Off", "Vehicle", "Person", "Both"]
+        frameRateLimit:
+          type: integer
+          example: 5
+        metadataMode:
+          type: boolean
+        statisticsMode:
+          type: boolean
+        diagnosticsMode:
+          type: boolean
+        detectorMode:
+          type: string
+          enum: ["SmartDetection", "Detection"]
+        detectionSensitivity:
+          type: string
+          enum: ["Low", "Medium", "High"]
+        movementSensitivity:
+          type: string
+          enum: ["Low", "Medium", "High"]
+        sensorModality:
+          type: string
+          enum: ["RGB", "Thermal"]
+
+    CrearResponse:
+      type: object
+      description:
+        Respuesta de `/crear`. Si la creación y setInput fueron correctos,
+        devuelve instanceId y running (si solutionId=securt, arranca automáticamente).
+      properties:
+        instanceId:
+          $ref: "../../utils/fields.yaml#/components/schemas/InstanceId"
+        setInput:
+          type: boolean
+        running:
+          type: boolean
+          nullable: true
+        message:
+          type: string
+          nullable: true
+      additionalProperties: true
+
+    ModificarRequest:
+      type: object
+      required:
+        - instanceId
+      properties:
+        instanceId:
+          type: string
+          format: uuid
+        solutionId:
+          type: string
+          default: securt
+          example: securt
+        streamQuality:
+          type: string
+          enum: ["high", "low"]
+        attributesExtraction:
+          type: string
+          enum: ["Off", "Vehicle", "Person", "Both"]
+        frameRateLimit:
+          type: integer
+          example: 5
+        metadataMode:
+          type: boolean
+        statisticsMode:
+          type: boolean
+        diagnosticsMode:
+          type: boolean
+        detectorMode:
+          type: string
+          enum: ["SmartDetection", "Detection"]
+        detectionSensitivity:
+          type: string
+          enum: ["Low", "Medium", "High"]
+        movementSensitivity:
+          type: string
+          enum: ["Low", "Medium", "High"]
+        sensorModality:
+          type: string
+          enum: ["RGB", "Thermal"]
+
+    ModificarResponse:
+      type: object
+      properties:
+        update:
+          type: object
+          properties:
+            streamQuality:
+              type: boolean
+            parameters:
+              type: boolean
+
+    DeleteResponse:
+      type: boolean
+
+    ObtenerRequest:
+      type: object
+      properties:
+        instanceId:
+          $ref: "../../utils/fields.yaml#/components/schemas/InstanceId"
+        cod_cloud_analysis:
+          type: integer
+          format: int64
+          nullable: true
+
+    ObtenerResponse:
+      type: object
+      properties:
+        instances:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+
+    Estado:
+      type: object
+      additionalProperties: true
+
+    Evento:
+      type: object
+      properties:
+        timestamp:
+          type: string
+        type:
+          type: string
+        object:
+          type: object
+          additionalProperties: true
+      additionalProperties: true

@@ -1,0 +1,637 @@
+openapi: 3.0.0
+info:
+  title: Operaciones de infracciones
+  version: 1.0.0
+
+components:
+  schemas:
+    ObtenerInfraccionesRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        cod_infraccion:
+          type: string
+        matricula:
+          $ref: "../../utils/fields.yaml#/components/schemas/Matricula"
+        color:
+          $ref: "../../utils/fields.yaml#/components/schemas/Color"
+        marca:
+          type: string
+        estat:
+          type: string
+          enum: ["p", "v", "r", "c"] # p=pendiente, c=cerrada
+        envio:
+          type: string
+          enum: ["p", "s"]
+        fecha_ini:
+          $ref: "../../utils/fields.yaml#/components/schemas/Fecha"
+        fecha_fin:
+          $ref: "../../utils/fields.yaml#/components/schemas/Fecha"
+        hora_ini:
+          $ref: "../../utils/fields.yaml#/components/schemas/Hora"
+        hora_fin:
+          $ref: "../../utils/fields.yaml#/components/schemas/Hora"
+        cod_dispositivo:
+          $ref: "../../utils/fields.yaml#/components/schemas/CodDispositivo"
+        nom_dispositivo:
+          $ref: "../../utils/fields.yaml#/components/schemas/NomDispositivo"
+        tipos:
+          type: array
+          items:
+            type: string
+        tipo_vh:
+          type: string
+        pais:
+          $ref: "../../utils/fields.yaml#/components/schemas/Pais"
+        modelo:
+          type: string
+        orientacion:
+          type: string
+          enum: ["Away", "Approach"]
+          nullable: true
+        confidence:
+          type: number
+          format: float
+          description: Valor decimal de confianza (0-1).
+          example: 0.79
+        cod_lista:
+          $ref: "../../utils/fields.yaml#/components/schemas/Cod4Fill"
+        nombre_lista:
+          type: string
+        cod_area:
+          $ref: "../../utils/fields.yaml#/components/schemas/Cod4Fill"
+
+    ObtenerInfraccionesItem:
+      type: object
+      additionalProperties: false
+      properties:
+        cod_sancion:
+          $ref: "../../utils/fields.yaml#/components/schemas/Cod6Fill"
+        cod_reconoc:
+          $ref: "../../utils/fields.yaml#/components/schemas/Cod6Fill"
+        cod_alerta:
+          $ref: "../../utils/fields.yaml#/components/schemas/Cod6Fill"
+        estat:
+          type: string
+          enum: ["p", "v", "r", "c"]
+        envio:
+          type: string
+          enum: ["p", "s"]
+        motivo:
+          type: string
+          nullable: true
+        cod_infraccion:
+          type: string
+        fecha_modif:
+          type: string
+          description: "Fecha y hora de modificación en formato 'YYYY-MM-DD HH:mm:ss'"
+          example: "2025-09-29 09:27:12"
+        usuario:
+          type: string
+        tipo:
+          type: string
+        cod_provincia:
+          $ref: "../../utils/fields.yaml#/components/schemas/Cod2Fill"
+        cod_poblacion:
+          $ref: "../../utils/fields.yaml#/components/schemas/Cod6Fill"
+        fecha:
+          $ref: "../../utils/fields.yaml#/components/schemas/Fecha"
+        hora:
+          $ref: "../../utils/fields.yaml#/components/schemas/Hora"
+        matricula:
+          $ref: "../../utils/fields.yaml#/components/schemas/Matricula"
+        pais:
+          $ref: "../../utils/fields.yaml#/components/schemas/Pais"
+        confidence:
+          type: number
+          format: float
+          example: 0.79
+        foto:
+          $ref: "../../utils/fields.yaml#/components/schemas/Foto"
+        foto2:
+          $ref: "../../utils/fields.yaml#/components/schemas/Foto"
+          nullable: true
+        fotop:
+          $ref: "../../utils/fields.yaml#/components/schemas/Foto"
+        incidencia:
+          type: string
+          nullable: true
+        cod_dispositivo:
+          $ref: "../../utils/fields.yaml#/components/schemas/CodDispositivo"
+        marca:
+          type: string
+        modelo:
+          type: string
+        color:
+          $ref: "../../utils/fields.yaml#/components/schemas/Color"
+        tipo_vh:
+          type: string
+        estado:
+          type: string
+        distintivo:
+          type: string
+        velocidad_vehiculo:
+          type: number
+        latitud:
+          type: string
+        longitud:
+          type: string
+        orientacion:
+          type: string
+          enum: ["Away", "Approach"]
+          nullable: true
+        cod_alertagest:
+          type: string
+        desc_infraccion:
+          type: string
+        nom_dispositivo:
+          $ref: "../../utils/fields.yaml#/components/schemas/NomDispositivo"
+      example:
+        cod_sancion: "000001"
+        cod_reconoc: "000002"
+        cod_alerta: "012050"
+        estat: "p"
+        envio: "p"
+        motivo: ""
+        cod_infraccion: "CIR151.53.5B"
+        fecha_modif: "2025-09-29 09:27:12"
+        usuario: "000037"
+        tipo: ""
+        cod_provincia: "03"
+        cod_poblacion: "000004"
+        fecha: "2025-09-30"
+        hora: "12:27:11"
+        matricula: "7339FZS"
+        pais: "ESP"
+        confidence: 0.79
+        foto: "2025-09-17_12-27-12_7339FZS.jpg"
+        foto2: null
+        fotop: "2025-09-17_12-27-12_7339FZSp.jpg"
+        incidencia: null
+        cod_dispositivo: "000001"
+        marca: "Audi"
+        modelo: " "
+        color: "white"
+        tipo_vh: "car"
+        estado: " "
+        distintivo: " ECO"
+        velocidad_vehiculo: 50
+        latitud: "1306"
+        longitud: "80"
+        orientacion: "Approach"
+        cod_alertagest: "0001"
+        desc_infraccion: "No detenerse en el lugar prescrito por la señal de STOP"
+        nom_dispositivo: "INCA001"
+
+    ObtenerInfraccionesResponse:
+      type: array
+      items:
+        $ref: "#/components/schemas/ObtenerInfraccionesItem"
+
+    GroupInfraccionesRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        fecha_ini:
+          $ref: "../../utils/fields.yaml#/components/schemas/Fecha"
+        fecha_fin:
+          $ref: "../../utils/fields.yaml#/components/schemas/Fecha"
+        hora_ini:
+          $ref: "../../utils/fields.yaml#/components/schemas/Hora"
+        hora_fin:
+          $ref: "../../utils/fields.yaml#/components/schemas/Hora"
+        matricula:
+          $ref: "../../utils/fields.yaml#/components/schemas/Matricula"
+        color:
+          $ref: "../../utils/fields.yaml#/components/schemas/Color"
+        marca:
+          type: string
+        tipo:
+          type: string
+        tipo_vh:
+          type: string
+        pais:
+          $ref: "../../utils/fields.yaml#/components/schemas/Pais"
+        dispositivos:
+          type: array
+          items:
+            $ref: "../../utils/fields.yaml#/components/schemas/CodDispositivo"
+        velocidad_vehiculo:
+          type: number
+        direccion:
+          type: string
+        estat:
+          type: string
+          enum: ["p", "v", "r", "c"]
+        envio:
+          type: string
+          enum: ["p", "s"]
+        cod_infraccion:
+          type: string
+        usuario:
+          $ref: "../../utils/fields.yaml#/components/schemas/Cod6Fill"
+        cod_provincia:
+          $ref: "../../utils/fields.yaml#/components/schemas/Cod2Fill"
+        modelo:
+          type: string
+        cod_poblacion:
+          $ref: "../../utils/fields.yaml#/components/schemas/Cod6Fill"
+        confidence:
+          type: number
+          format: float
+        orientacion:
+          type: string
+          enum: ["Away", "Approach"]
+          nullable: true
+        cod_lista:
+          $ref: "../../utils/fields.yaml#/components/schemas/Cod4Fill"
+        campos:
+          type: array
+          items:
+            type: string
+            enum:
+              - hora
+              - modulo
+              - cod_dispositivo
+              - tipo_vh
+              - estat
+              - fecha
+              - cod_alertagest
+        order:
+          type: array
+          items:
+            type: string
+          description: Lista de órdenes, p. ej. ["fecha DESC", "hora ASC"]
+        modulos:
+          type: array
+          items:
+            $ref: "../../utils/fields.yaml#/components/schemas/Cod4Fill"
+        alertas:
+          type: array
+          items:
+            $ref: "../../utils/fields.yaml#/components/schemas/Cod4Fill"
+
+    Group24InfraccionesRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        matricula:
+          $ref: "../../utils/fields.yaml#/components/schemas/Matricula"
+        color:
+          $ref: "../../utils/fields.yaml#/components/schemas/Color"
+        marca:
+          type: string
+        tipo:
+          type: string
+        tipo_vh:
+          type: string
+        pais:
+          $ref: "../../utils/fields.yaml#/components/schemas/Pais"
+        dispositivos:
+          type: array
+          items:
+            $ref: "../../utils/fields.yaml#/components/schemas/CodDispositivo"
+        velocidad_vehiculo:
+          type: number
+        direccion:
+          type: string
+        estat:
+          type: string
+          enum: ["p", "v", "r", "c"]
+        envio:
+          type: string
+          enum: ["p", "s"]
+        cod_infraccion:
+          type: string
+        usuario:
+          $ref: "../../utils/fields.yaml#/components/schemas/Cod6Fill"
+        cod_provincia:
+          $ref: "../../utils/fields.yaml#/components/schemas/Cod2Fill"
+        modelo:
+          type: string
+        cod_poblacion:
+          $ref: "../../utils/fields.yaml#/components/schemas/Cod6Fill"
+        confidence:
+          type: number
+          format: float
+        orientacion:
+          type: string
+          enum: ["Away", "Approach"]
+          nullable: true
+        cod_lista:
+          $ref: "../../utils/fields.yaml#/components/schemas/Cod4Fill"
+        campos:
+          type: array
+          items:
+            type: string
+            enum:
+              - hora
+              - modulo
+              - cod_dispositivo
+              - tipo_vh
+              - estat
+              - fecha
+              - cod_alertagest
+        order:
+          type: array
+          items:
+            type: string
+        modulos:
+          type: array
+          items:
+            $ref: "../../utils/fields.yaml#/components/schemas/Cod4Fill"
+        alertas:
+          type: array
+          items:
+            $ref: "../../utils/fields.yaml#/components/schemas/Cod4Fill"
+
+    GroupInfraccionesItem:
+      type: object
+      additionalProperties: false
+      properties:
+        hora:
+          type: integer
+          minimum: 0
+          maximum: 23
+        nombre_modulo:
+          type: string
+        cod_dispositivo:
+          $ref: "../../utils/fields.yaml#/components/schemas/CodDispositivo"
+        coordenadas:
+          type: string
+          description: Coordenadas "lat,long"
+        tipo_vh:
+          type: string
+        estat:
+          type: string
+          enum: ["p", "v", "r", "c"]
+        fecha:
+          $ref: "../../utils/fields.yaml#/components/schemas/Fecha"
+        total:
+          type: integer
+          minimum: 0
+      example:
+        hora: 9
+        nombre_modulo: "traffic"
+        cod_dispositivo: "000001"
+        coordenadas: "39.72213450681315,2.912756244156242"
+        tipo_vh: "car"
+        estat: "p"
+        fecha: "2025-09-30"
+        total: 1
+
+    GroupInfraccionesResponse:
+      type: array
+      items:
+        $ref: "#/components/schemas/GroupInfraccionesItem"
+
+    ValidarInfraccionesRequest:
+      type: object
+      additionalProperties: false
+      required: [infracciones]
+      properties:
+        infracciones:
+          type: array
+          minItems: 1
+          items:
+            type: object
+            additionalProperties: false
+            required: [cod_sancion]
+            properties:
+              cod_sancion:
+                $ref: "../../utils/fields.yaml#/components/schemas/Cod6Fill"
+
+    EnviarInfraccionesRequest:
+      type: object
+      additionalProperties: false
+      required: [infracciones]
+      properties:
+        infracciones:
+          type: array
+          minItems: 1
+          items:
+            type: object
+            additionalProperties: false
+            required: [cod_sancion]
+            properties:
+              cod_sancion:
+                $ref: "../../utils/fields.yaml#/components/schemas/Cod6Fill"
+
+    RechazarInfraccionesRequest:
+      type: object
+      additionalProperties: false
+      required: [cod_sancion, motivo]
+      properties:
+        cod_sancion:
+          $ref: "../../utils/fields.yaml#/components/schemas/Cod6Fill"
+        motivo:
+          type: string
+
+  x-routes:
+    Obtener:
+      post:
+        tags:
+          - Infracciones
+        summary: Obtener infracciones (consulta)
+        description: Devuelve las infracciones filtradas por los parámetros indicados.
+        operationId: obtenerInfracciones
+        security:
+          - bearerAuth: []
+        parameters: []
+        requestBody:
+          required: false
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ObtenerInfraccionesRequest"
+        responses:
+          "200":
+            description: OK
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/ObtenerInfraccionesResponse"
+          "401":
+            $ref: "../../utils/responses.yaml#/components/x-responses/401"
+          "498":
+            $ref: "../../utils/responses.yaml#/components/x-responses/498"
+          "500":
+            $ref: "../../utils/responses.yaml#/components/x-responses/500"
+
+    ObtenerPendientes:
+      post:
+        tags:
+          - Infracciones
+        summary: Obtener infracciones pendientes
+        description: Devuelve todas las infracciones en estado pendiente.
+        operationId: obtenerInfraccionesPendientes
+        security:
+          - bearerAuth: []
+        parameters: []
+        requestBody:
+          required: false
+          content:
+            application/json:
+              schema:
+                type: object
+                description: No se requieren parámetros para esta consulta
+        responses:
+          "200":
+            description: OK
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/ObtenerInfraccionesResponse"
+          "401":
+            $ref: "../../utils/responses.yaml#/components/x-responses/401"
+          "498":
+            $ref: "../../utils/responses.yaml#/components/x-responses/498"
+          "500":
+            $ref: "../../utils/responses.yaml#/components/x-responses/500"
+
+    Group:
+      post:
+        tags:
+          - Infracciones
+        summary: Agrupar infracciones por campos
+        description: Devuelve agregaciones de infracciones según los campos indicados y el rango de fecha/hora opcional.
+        operationId: groupInfracciones
+        security:
+          - bearerAuth: []
+        parameters: []
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GroupInfraccionesRequest"
+        responses:
+          "200":
+            description: OK
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/GroupInfraccionesResponse"
+          "401":
+            $ref: "../../utils/responses.yaml#/components/x-responses/401"
+          "498":
+            $ref: "../../utils/responses.yaml#/components/x-responses/498"
+          "500":
+            $ref: "../../utils/responses.yaml#/components/x-responses/500"
+
+    Group24:
+      post:
+        tags:
+          - Infracciones
+        summary: Agrupar infracciones últimas 24h
+        description: Igual que `/infracciones/group` pero sin filtros de fecha/hora; agrupa sobre las últimas 24 horas.
+        operationId: group24Infracciones
+        security:
+          - bearerAuth: []
+        parameters: []
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Group24InfraccionesRequest"
+        responses:
+          "200":
+            description: OK
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/GroupInfraccionesResponse"
+          "401":
+            $ref: "../../utils/responses.yaml#/components/x-responses/401"
+          "498":
+            $ref: "../../utils/responses.yaml#/components/x-responses/498"
+          "500":
+            $ref: "../../utils/responses.yaml#/components/x-responses/500"
+
+    Validar:
+      post:
+        tags: ["Infracciones"]
+        summary: Validar infracciones
+        description: Valida un conjunto de infracciones indicadas por su `cod_sancion`.
+        operationId: validarInfracciones
+        security:
+          - bearerAuth: []
+        parameters: []
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidarInfraccionesRequest"
+        responses:
+          "200":
+            description: OK
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ActionResult"
+          "401":
+            $ref: "../../utils/responses.yaml#/components/x-responses/401"
+          "498":
+            $ref: "../../utils/responses.yaml#/components/x-responses/498"
+          "500":
+            $ref: "../../utils/responses.yaml#/components/x-responses/500"
+
+    Enviar:
+      post:
+        tags: ["Infracciones"]
+        summary: Enviar infracciones
+        description: Envía (formatea y remite) las infracciones a DGT.
+        operationId: enviarInfracciones
+        security:
+          - bearerAuth: []
+        parameters: []
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EnviarInfraccionesRequest"
+        responses:
+          "200":
+            description: OK
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ActionResult"
+          "401":
+            $ref: "../../utils/responses.yaml#/components/x-responses/401"
+          "498":
+            $ref: "../../utils/responses.yaml#/components/x-responses/498"
+          "500":
+            $ref: "../../utils/responses.yaml#/components/x-responses/500"
+
+    Rechazar:
+      post:
+        tags: ["Infracciones"]
+        summary: Rechazar infracción
+        description: Rechaza una infracción indicando motivo.
+        operationId: rechazarInfraccion
+        security:
+          - bearerAuth: []
+        parameters: []
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RechazarInfraccionesRequest"
+        responses:
+          "200":
+            description: OK
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ActionResult"
+          "401":
+            $ref: "../../utils/responses.yaml#/components/x-responses/401"
+          "498":
+            $ref: "../../utils/responses.yaml#/components/x-responses/498"
+          "500":
+            $ref: "../../utils/responses.yaml#/components/x-responses/500"

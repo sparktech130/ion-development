@@ -1,0 +1,90 @@
+openapi: 3.0.0
+info:
+  title: Operaciones de tipos
+  version: 1.0.0
+components:
+  x-routes:
+    ObtenerTiposAnalisis:
+      post:
+        tags:
+          - Analisis
+        summary: Obtener
+        operationId: obtenerTiposAnalisis
+        requestBody:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ObtenerTiposRequest"
+        responses:
+          "200":
+            description: Respuesta correcta
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/ObtenerTiposResponse"
+          "401":
+            description: Usuario inválido o no autorizado
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "498":
+            description: Token expirado o inválido
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "500":
+            description: Unexpected error
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+
+  schemas:
+    ObtenerTiposRequest:
+      type: object
+      properties:
+        cod_modulo:
+          $ref: "../../utils/fields.yaml#/components/schemas/CodModulo"
+        cod_categoria:
+          type: string
+          example: "00001"
+        nombre_categoria:
+          type: string
+          example: "camara"
+
+    ObtenerTiposResponse:
+      type: array
+      items:
+        type: object
+        description: Respuesta de `/ai_analysis`.
+        properties:
+          cod_rel:
+            type: string
+            example: "00001"
+          cod_ai:
+            type: string
+            example: "0001"
+          type:
+            type: string
+            example: "line_crossing"
+          solution_code:
+            type: string
+            example: securt
+          cod_modulo:
+            $ref: "../../utils/fields.yaml#/components/schemas/CodModulo"
+          nombre_modulo:
+            type: string
+            example: traffic
+          name:
+            type: string
+            example: "1. Contradirección (línea)"
+          description:
+            example: "Detecta cuando un vehículo circula contradirección."
+          cod_tipo_area:
+            example: "0009"
+          cod_categoria:
+            example: "0002"
+          nombre_categoria:
+            example: "Cámara"

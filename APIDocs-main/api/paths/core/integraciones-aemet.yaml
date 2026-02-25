@@ -1,0 +1,244 @@
+openapi: 3.0.0
+info:
+  title: Integración con AEMET
+  version: 1.0.0
+  description: |
+    Endpoints para gestión de la integración con AEMET (Agencia Estatal de Meteorología).
+    Permite vincular/desvincular municipios y consultar datos meteorológicos.
+
+components:
+  schemas:
+    # ===== Obtener Municipios =====
+    ObtenerMunicipiosAemetRequest:
+      type: object
+      description: Filtros para buscar municipios AEMET
+      properties:
+        id:
+          type: number
+          description: ID del municipio (código único)
+          example: 8079
+        nombre:
+          type: string
+          description: Nombre del municipio (búsqueda parcial)
+          example: "Madrid"
+
+    MunicipioAemetInfo:
+      type: object
+      description: Información de un municipio de AEMET
+      properties:
+        id:
+          type: number
+          description: ID único del municipio
+          example: 8079
+        nombre:
+          type: string
+          description: Nombre del municipio
+          example: "Madrid"
+        cod_auto:
+          type: string
+          description: Código de comunidad autónoma
+          example: "13"
+        cod_pro:
+          type: string
+          description: Código de provincia
+          example: "28"
+        cod_mun:
+          type: string
+          description: Código de municipio dentro de la provincia
+          example: "079"
+
+    ObtenerMunicipiosAemetResponse:
+      type: array
+      items:
+        $ref: "#/components/schemas/MunicipioAemetInfo"
+
+    # ===== Vincular =====
+    VincularAemetRequest:
+      type: object
+      required:
+        - idMunicipio
+      properties:
+        idMunicipio:
+          type: number
+          description: ID del municipio AEMET a vincular
+          example: 8079
+
+    VincularAemetResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Mensaje de resultado
+          example: "Integración vinculada correctamente"
+        error:
+          type: boolean
+          description: Indica si hubo error
+          example: false
+        data:
+          type: object
+          description: Datos de la integración vinculada
+          properties:
+            cod_integracion:
+              type: string
+              example: "aemet"
+            idFormat:
+              type: string
+              description: ID formateado del municipio (cod_pro + cod_mun)
+              example: "28079"
+
+    # ===== Desvincular =====
+    DesvincularAemetResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Mensaje de resultado
+          example: "Integración desvinculada correctamente"
+        error:
+          type: boolean
+          description: Indica si hubo error
+          example: false
+
+  x-routes:
+    # ===== Obtener Municipios =====
+    ObtenerMunicipios:
+      post:
+        tags:
+          - Integraciones AEMET
+        summary: Obtener municipios AEMET
+        description: |
+          Consulta municipios disponibles en AEMET. Se puede filtrar por ID o nombre.
+          Si no se envían parámetros, devuelve todos los municipios.
+        operationId: obtenerMunicipiosAemet
+        security:
+          - bearerAuth: []
+        requestBody:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ObtenerMunicipiosAemetRequest"
+              examples:
+                por_id:
+                  summary: Buscar por ID
+                  value:
+                    id: 8079
+                por_nombre:
+                  summary: Buscar por nombre
+                  value:
+                    nombre: "Madrid"
+                todos:
+                  summary: Obtener todos
+                  value: {}
+
+        responses:
+          "200":
+            description: Lista de municipios encontrados
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/ObtenerMunicipiosAemetResponse"
+                example:
+                  - id: "id28079"
+                    nombre: "Madrid"
+                    cod_auto: "13"
+                    cod_pro: "28"
+                    cod_mun: "079"
+          "401":
+            $ref: "../../utils/responses.yaml#/components/x-responses/401"
+          "498":
+            $ref: "../../utils/responses.yaml#/components/x-responses/498"
+          "500":
+            $ref: "../../utils/responses.yaml#/components/x-responses/500"
+
+    # ===== Vincular =====
+    Vincular:
+      post:
+        tags:
+          - Integraciones AEMET
+        summary: Vincular municipio AEMET
+        description: |
+          Vincula un municipio de AEMET a la instalación actual.
+          Solo se puede tener un municipio vinculado a la vez.
+          Esta acción permite recibir datos meteorológicos del municipio seleccionado.
+        operationId: vincularAemet
+        security:
+          - bearerAuth: []
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VincularAemetRequest"
+              example:
+                idMunicipio: 8079
+
+        responses:
+          "200":
+            description: Municipio vinculado correctamente
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/VincularAemetResponse"
+                example:
+                  message: "Integración vinculada correctamente"
+                  error: false
+                  data:
+                    cod_integracion: "aemet"
+                    idFormat: "28079"
+          "400":
+            description: Error de validación
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                    error:
+                      type: boolean
+                example:
+                  message: "Municipio no recibido"
+                  error: true
+          "401":
+            $ref: "../../utils/responses.yaml#/components/x-responses/401"
+          "498":
+            $ref: "../../utils/responses.yaml#/components/x-responses/498"
+          "500":
+            $ref: "../../utils/responses.yaml#/components/x-responses/500"
+
+    # ===== Desvincular =====
+    Desvincular:
+      post:
+        tags:
+          - Integraciones AEMET
+        summary: Desvincular integración AEMET
+        description: |
+          Desvincula el municipio AEMET actualmente vinculado a la instalación.
+          Después de desvincular, no se recibirán más datos meteorológicos.
+        operationId: desvincularAemet
+        security:
+          - bearerAuth: []
+        requestBody:
+          content:
+            application/json:
+              schema:
+                type: object
+                description: No requiere parámetros
+              example: {}
+
+        responses:
+          "200":
+            description: Integración desvinculada correctamente
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/DesvincularAemetResponse"
+                example:
+                  message: "Integración desvinculada correctamente"
+                  error: false
+          "401":
+            $ref: "../../utils/responses.yaml#/components/x-responses/401"
+          "498":
+            $ref: "../../utils/responses.yaml#/components/x-responses/498"
+          "500":
+            $ref: "../../utils/responses.yaml#/components/x-responses/500"

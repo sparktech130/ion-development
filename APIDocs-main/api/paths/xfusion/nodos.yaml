@@ -1,0 +1,1313 @@
+openapi: 3.0.0
+info:
+  title: Operaciones de XFusion
+  version: 1.0.0
+
+components:
+  x-routes:
+    Obtener:
+      post:
+        tags:
+          - Nodos
+        summary: Obtener
+        operationId: obtenerNodos
+        responses:
+          "200":
+            description: Respuesta correcta
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/ObtenerNodosResponse"
+          "401":
+            description: Usuario inválido o no autorizado
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "498":
+            description: Token expirado o inválido
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "500":
+            description: Unexpected error
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+
+    ObtenerDetalles:
+      post:
+        tags:
+          - Nodos
+        summary: Obtener detalles
+        operationId: obtenerDetallesNodos
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ObtenerDetallesRequest"
+
+        responses:
+          "200":
+            description: Respuesta correcta
+            content:
+              application/json:
+                schema:
+                  # $ref: "#/components/schemas/ObtenerNodosResponse"
+                  $ref: "#/components/schemas/ObtenerDetallesResponse"
+          "401":
+            $ref: "../../utils/responses.yaml#/components/x-responses/401"
+          "498":
+            $ref: "../../utils/responses.yaml#/components/x-responses/498"
+          "500":
+            $ref: "../../utils/responses.yaml#/components/x-responses/500"
+
+    EjecutarAccion:
+      post:
+        tags: ["Nodos"]
+        summary: Ejecutar acción sobre el Nodo
+        description: >
+          Dispatcher de acciones hacia los nodos de XFusion. Recibe `action` en el body y, según su valor,
+          usa distintos parámetros (`nodeId`, `systemId`, `params.*`). Valida con `oneOf` cada caso.
+        operationId: nodoEjecutarAccion
+        security:
+          - bearerAuth: []
+        parameters: []
+        requestBody:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AccionRequest"
+        responses:
+          "200":
+            description: OK
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/AccionResponse"
+                examples:
+                  forced_restart_ok:
+                    value:
+                      ok: true
+                      status: 202
+                      taskId: "888a93ad-8a49-4277-9316-db111cdc4d6e"
+                      task_status:
+                        finished: true
+                        success: true
+                        progress: 100
+                        subStatus: "Finish"
+                        type: "ForceRestart"
+                        rebootSetFailed: false
+                        hint: "La tarea terminó correctamente."
+                      nodeId: "d10d288d-5f08-4e2f-9534-98cba7855697"
+                      ibmc_ip: "10.0.0.55"
+                  task_status_example:
+                    value:
+                      ok: true
+                      taskId: "888a93ad-8a49-4277-9316-db111cdc4d6e"
+                      task_status:
+                        finished: false
+                        success: false
+                        progress: 40
+                        subStatus: null
+                        type: "ForceRestart"
+                        rebootSetFailed: false
+                        hint: "La tarea no está completada o tiene avisos. Revisa SubTasks/StepInfo."
+          "400":
+            description: Error de validación o acción no permitida
+            content:
+              application/json:
+                schema:
+                  type: object
+                  additionalProperties: true
+                  properties:
+                    message:
+                      type: string
+                    error:
+                      type: boolean
+                      example: true
+                    allowed:
+                      type: array
+                      description: Presente cuando `action` no está permitida
+                      items:
+                        type: string
+          "401":
+            $ref: "../../utils/responses.yaml#/components/x-responses/401"
+          "498":
+            $ref: "../../utils/responses.yaml#/components/x-responses/498"
+          "500":
+            $ref: "../../utils/responses.yaml#/components/x-responses/500"
+
+  schemas:
+    ObtenerDetallesRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+
+    ObtenerNodosResponse:
+      type: object
+      properties:
+        generated_at:
+          type: string
+          format: date-time
+          description: Fecha y hora en que se generó la respuesta.
+          example: "2025-10-14T10:06:41+02:00"
+
+        summary:
+          type: object
+          description: Resumen de los estados de los nodos.
+          properties:
+            OK:
+              type: integer
+              example: 2
+            Warning:
+              type: integer
+              example: 0
+            Critical:
+              type: integer
+              example: 0
+            Unknown:
+              type: integer
+              example: 0
+          required: [OK, Warning, Critical, Unknown]
+
+        nodes:
+          type: array
+          description: Lista de nodos y sus estados.
+          items:
+            $ref: "#/components/schemas/NodeStatus"
+
+      required: [generated_at, summary, nodes]
+
+    NodeStatus:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Identificador único del nodo.
+
+        Name:
+          type: string
+          description: Nombre del nodo o sistema.
+
+        Status:
+          $ref: "#/components/schemas/Status"
+
+        Model:
+          type: string
+          description: Modelo del sistema.
+          example: "ION-SI-1234ABC"
+
+        SerialNumber:
+          type: string
+          description: Número de serie del sistema.
+
+        resume:
+          $ref: "#/components/schemas/Resume"
+
+        "@odata.id":
+          type: string
+          description: URI al recurso Redfish asociado al nodo.
+          example: "/redfish/v1/rich/Nodes/UUID"
+
+      required: [id, Name, Status, Model, SerialNumber, resume, "@odata.id"]
+
+    Status:
+      type: object
+      description: Estado de salud del nodo.
+      properties:
+        State:
+          type: string
+          description: Estado operativo del nodo.
+          example: "Enabled"
+
+        Health:
+          type: string
+          description: Estado de salud general.
+          enum: ["OK", "Warning", "Critical"]
+          example: "OK"
+
+        HealthRollup:
+          type: string
+          description: Estado agregado de salud de componentes secundarios.
+          nullable: true
+
+        Prediction:
+          $ref: "#/components/schemas/Prediction"
+
+      required: [State, Health, Prediction]
+
+    Prediction:
+      type: object
+      description: Predicción de estabilidad o riesgo del nodo.
+      properties:
+        risk_score:
+          type: number
+          format: float
+          description: Valor de riesgo estimado (0 a 1).
+          example: 0.15
+        prediction:
+          type: string
+          description: Descripción de la predicción a corto plazo.
+          example: "Stable"
+        days:
+          type: string
+          description: Días predicción.
+      required: [risk_score, prediction, days]
+
+    ObtenerDetallesResponse:
+      type: object
+      required: [generated_at, summary, node]
+      properties:
+        generated_at:
+          type: string
+          format: date-time
+          example: "2025-10-14T10:06:27+02:00"
+        summary:
+          $ref: "#/components/schemas/HealthSummary"
+        node:
+          $ref: "#/components/schemas/NodeDetail"
+
+    HealthSummary:
+      type: object
+      required: [OK, Warning, Critical, Unknown]
+      properties:
+        OK: { type: integer, example: 1 }
+        Warning: { type: integer, example: 0 }
+        Critical: { type: integer, example: 0 }
+        Unknown: { type: integer, example: 0 }
+
+    NodeDetail:
+      type: object
+      required: [id, Name, Status, Model, SerialNumber, "@odata.id", Components]
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "eb021313-fcb3-4324-90cc-2bdb8d5e10be"
+        Name:
+          type: string
+          example: "Computer System"
+        Status:
+          $ref: "#/components/schemas/StatusWithPrediction"
+        Model:
+          type: string
+          example: "ION-SI-2108HG1R"
+        SerialNumber:
+          type: string
+          example: "210619GMHCXGR6000002"
+        "@odata.id":
+          type: string
+          example: "/redfish/v1/rich/Nodes/eb021313-fcb3-4324-90cc-2bdb8d5e10be"
+        Components:
+          $ref: "#/components/schemas/Components"
+
+    StatusWithPrediction:
+      type: object
+      required: [State, Health, Prediction]
+      properties:
+        State:
+          type: string
+          example: "Enabled"
+        Health:
+          type: string
+          example: "OK"
+        HealthRollup:
+          type: string
+          nullable: true
+        Prediction:
+          $ref: "#/components/schemas/Prediction"
+
+    Components:
+      type: object
+      properties:
+        Processor:
+          $ref: "#/components/schemas/ProcessorCollection"
+        Memory:
+          $ref: "#/components/schemas/MemoryCollection"
+        Storage:
+          $ref: "#/components/schemas/Storage"
+        Power:
+          $ref: "#/components/schemas/PowerInfo"
+        Thermal:
+          $ref: "#/components/schemas/ThermalInfo"
+        Network:
+          $ref: "#/components/schemas/NetworkAdapterList"
+        Ethernet:
+          $ref: "#/components/schemas/EthernetInterfaceList"
+        PCIe:
+          $ref: "#/components/schemas/PCIeList"
+
+    ODataCommon:
+      type: object
+      properties:
+        "@odata.context": { type: string }
+        "@odata.id": { type: string }
+        "@odata.type": { type: string }
+
+    ComponentStatus:
+      type: object
+      required: [Health, State]
+      properties:
+        Health: { type: string, example: "OK" }
+        State: { type: string, example: "Enabled" }
+
+    # ---------- Processor ----------
+    ProcessorCollection:
+      allOf:
+        - $ref: "#/components/schemas/ODataCommon"
+        - type: object
+          required: [Members, "Members@odata.count"]
+          properties:
+            Members:
+              type: array
+              items:
+                $ref: "#/components/schemas/ProcessorItem"
+            "Members@odata.count":
+              type: integer
+
+    ProcessorItem:
+      type: object
+      required: [DeviceID, Name, Id, ProcessorType, Status, Manufacturer, Model]
+      properties:
+        DeviceID: { type: string }
+        Name: { type: string, example: "CPU1" }
+        Id: { type: string }
+        ProcessorType: { type: string, enum: ["CPU", "GPU"] }
+        ProcessorArchitecture:
+          type: string
+          nullable: true
+          example: "x86"
+        ProcessorId:
+          type: object
+          properties:
+            IdentificationRegisters:
+              type: string
+              nullable: true
+        InstructionSet:
+          type: string
+          nullable: true
+          example: "x86-64"
+        Manufacturer: { type: string }
+        Model: { type: string }
+        MaxSpeedMHz:
+          type: string
+          nullable: true
+        Socket:
+          type: string
+          nullable: true
+        TotalCores:
+          type: string
+          nullable: true
+        TotalThreads:
+          type: string
+          nullable: true
+        Status:
+          $ref: "#/components/schemas/Status"
+        FirmwareVersion:
+          type: string
+          nullable: true
+        Oem:
+          type: object
+          properties:
+            xFusion:
+              type: object
+              description: Bloque OEM específico del proveedor. Estructura abierta.
+              additionalProperties: true
+
+    # ---------- Memory ----------
+    MemoryCollection:
+      allOf:
+        - $ref: "#/components/schemas/ODataCommon"
+        - type: object
+          required: [Members, "Members@odata.count"]
+          properties:
+            Members:
+              type: array
+              items:
+                $ref: "#/components/schemas/MemoryItem"
+            "Members@odata.count":
+              type: integer
+
+    MemoryItem:
+      type: object
+      required:
+        - Name
+        - Id
+        - Manufacturer
+        - OperatingSpeedMhz
+        - SerialNumber
+        - PartNumber
+        - MemoryDeviceType
+        - DataWidthBits
+        - RankCount
+        - MemoryLocation
+        - Status
+        - CapacityGiB
+        - DeviceID
+        - Slot
+      properties:
+        Name: { type: string }
+        Id: { type: string }
+        Manufacturer: { type: string }
+        OperatingSpeedMhz: { type: integer }
+        AllowedSpeedsMHz:
+          type: array
+          items: { type: integer }
+        SerialNumber: { type: string }
+        PartNumber: { type: string }
+        MemoryDeviceType: { type: string, example: "DDR5" }
+        DataWidthBits: { type: integer }
+        RankCount: { type: integer }
+        MemoryLocation:
+          type: object
+          required: [Socket, Controller, Channel, Slot]
+          properties:
+            Socket: { type: integer }
+            Controller: { type: integer }
+            Channel: { type: integer }
+            Slot: { type: integer }
+        Status:
+          $ref: "#/components/schemas/Status"
+        Oem:
+          type: object
+          properties:
+            xFusion:
+              type: object
+              additionalProperties: true
+        CapacityGiB: { type: integer }
+        DeviceID: { type: string }
+        Slot: { type: integer }
+
+    # ---------- Storage ----------
+    Storage:
+      allOf:
+        - $ref: "#/components/schemas/ODataCommon"
+        - type: object
+          properties:
+            Drive:
+              allOf:
+                - $ref: "#/components/schemas/ODataCommon"
+                - type: object
+                  required: [Members, "Members@odata.count"]
+                  properties:
+                    Members:
+                      type: array
+                      items:
+                        $ref: "#/components/schemas/DriveItem"
+                    "Members@odata.count":
+                      type: integer
+            RaidCard:
+              allOf:
+                - $ref: "#/components/schemas/ODataCommon"
+                - type: object
+                  required: [Members, "Members@odata.count"]
+                  properties:
+                    Members:
+                      type: array
+                      items:
+                        $ref: "#/components/schemas/RaidCardItem"
+                    "Members@odata.count":
+                      type: integer
+
+    DriveItem:
+      type: object
+      required:
+        [
+          Id,
+          Name,
+          DeviceID,
+          "@odata.id",
+          DirectDrive,
+          Health,
+          IndicatorLED,
+          MediaType,
+          SerialNumber,
+          CapabilityIndicatorLED,
+        ]
+      properties:
+        Id: { type: string }
+        Name: { type: string }
+        DeviceID: { type: string }
+        "@odata.id": { type: string }
+        DirectDrive: { type: boolean }
+        Health: { type: string }
+        IndicatorLED:
+          type: string
+          nullable: true
+        MediaType: { type: string, enum: ["SSD", "HDD"] }
+        SerialNumber:
+          type: string
+          nullable: true
+        Oem:
+          type: object
+          properties:
+            xFusion:
+              type: object
+              additionalProperties: true
+        CapabilityIndicatorLED: { type: boolean }
+
+    RaidCardItem:
+      type: object
+      required: [Id, Name, DeviceID, "@odata.id"]
+      properties:
+        Id: { type: string }
+        Name: { type: string }
+        DeviceID: { type: string }
+        "@odata.id": { type: string }
+
+    # ---------- Power ----------
+    PowerInfo:
+      allOf:
+        - $ref: "#/components/schemas/ODataCommon"
+        - type: object
+          required: [Id, Name, PowerControl, PowerSupplies, Redundancy]
+          properties:
+            Id: { type: string, example: "Power" }
+            Name: { type: string, example: "Power" }
+            PowerControl:
+              type: array
+              items:
+                $ref: "#/components/schemas/PowerControlItem"
+            PowerSupplies:
+              type: array
+              items:
+                $ref: "#/components/schemas/PowerSupplyItem"
+            Redundancy:
+              type: array
+              items:
+                $ref: "#/components/schemas/RedundancyItem"
+
+    PowerControlItem:
+      type: object
+      required:
+        [
+          "@odata.id",
+          MemberId,
+          Name,
+          PowerConsumedWatts,
+          PowerMetrics,
+          PowerLimit,
+        ]
+      properties:
+        "@odata.id": { type: string }
+        MemberId: { type: string }
+        Name: { type: string }
+        PowerConsumedWatts: { type: number }
+        PowerMetrics:
+          type: object
+          required: [MinConsumedWatts, MaxConsumedWatts, AverageConsumedWatts]
+          properties:
+            MinConsumedWatts: { type: number }
+            MaxConsumedWatts: { type: number }
+            AverageConsumedWatts: { type: number }
+        PowerLimit:
+          type: object
+          required: [LimitInWatts, LimitException]
+          properties:
+            LimitInWatts:
+              type: string
+              nullable: true
+            LimitException: { type: string }
+        Oem:
+          type: object
+          properties:
+            xFusion:
+              type: object
+              additionalProperties: true
+
+    PowerSupplyItem:
+      type: object
+      required:
+        [
+          "@odata.id",
+          LineInputVoltage,
+          MemberId,
+          Name,
+          Status,
+          PowerSupplyType,
+          PowerCapacityWatts,
+          Model,
+          FirmwareVersion,
+          SerialNumber,
+          PartNumber,
+          Manufacturer,
+        ]
+      properties:
+        "@odata.id": { type: string }
+        LineInputVoltage: { type: number }
+        MemberId: { type: string }
+        Name: { type: string }
+        Status:
+          $ref: "#/components/schemas/Status"
+        PowerSupplyType: { type: string, example: "AC" }
+        PowerCapacityWatts: { type: number }
+        Model: { type: string }
+        FirmwareVersion: { type: string }
+        SerialNumber: { type: string }
+        PartNumber: { type: string }
+        Manufacturer: { type: string }
+        Oem:
+          type: object
+          properties:
+            xFusion:
+              type: object
+              additionalProperties: true
+
+    RedundancyItem:
+      type: object
+      required:
+        [
+          "@odata.id",
+          MemberId,
+          Name,
+          Mode,
+          MaxNumSupported,
+          MinNumNeeded,
+          RedundancySet,
+          Status,
+        ]
+      properties:
+        "@odata.id": { type: string }
+        MemberId: { type: string }
+        Name: { type: string }
+        Mode: { type: string, enum: ["Sharing", "Failover"] }
+        MaxNumSupported: { type: integer }
+        MinNumNeeded: { type: integer }
+        RedundancySet:
+          type: array
+          items:
+            type: object
+            properties:
+              "@odata.id": { type: string }
+        Status:
+          type: object
+          properties:
+            Health:
+              type: string
+              nullable: true
+            State: { type: string }
+
+    # ---------- Thermal ----------
+    ThermalInfo:
+      allOf:
+        - $ref: "#/components/schemas/ODataCommon"
+        - type: object
+          required: [Id, Name, Fans, Temperatures]
+          properties:
+            Id: { type: string, example: "Thermal" }
+            Name: { type: string, example: "Thermal" }
+            Fans:
+              type: array
+              items:
+                $ref: "#/components/schemas/FanItem"
+            Oem:
+              type: object
+              properties:
+                xFusion:
+                  type: object
+                  additionalProperties: true
+            Temperatures:
+              type: array
+              items:
+                $ref: "#/components/schemas/TemperatureItem"
+
+    FanItem:
+      type: object
+      required:
+        [
+          MemberId,
+          Model,
+          Name,
+          PartNumber,
+          Reading,
+          ReadingUnits,
+          SpeedRatio,
+          Status,
+        ]
+      properties:
+        MemberId: { type: string }
+        Model: { type: string }
+        Name: { type: string }
+        PartNumber: { type: string }
+        Reading: { type: number }
+        ReadingUnits: { type: string, example: "RPM" }
+        SpeedRatio: { type: number }
+        Status:
+          $ref: "#/components/schemas/Status"
+
+    TemperatureItem:
+      type: object
+      required: [MemberId, Name, Status]
+      properties:
+        LowerThresholdCritical:
+          type: number
+          nullable: true
+        LowerThresholdFatal:
+          type: number
+          nullable: true
+        LowerThresholdNonCritical:
+          type: number
+          nullable: true
+        MaxReadingRangeTemp:
+          type: number
+          nullable: true
+        MemberId: { type: string }
+        MinReadingRangeTemp:
+          type: number
+          nullable: true
+        Name: { type: string }
+        ReadingCelsius:
+          type: number
+          nullable: true
+        Status:
+          $ref: "#/components/schemas/Status"
+        UpperThresholdCritical:
+          type: number
+          nullable: true
+        UpperThresholdNonCritical:
+          type: number
+          nullable: true
+
+    # ---------- Network ----------
+    NetworkAdapterList:
+      allOf:
+        - $ref: "#/components/schemas/ODataCommon"
+        - type: object
+          required: [Members, "Members@odata.count"]
+          properties:
+            Members:
+              type: array
+              items:
+                $ref: "#/components/schemas/NetworkAdapterItem"
+            "Members@odata.count":
+              type: integer
+
+    NetworkAdapterItem:
+      type: object
+      required:
+        [
+          "@odata.id",
+          DeviceID,
+          Id,
+          Name,
+          Manufacturer,
+          Model,
+          Status,
+          NetworkTechnology,
+          SlotNumber,
+        ]
+      properties:
+        "@odata.id": { type: string }
+        DeviceID: { type: string }
+        Id: { type: string }
+        Name: { type: string }
+        Manufacturer: { type: string }
+        Model: { type: string }
+        DriverName:
+          type: string
+          nullable: true
+        SerialNumber:
+          type: string
+          nullable: true
+        PartNumber:
+          type: string
+          nullable: true
+        DriverVersion:
+          type: string
+          nullable: true
+        DeviceLocator:
+          type: string
+          nullable: true
+        CardName:
+          type: string
+          nullable: true
+        CardManufacturer:
+          type: string
+          nullable: true
+        CardModel:
+          type: string
+          nullable: true
+        Position:
+          type: string
+          nullable: true
+        NetworkPort:
+          type: object
+          properties:
+            PortNum: { type: integer }
+            "@odata.id": { type: string }
+        Status:
+          $ref: "#/components/schemas/Status"
+        NetworkTechnology:
+          type: array
+          items: { type: string }
+        RootBDF:
+          type: string
+          nullable: true
+        Configuration:
+          type: string
+          nullable: true
+        PCBVersion:
+          type: string
+          nullable: true
+        MctpEnabled:
+          type: boolean
+          nullable: true
+        AssociatedResource:
+          type: string
+          nullable: true
+        SlotNumber: { type: integer }
+        PcieSlotId:
+          type: string
+          nullable: true
+        BoardIdHex:
+          type: string
+          nullable: true
+
+    EthernetInterfaceList:
+      allOf:
+        - $ref: "#/components/schemas/ODataCommon"
+        - type: object
+          required: [Members, "Members@odata.count"]
+          properties:
+            Members:
+              type: array
+              items:
+                $ref: "#/components/schemas/EthernetInterfaceItem"
+            "Members@odata.count":
+              type: integer
+
+    EthernetInterfaceItem:
+      type: object
+      required:
+        [
+          Id,
+          Name,
+          PermanentMACAddress,
+          LinkStatus,
+          IPv4Addresses,
+          MACAddress,
+          SpeedMbps,
+          AutoNeg,
+          FullDuplex,
+          "@odata.id",
+          DeviceID,
+          BDF,
+          Protocol,
+          InterfaceType,
+          VLAN,
+          NetworkPort,
+        ]
+      properties:
+        Id: { type: string }
+        Name: { type: string }
+        PermanentMACAddress: { type: string }
+        LinkStatus: { type: string, enum: ["LinkUp", "LinkDown"] }
+        IPv4Addresses:
+          type: array
+          items: {}
+        MACAddress: { type: string }
+        SpeedMbps: { type: integer }
+        AutoNeg: { type: boolean }
+        FullDuplex: { type: boolean }
+        "@odata.id": { type: string }
+        DeviceID: { type: string }
+        BDF: { type: string }
+        Protocol: { type: string, example: "Ethernet" }
+        InterfaceType: { type: string, example: "Physical" }
+        VLAN:
+          type: array
+          items: {}
+        NetworkPort:
+          type: object
+          properties:
+            "@odata.id": { type: string }
+
+    # ---------- PCIe ----------
+    PCIeList:
+      allOf:
+        - $ref: "#/components/schemas/ODataCommon"
+        - type: object
+          required: [Members, "Members@odata.count"]
+          properties:
+            Members:
+              type: array
+              items:
+                $ref: "#/components/schemas/PCIeItem"
+            "Members@odata.count":
+              type: integer
+
+    PCIeItem:
+      type: object
+      required:
+        [
+          "@odata.id",
+          DeviceID,
+          Id,
+          Name,
+          Description,
+          Manufacturer,
+          Model,
+          SerialNumber,
+          FirmwareVersion,
+          Status,
+          PCIeFunction,
+          PartNumber,
+        ]
+      properties:
+        "@odata.id": { type: string }
+        DeviceID: { type: string }
+        Id: { type: string }
+        Name: { type: string }
+        Description: { type: string }
+        Manufacturer: { type: string }
+        Model: { type: string }
+        ModelType:
+          type: string
+          nullable: true
+        SerialNumber:
+          type: string
+          nullable: true
+        FirmwareVersion:
+          type: string
+          nullable: true
+        Status:
+          $ref: "#/components/schemas/Status"
+        Oem:
+          type: object
+          properties:
+            xFusion:
+              type: object
+              additionalProperties: true
+        PCIeFunction:
+          type: object
+          properties:
+            "@odata.id": { type: string }
+        PartNumber:
+          type: string
+          nullable: true
+        CardManufacturer:
+          type: string
+          nullable: true
+        CardModel:
+          type: string
+          nullable: true
+
+    # ---------- Resume ----------
+    Resume:
+      type: object
+      required:
+        [
+          Modelo,
+          NumeroSerie,
+          RAM_GiB,
+          Almacenamiento_Bytes,
+          ControladorasRAID,
+          PowerState,
+        ]
+      properties:
+        IP:
+          type: string
+          nullable: true
+        Hostname:
+          type: string
+          nullable: true
+        Modelo: { type: string, example: "ION-SI-2108HG1R" }
+        NumeroSerie: { type: string, example: "210619GMHCXGR6000002" }
+        RAM_GiB: { type: integer, example: 32 }
+        Almacenamiento_Bytes: { type: integer, example: 0 }
+        Almacenamiento_GiB:
+          type: number
+          nullable: true
+        ControladorasRAID: { type: integer, example: 0 }
+        SO_Nombre:
+          type: string
+          nullable: true
+        SO_Kernel:
+          type: string
+          nullable: true
+        iBMA_VersionServicio:
+          type: string
+          nullable: true
+        iBMA_VersionDriver:
+          type: string
+          nullable: true
+        iBMA_Estado:
+          type: string
+          nullable: true
+        PowerState: { type: string, example: "On" }
+
+    AccionBase:
+      type: object
+      additionalProperties: false
+      properties:
+        action:
+          type: string
+          description: Acción a ejecutar (dispatcher)
+          enum:
+            - forced_power_off
+            - forced_restart
+            - uid_on
+            - jump_to_ibmc
+            - kvm
+            - refresh
+            - remove
+            - change_mgmt_password
+            - format_disk
+            - export_logs
+            - ibmc_ip_config
+            - task_status
+            - task_history
+        nodeId:
+          type: string
+          description: Identificador del nodo (obligatorio en acciones POWER y varias de gestión)
+        systemId:
+          type: string
+          description: Identificador del sistema (usado en varias acciones no-POWER)
+        params:
+          type: object
+          description: Parámetros específicos por acción
+          additionalProperties: true
+
+    # --- Discriminador por acción (valida qué campos son obligatorios en cada caso)
+    AccionRequest:
+      oneOf:
+        # POWER: ForceOff
+        - allOf:
+            - $ref: "#/components/schemas/AccionBase"
+            - type: object
+              required: [action, nodeId]
+              properties:
+                action:
+                  enum: [forced_power_off]
+                  description: Apagado del nodo
+
+        # POWER: ForceRestart
+        - allOf:
+            - $ref: "#/components/schemas/AccionBase"
+            - type: object
+              required: [action, nodeId]
+              properties:
+                action:
+                  enum: [forced_restart]
+                  description: Reinicio del nodo
+
+        # UID (IndicatorLED) — params.uid_state: Lit | Off | Blinking
+        - allOf:
+            - $ref: "#/components/schemas/AccionBase"
+            - type: object
+              required: [action, nodeId, params]
+              properties:
+                action:
+                  enum: [uid_on]
+                  description: Manejo UID
+                params:
+                  type: object
+                  additionalProperties: false
+                  required: [uid_state]
+                  properties:
+                    uid_state:
+                      type: string
+                      enum: [Lit, Off, Blinking]
+
+        # Refresh del nodo
+        - allOf:
+            - $ref: "#/components/schemas/AccionBase"
+            - type: object
+              required: [action, nodeId]
+              properties:
+                action:
+                  enum: [refresh]
+
+        # Saltar a iBMC
+        - allOf:
+            - $ref: "#/components/schemas/AccionBase"
+            - type: object
+              required: [action, nodeId]
+              properties:
+                action:
+                  enum: [jump_to_ibmc]
+                  description: Ir al IBMC
+
+        # KVM (de iBMC)
+        - allOf:
+            - $ref: "#/components/schemas/AccionBase"
+            - type: object
+              required: [action, nodeId]
+              properties:
+                action:
+                  enum: [kvm]
+                  description: KVM (de iBMC)
+
+        # Export logs (por System)
+        - allOf:
+            - $ref: "#/components/schemas/AccionBase"
+            - type: object
+              required: [action, systemId]
+              properties:
+                action:
+                  enum: [export_logs]
+                  description: Exportar logs
+
+        # Remove device(s) — requiere params.deviceIds o nodeId
+        - allOf:
+            - $ref: "#/components/schemas/AccionBase"
+            - type: object
+              required: [action]
+              properties:
+                action:
+                  enum: [remove]
+                  description: Remove
+                  oneOf:
+                    - required: [nodeId]
+                    - required: [params]
+                params:
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    deviceIds:
+                      type: array
+                      minItems: 1
+                      items:
+                        type: string
+                  # deviceIds opcional si se aporta nodeId
+
+        # Change management password (Accounts)
+        - allOf:
+            - $ref: "#/components/schemas/AccionBase"
+            - type: object
+              required: [action, systemId, params]
+              properties:
+                action:
+                  enum: [change_mgmt_password]
+                  description: Cambiar contraseña management
+                params:
+                  type: object
+                  additionalProperties: false
+                  required: [username, new_password]
+                  properties:
+                    username:
+                      type: string
+                    new_password:
+                      type: string
+
+        # Format disk (requiere driveId en params)
+        - allOf:
+            - $ref: "#/components/schemas/AccionBase"
+            - type: object
+              required: [action, systemId, params]
+              properties:
+                action:
+                  enum: [format_disk]
+                  description: Formatear disco
+                params:
+                  type: object
+                  additionalProperties: false
+                  required: [driveId]
+                  properties:
+                    driveId:
+                      type: string
+
+        # iBMC IP config (iface + IPv4Addresses)
+        - allOf:
+            - $ref: "#/components/schemas/AccionBase"
+            - type: object
+              required: [action, nodeId, params]
+              properties:
+                action:
+                  enum: [ibmc_ip_config]
+                  description: Configuración IP iBMC
+                params:
+                  type: object
+                  additionalProperties: false
+                  required: [ibmc_if_id, ipv4]
+                  properties:
+                    ibmc_if_id:
+                      type: string
+                    ipv4:
+                      type: object
+                      additionalProperties: false
+                      required: [Address, SubnetMask, GateWay, AddressOrigin]
+                      properties:
+                        Address:
+                          type: string
+                          example: "10.0.0.10"
+                        SubnetMask:
+                          type: string
+                          example: "255.255.255.0"
+                        GateWay:
+                          type: string
+                          example: "10.0.0.1"
+                        AddressOrigin:
+                          type: string
+                          enum: [Static, DHCP]
+
+        # Task status
+        - allOf:
+            - $ref: "#/components/schemas/AccionBase"
+            - type: object
+              required: [action, params]
+              properties:
+                action:
+                  enum: [task_status]
+                  description: Obtener estado tarea
+                params:
+                  type: object
+                  additionalProperties: false
+                  required: [taskId]
+                  properties:
+                    taskId:
+                      type: string
+                      format: uuid
+
+        # Task history (por nodeId)
+        - allOf:
+            - $ref: "#/components/schemas/AccionBase"
+            - type: object
+              required: [action]
+              properties:
+                action:
+                  enum: [task_history]
+                  description: Obtener historial tareas
+              oneOf:
+                - required: [nodeId]
+                - type: object # permite vacío → historial global si backend lo soporta
+
+    # Respuesta genérica (el backend devuelve distintos formatos según acción)
+    AccionResponse:
+      type: object
+      description: Respuesta variable según acción ejecutada (proxy del backend). Puede incluir ok/status/task/summary/etc.
+      additionalProperties: true
+      properties:
+        ok:
+          type: boolean
+        taskId:
+          type: string
+          format: uuid
+        task_status:
+          type: object
+          properties:
+            finished:
+              type: boolean
+            success:
+              type: boolean
+            progress:
+              type: integer
+            subStatus:
+              type: string
+            type:
+              type: string
+            rebootSetFailed:
+              type: boolean
+            hint:
+              type: string
+        message:
+          type: string
+        storage:
+          type: object

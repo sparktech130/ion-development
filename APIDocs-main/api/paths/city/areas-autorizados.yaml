@@ -1,0 +1,230 @@
+openapi: 3.0.0
+info: { title: Áreas autorizados, version: 1.0.0 }
+components:
+  schemas:
+    ImportarAutorizadosResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        insert:
+          type: boolean
+        matriculasInsert:
+          type: array
+          items:
+            type: string
+        matriculasRepetidas:
+          type: array
+          items:
+            type: string
+      example:
+        insert: true
+        matriculasInsert:
+          - "1234ABC"
+        matriculasRepetidas:
+          - "1234ABC"
+
+  x-routes:
+    ObtenerAutorizados:
+      post:
+        tags: [Áreas autorizados]
+        summary: Obtener
+        operationId: areasAutorizados_obtener
+        security: [{ bearerAuth: [] }]
+        requestBody:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  cod_area:
+                    $ref: "../../utils/fields.yaml#/components/schemas/Cod4Fill"
+                  matricula:
+                    $ref: "../../utils/fields.yaml#/components/schemas/Matricula"
+                  observaciones:
+                    type: string
+                  fecha_alta:
+                    $ref: "../../utils/fields.yaml#/components/schemas/Fecha"
+                  fecha_baja:
+                    $ref: "../../utils/fields.yaml#/components/schemas/Fecha"
+        responses:
+          "200":
+            description: OK
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    rows:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          cod_autorizado:
+                            $ref: "../../utils/fields.yaml#/components/schemas/Cod6Fill"
+                          cod_area:
+                            $ref: "../../utils/fields.yaml#/components/schemas/Cod4Fill"
+                          matricula:
+                            $ref: "../../utils/fields.yaml#/components/schemas/Matricula"
+                          observaciones:
+                            type: string
+                          fecha_alta:
+                            $ref: "../../utils/fields.yaml#/components/schemas/Fecha"
+                          fecha_baja:
+                            $ref: "../../utils/fields.yaml#/components/schemas/Fecha"
+                    total:
+                      type: integer
+          "401":
+            $ref: "../../utils/responses.yaml#/components/x-responses/401"
+          "498":
+            $ref: "../../utils/responses.yaml#/components/x-responses/498"
+          "500":
+            $ref: "../../utils/responses.yaml#/components/x-responses/500"
+
+    InsertarAutorizado:
+      post:
+        tags: [Áreas autorizados]
+        summary: Insertar
+        operationId: areasAutorizados_insertar
+        security: [{ bearerAuth: [] }]
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  cod_area:
+                    $ref: "../../utils/fields.yaml#/components/schemas/Cod4Fill"
+                  matricula:
+                    $ref: "../../utils/fields.yaml#/components/schemas/Matricula"
+                  observaciones:
+                    type: string
+                  fecha_alta:
+                    $ref: "../../utils/fields.yaml#/components/schemas/Fecha"
+                  fecha_baja:
+                    $ref: "../../utils/fields.yaml#/components/schemas/Fecha"
+
+        responses:
+          "200":
+            description: OK
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ActionResult"
+          "401":
+            $ref: "../../utils/responses.yaml#/components/x-responses/401"
+          "498":
+            $ref: "../../utils/responses.yaml#/components/x-responses/498"
+          "500":
+            $ref: "../../utils/responses.yaml#/components/x-responses/500"
+
+    ImportarAutorizados:
+      post:
+        tags: [Áreas autorizados]
+        summary: Importar autorizados de un área
+        description: >
+          Importa autorizados para un área desde un CSV. El CSV debe contener las columnas:
+          `matricula`, `observaciones`, `fecha_alta`, `fecha_baja`.
+        operationId: importarAutorizados
+        security:
+          - bearerAuth: []
+        parameters: []
+        requestBody:
+          required: true
+          content:
+            multipart/form-data:
+              schema:
+                type: object
+                additionalProperties: false
+                required:
+                  - cod_area
+                  - archivo_csv
+                properties:
+                  cod_area:
+                    $ref: "../../utils/fields.yaml#/components/schemas/Cod4Fill"
+                  archivo_csv:
+                    type: string
+                    format: binary
+                    description: >
+                      Fichero CSV con columnas `matricula`, `observaciones`, `fecha_alta`, `fecha_baja`.
+        responses:
+          "200":
+            description: OK
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/ImportarAutorizadosResponse"
+          "401":
+            $ref: "../../utils/responses.yaml#/components/x-responses/401"
+          "498":
+            $ref: "../../utils/responses.yaml#/components/x-responses/498"
+          "500":
+            $ref: "../../utils/responses.yaml#/components/x-responses/500"
+
+    ModificarAutorizado:
+      post:
+        tags: [Áreas autorizados]
+        summary: Modificar
+        operationId: areasAutorizados_modificar
+        security: [{ bearerAuth: [] }]
+        requestBody:
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - cod_autorizado
+                properties:
+                  cod_autorizado:
+                    $ref: "../../utils/fields.yaml#/components/schemas/Cod4Fill"
+                  cod_area:
+                    $ref: "../../utils/fields.yaml#/components/schemas/Cod4Fill"
+                  matricula:
+                    $ref: "../../utils/fields.yaml#/components/schemas/Matricula"
+                  observaciones:
+                    type: string
+                  fecha_alta:
+                    $ref: "../../utils/fields.yaml#/components/schemas/Fecha"
+                  fecha_baja:
+                    $ref: "../../utils/fields.yaml#/components/schemas/Fecha"
+        responses:
+          "200":
+            description: OK
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ActionResult"
+          "401":
+            $ref: "../../utils/responses.yaml#/components/x-responses/401"
+          "498":
+            $ref: "../../utils/responses.yaml#/components/x-responses/498"
+          "500":
+            $ref: "../../utils/responses.yaml#/components/x-responses/500"
+
+    EliminarAutorizado:
+      post:
+        tags: [Áreas autorizados]
+        summary: Eliminar
+        operationId: areasAutorizados_eliminar
+        security: [{ bearerAuth: [] }]
+        requestBody:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  cod_autorizado:
+                    $ref: "../../utils/fields.yaml#/components/schemas/Cod4Fill"
+        responses:
+          "200":
+            description: OK
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ActionResult"
+          "401":
+            $ref: "../../utils/responses.yaml#/components/x-responses/401"
+          "498":
+            $ref: "../../utils/responses.yaml#/components/x-responses/498"
+          "500":
+            $ref: "../../utils/responses.yaml#/components/x-responses/500"

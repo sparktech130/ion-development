@@ -1,0 +1,149 @@
+openapi: 3.0.0
+info:
+  title: Operaciones de modulos
+  version: 1.0.0
+
+components:
+  x-routes:
+    Obtener:
+      post:
+        tags:
+          - Modulos
+        summary: Obtener
+        description: Devuelve todos los modulos registrados
+        operationId: obtenerModulos
+        security:
+          - bearerAuth: []
+        parameters: []
+        responses:
+          "200":
+            description: Successful operation
+            content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/ModuleInfo"
+          "401":
+            description: Usuario inválido o no autorizado
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "498":
+            description: Token expirado o inválido
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "500":
+            description: Unexpected error
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+        requestBody:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  cod_modulo:
+                    type: string
+                    example: "000015"
+                  nombre_modulo:
+                    type: string
+                    example: "Monitores"
+                  cod_sector:
+                    type: string
+                    example: "000015"
+
+    ObtenerSecciones:
+      post:
+        tags:
+          - Modulos
+        summary: Obtener secciones
+        description: Devuelve todas las secciones
+        operationId: obtenerSecciones
+        security:
+          - bearerAuth: []
+        parameters: []
+        responses:
+          "200":
+            description: Successful operation
+            content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/ModuleSectionsInfo"
+          "401":
+            description: Usuario inválido o no autorizado
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "498":
+            description: Token expirado o inválido
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "500":
+            description: Unexpected error
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+        requestBody:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  cod_seccion:
+                    type: string
+                  nombre_seccion:
+                    type: string
+                  cod_modulo:
+                    type: string
+                  cod_sector:
+                    type: string
+                  cod_sector_unico:
+                    type: string
+
+  schemas:
+    ModuleInfo:
+      type: object
+      properties:
+        cod_modulo:
+          type: string
+          example: "0015"
+        abreviacion:
+          type: string
+          example: "TR"
+        nombre_modulo:
+          type: string
+          example: "traffic"
+        cod_sector:
+          type: string
+          example: "0001"
+
+    ModuleSectionsInfo:
+      type: object
+      properties:
+        cod_seccion:
+          type: string
+          example: "0001"
+        cod_front:
+          type: string
+          example: "traffic-live"
+        cod_modulo:
+          type: string
+          example: "0015"
+        abreviacion:
+          type: string
+          example: "LIV"
+        nombre_seccion:
+          type: string
+          example: "LIVE"

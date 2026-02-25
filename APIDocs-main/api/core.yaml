@@ -1,0 +1,212 @@
+openapi: 3.0.0
+
+info:
+  version: 0.4.1
+  title: ion-core-api
+  description: |
+    ION Smart Core API<br/><br/>
+    El token de autenticación se recibe en comprobar2FA de la API Core
+
+servers:
+  - description: ION Smart Test
+    url: "https://ionsmartest.eu/core"
+  - description: ION Smart Development
+    url: "http://localhost:8101/core"
+
+tags:
+  - name: Authorization
+    description: Autenticación para todo el aplicativo.
+  - name: Dispositivos
+    description: Operaciones de gestión de los dispositivos usados en el aplicativo.
+  - name: Fabricantes
+    description: Obtención de fabricantes, modelos y categorías de dispositivos.
+  - name: Integraciones
+    description: Obtención de integraciones
+  - name: Integraciones AEMET
+    description: Gestión de la integración con AEMET (vincular/desvincular municipios y consultar datos)
+  - name: Licencias
+    description: Gestión de licencias, tanto de activación como creación.
+  - name: Modulos
+    description: Operaciones de obtención de módulos y secciones.
+  - name: NX Clouds
+    description: Gestión de clouds de Nx Witness, para su posterior interacción en la plataforma.
+  - name: Reconocimientos
+    description: Gestión de reconocimientos de vehículos, detectados por las cámaras asignadas a cada módulo.
+  - name: Reconocimientos personas
+    description: Gestión de reconocimientos de personas, detectados por las cámaras con análisis IA.
+  - name: Sistema
+    description: Operaciones relacionadas con el sistema, incluyendo notificaciones y monitoreo.
+  - name: Weather
+    description: Operaciones relacionadas con datos meteorológicos de AEMET.
+
+paths:
+  # ===== Autenticación =====
+  /auth/login:
+    $ref: "paths/core/auth.yaml#/components/x-routes/Login"
+
+  /auth/comprobar2FA:
+    $ref: "paths/core/auth.yaml#/components/x-routes/Comprobar2FA"
+
+  /auth/logout:
+    $ref: "paths/core/auth.yaml#/components/x-routes/Logout"
+
+  # ===== Dispositivos =====
+  /dispositivos/insertar:
+    $ref: "paths/core/dispositivos.yaml#/components/x-routes/Insertar"
+
+  /dispositivos/obtener:
+    $ref: "paths/core/dispositivos.yaml#/components/x-routes/Obtener"
+
+  /dispositivos/existe:
+    $ref: "paths/core/dispositivos.yaml#/components/x-routes/Existe"
+
+  /dispositivos/obtenerImagen:
+    $ref: "paths/core/dispositivos.yaml#/components/x-routes/ObtenerImagen"
+
+  /dispositivos/obtener4Miniaturas:
+    $ref: "paths/core/dispositivos.yaml#/components/x-routes/ObtenerMiniaturas"
+
+  # /dispositivos/obtenerUltimaImagen:
+  #   $ref: "paths/core/dispositivos.yaml#/components/x-routes/ObtenerUltimaImagen"
+
+  /dispositivos/obtenerTipoGrabacion:
+    $ref: "paths/core/dispositivos.yaml#/components/x-routes/ObtenerTipoGrabacion"
+
+  /dispositivos/obtenerStreamNx:
+    $ref: "paths/core/dispositivos.yaml#/components/x-routes/ObtenerStreamNx"
+
+  /dispositivos/modificar:
+    $ref: "paths/core/dispositivos.yaml#/components/x-routes/Modificar"
+
+  /dispositivos/eliminar:
+    $ref: "paths/core/dispositivos.yaml#/components/x-routes/Eliminar"
+
+  /dispositivos/actualizarUbicacion:
+    $ref: "paths/core/dispositivos.yaml#/components/x-routes/ActualizarUbicacion"
+
+  # ===== Fabricantes =====
+  /fabricantes/obtener:
+    $ref: "paths/core/fabricantes.yaml#/components/x-routes/Obtener"
+
+  /fabricantes/categorias/obtener:
+    $ref: "paths/core/fabricantes.yaml#/components/x-routes/ObtenerCategorias"
+
+  /fabricantes/modelos/obtener:
+    $ref: "paths/core/fabricantes.yaml#/components/x-routes/ObtenerModelos"
+
+  # ===== Integraciones =====
+  /integraciones/obtener:
+    $ref: "paths/core/integraciones.yaml#/components/x-routes/Obtener"
+
+  # ===== Integraciones AEMET =====
+  /integraciones/aemet/municipios:
+    $ref: "paths/core/integraciones-aemet.yaml#/components/x-routes/ObtenerMunicipios"
+
+  /integraciones/aemet/vincular:
+    $ref: "paths/core/integraciones-aemet.yaml#/components/x-routes/Vincular"
+
+  /integraciones/aemet/desvincular:
+    $ref: "paths/core/integraciones-aemet.yaml#/components/x-routes/Desvincular"
+
+  # ===== Licencias =====
+  /licencias/obtener:
+    $ref: "paths/core/licencias.yaml#/components/x-routes/Obtener"
+
+  /licencias/obtenerCanales:
+    $ref: "paths/core/licencias.yaml#/components/x-routes/ObtenerCanales"
+
+  /licencias/agregarLicenciaUsuario:
+    $ref: "paths/core/licencias.yaml#/components/x-routes/AgregarLicencia"
+
+  /licencias/cambiarEstadoLicencias:
+    $ref: "paths/core/licencias.yaml#/components/x-routes/CambiarEstadoLicencias"
+
+  # ===== Módulos =====
+  /modulos/obtener:
+    $ref: "paths/core/modulos.yaml#/components/x-routes/Obtener"
+
+  /modulos/secciones/obtener:
+    $ref: "paths/core/modulos.yaml#/components/x-routes/ObtenerSecciones"
+
+  # Clouds Nx Witness
+  /cloud_nx/insertar:
+    $ref: "paths/core/clouds.yaml#/components/x-routes/Insertar"
+
+  /cloud_nx/obtener:
+    $ref: "paths/core/clouds.yaml#/components/x-routes/Obtener"
+
+  /cloud_nx/modificar:
+    $ref: "paths/core/clouds.yaml#/components/x-routes/Modificar"
+
+  /cloud_nx/eliminar:
+    $ref: "paths/core/clouds.yaml#/components/x-routes/Eliminar"
+
+  /cloud_nx/obtenerDispositivosSincronizar:
+    $ref: "paths/core/clouds.yaml#/components/x-routes/ObtenerDispositivosSincronizar"
+
+  /cloud_nx/insertarDispositivosSincronizar:
+    $ref: "paths/core/clouds.yaml#/components/x-routes/InsertarDispositivosSincronizar"
+
+  # Vehiculos reconocidos
+  /reconocimientos/obtener:
+    $ref: "paths/core/reconocimientos.yaml#/components/x-routes/Obtener"
+  /reconocimientos/obtener24:
+    $ref: "paths/core/reconocimientos.yaml#/components/x-routes/Obtener24"
+
+  /reconocimientos/obtenerAlertas24:
+    $ref: "paths/core/reconocimientos.yaml#/components/x-routes/ObtenerAlertas24"
+  /reconocimientos/obtenerGrid:
+    $ref: "paths/core/reconocimientos.yaml#/components/x-routes/ObtenerGrid"
+  /reconocimientos/obtenerNx:
+    $ref: "paths/core/reconocimientos.yaml#/components/x-routes/ObtenerNx"
+
+  /reconocimientos/group:
+    $ref: "paths/core/reconocimientos.yaml#/components/x-routes/Group"
+  /reconocimientos/group24:
+    $ref: "paths/core/reconocimientos.yaml#/components/x-routes/Group24"
+  /reconocimientos/marcar:
+    $ref: "paths/core/reconocimientos.yaml#/components/x-routes/Marcar"
+
+  /reconocimientos/observaciones:
+    $ref: "paths/core/reconocimientos.yaml#/components/x-routes/Observaciones"
+
+  # WS - Reconocimientos (Bodyworn)
+  /ws/jsonBodyworn.php:
+    $ref: "paths/core/jsonBodyworn.yaml#/components/x-routes/JsonBodyworn"
+
+  /reconocimientos_personas/obtener:
+    $ref: "paths/core/reconocimientos-personas.yaml#/components/x-routes/Obtener"
+  /reconocimientos_personas/group:
+    $ref: "paths/core/reconocimientos-personas.yaml#/components/x-routes/Group"
+  /reconocimientos_personas/obtenerFotoOriginal:
+    $ref: "paths/core/reconocimientos-personas.yaml#/components/x-routes/ObtenerFotoOriginal"
+  /reconocimientos_personas/marcar:
+    $ref: "paths/core/reconocimientos-personas.yaml#/components/x-routes/Marcar"
+
+  # ===== Sistema =====
+  /sistema/notificaciones/obtener:
+    $ref: "paths/core/sistema.yaml#/components/x-routes/ObtenerNotificaciones"
+
+  # ===== Weather =====
+  /weather/prediccion:
+    $ref: "paths/core/weather.yaml#/components/x-routes/PrediccionMunicipioHoraria"
+
+  /weather/avisos:
+    $ref: "paths/core/weather.yaml#/components/x-routes/AvisosCap"
+
+  /weather/rayos:
+    $ref: "paths/core/weather.yaml#/components/x-routes/Rayos"
+
+  /weather/incendios:
+    $ref: "paths/core/weather.yaml#/components/x-routes/Incendios"
+
+  /weather/redesEspeciales:
+    $ref: "paths/core/weather.yaml#/components/x-routes/RedesEspeciales"
+
+components:
+  # schemas:
+  securitySchemes:
+    bearerAuth:
+      $ref: "utils/fields.yaml#/components/securitySchemes/bearerAuth"
+    userAndPassword:
+      $ref: "utils/fields.yaml#/components/securitySchemes/userAndPassword"

@@ -1,0 +1,301 @@
+openapi: 3.0.0
+info:
+  title: Gestión Administrativa de Clientes
+  version: 1.0.0
+  description: Endpoints administrativos para gestión de clientes (requiere autenticación)
+
+components:
+  x-routes:
+    Insertar:
+      post:
+        tags:
+          - Clientes Admin
+        summary: Crea un nuevo cliente en el sistema
+        description: |
+          Registra un nuevo cliente con toda su información administrativa y técnica.
+
+          **Características**:
+          - Calcula automáticamente las coordenadas desde la dirección
+          - Soporta subida de foto/logo del cliente
+          - Valida que dirección, población y provincia sean obligatorios
+
+          **Nota**: Este endpoint usa `multipart/form-data` para soportar la subida de archivos.
+        operationId: insertarCliente
+        security:
+          - bearerAuth: []
+        requestBody:
+          required: true
+          content:
+            multipart/form-data:
+              schema:
+                type: object
+                required:
+                  - direccion
+                  - poblacion
+                  - provincia
+                properties:
+                  nombre_cliente:
+                    type: string
+                    description: Nombre comercial del cliente
+                    example: "Ayuntamiento de Barcelona"
+                  razon_social:
+                    type: string
+                    description: Razón social legal
+                    example: "Ajuntament de Barcelona"
+                  nif:
+                    type: string
+                    description: NIF/CIF del cliente
+                    example: "P0800000G"
+                  direccion:
+                    type: string
+                    description: Dirección postal (obligatorio)
+                    example: "Plaça Sant Jaume, 1"
+                  poblacion:
+                    type: string
+                    description: Población o ciudad (obligatorio)
+                    example: "Barcelona"
+                  provincia:
+                    type: string
+                    description: Provincia (obligatorio)
+                    example: "Barcelona"
+                  telefono:
+                    type: string
+                    description: Teléfono de contacto
+                    example: "+34 934 027 000"
+                  email:
+                    type: string
+                    format: email
+                    description: Email de contacto
+                    example: "contacto@barcelona.cat"
+                  persona_contacto:
+                    type: string
+                    description: Nombre de la persona de contacto
+                    example: "Juan Pérez"
+                  servidor:
+                    type: string
+                    description: URL del servidor del cliente
+                    example: "https://barcelona.ionsmart.eu"
+                  video:
+                    type: boolean
+                    description: Para saber si el cliente verá streams en la plataforma
+                  foto_cliente:
+                    type: string
+                    format: binary
+                    description: Foto o logo del cliente (archivo)
+        responses:
+          "200":
+            description: Cliente creado correctamente
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    cod_cliente:
+                      type: string
+                      description: Código del cliente generado
+                      example: "000123"
+                    message:
+                      type: string
+                      example: "Cliente creado correctamente"
+          "400":
+            description: Parámetros inválidos
+          "401":
+            description: Usuario no autenticado
+          "500":
+            description: Error al crear cliente o campos necesarios no recibidos
+
+    ObtenerAdmin:
+      post:
+        tags:
+          - Clientes Admin
+        summary: Obtiene clientes con filtros administrativos
+        description: |
+          Consulta clientes del sistema con filtros avanzados.
+
+          Todos los parámetros son opcionales. Si no se especifica ninguno, 
+          devuelve todos los clientes del sistema.
+        operationId: obtenerClientesAdmin
+        security:
+          - bearerAuth: []
+        requestBody:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  cod_cliente:
+                    type: string
+                    description: Filtrar por código específico
+                    example: "000123"
+                  nombre_cliente:
+                    type: string
+                    description: Filtrar por nombre (búsqueda parcial)
+                    example: "Barcelona"
+                  poblacion:
+                    type: string
+                    description: Filtrar por población
+                    example: "Barcelona"
+                  provincia:
+                    type: string
+                    description: Filtrar por provincia
+                    example: "Barcelona"
+                  nif:
+                    type: string
+                    description: Filtrar por NIF/CIF
+                    example: "P0800000G"
+                  razon_social:
+                    type: string
+                    description: Filtrar por razón social
+                  direccion:
+                    type: string
+                    description: Filtrar por dirección
+                  persona_contacto:
+                    type: string
+                    description: Filtrar por persona de contacto
+                  email:
+                    type: string
+                    description: Filtrar por email
+                  telefono:
+                    type: string
+                    description: Filtrar por teléfono
+        responses:
+          "200":
+            description: Clientes encontrados
+            content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    $ref: "../../ionadmin.yaml#/components/schemas/ClienteInfo"
+          "401":
+            description: Usuario no autenticado
+          "500":
+            description: Error del servidor
+
+    Modificar:
+      post:
+        tags:
+          - Clientes Admin
+        summary: Modifica los datos de un cliente existente
+        description: |
+          Actualiza la información de un cliente identificado por su código.
+
+          **Características**:
+          - Todos los campos son opcionales (se actualizan solo los especificados)
+          - Si se cambia la dirección, recalcula automáticamente las coordenadas
+          - Soporta actualización de foto/logo (elimina la anterior)
+          - Requiere que al menos un campo sea modificado
+
+          **Nota**: Este endpoint usa `multipart/form-data` para soportar la subida de archivos.
+        operationId: modificarCliente
+        security:
+          - bearerAuth: []
+        requestBody:
+          required: true
+          content:
+            multipart/form-data:
+              schema:
+                type: object
+                required:
+                  - cod_cliente
+                properties:
+                  cod_cliente:
+                    type: string
+                    description: Código del cliente a modificar (obligatorio)
+                    example: "000123"
+                  nombre_cliente:
+                    type: string
+                    description: Nuevo nombre comercial
+                  razon_social:
+                    type: string
+                    description: Nueva razón social
+                  nif:
+                    type: string
+                    description: Nuevo NIF/CIF
+                  direccion:
+                    type: string
+                    description: Nueva dirección (recalcula coordenadas)
+                  poblacion:
+                    type: string
+                    description: Nueva población
+                  provincia:
+                    type: string
+                    description: Nueva provincia
+                  telefono:
+                    type: string
+                    description: Nuevo teléfono
+                  email:
+                    type: string
+                    format: email
+                    description: Nuevo email
+                  persona_contacto:
+                    type: string
+                    description: Nueva persona de contacto
+                  servidor:
+                    type: string
+                    description: Nueva URL del servidor
+                  foto_cliente:
+                    type: string
+                    format: binary
+                    description: Nueva foto/logo (reemplaza la anterior)
+                  video:
+                    type: boolean
+                    description: Video en la plataforma
+        responses:
+          "200":
+            description: Cliente modificado correctamente
+            content:
+              application/json:
+                schema:
+                  type: boolean
+                  description: true si se modificó correctamente
+                  example: true
+          "400":
+            description: Código de cliente inválido o no se recibió ningún campo a modificar
+          "401":
+            description: Usuario no autenticado
+          "500":
+            description: Error al modificar cliente
+
+    Eliminar:
+      post:
+        tags:
+          - Clientes Admin
+        summary: Elimina un cliente del sistema
+        description: |
+          Elimina un cliente identificado por su código.
+
+          **IMPORTANTE**: Esta operación puede ser irreversible dependiendo de 
+          la implementación. Se recomienda verificar que no tenga licencias asociadas 
+          antes de eliminar.
+        operationId: eliminarCliente
+        security:
+          - bearerAuth: []
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - cod_cliente
+                properties:
+                  cod_cliente:
+                    type: string
+                    description: Código del cliente a eliminar
+                    example: "000123"
+        responses:
+          "200":
+            description: Cliente eliminado correctamente
+            content:
+              application/json:
+                schema:
+                  type: boolean
+                  description: true si se eliminó correctamente
+                  example: true
+          "400":
+            description: Falta cod_cliente
+          "401":
+            description: Usuario no autenticado
+          "500":
+            description: Error al eliminar cliente

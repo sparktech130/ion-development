@@ -1,0 +1,918 @@
+openapi: 3.0.0
+info:
+  title: Operaciones meteorológicas
+  version: 1.0.0
+
+components:
+  x-routes:
+    PrediccionMunicipioHoraria:
+      post:
+        tags:
+          - Weather
+        summary: Predicción horaria por municipio
+        description: |
+          Obtiene la predicción meteorológica horaria para un municipio específico mediante su código INE de 5 dígitos.
+
+          Soporta dos modos:
+          - `raw`: Estructura original de AEMET
+          - `compact`: Estructura optimizada para frontend (recomendado)
+        operationId: prediccionMunicipioHoraria
+        parameters: []
+        security: []
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - idMunicipio
+                properties:
+                  idMunicipio:
+                    type: string
+                    pattern: '^\d{5}$'
+                    description: Código INE del municipio (5 dígitos)
+                    example: "07027"
+                  modo:
+                    type: string
+                    enum:
+                      - raw
+                      - compact
+                    default: raw
+                    description: Modo de respuesta (raw = estructura AEMET original, compact = optimizado)
+                    example: compact
+              examples:
+                Modo compacto:
+                  value:
+                    idMunicipio: "07027"
+                    modo: compact
+                Modo raw:
+                  value:
+                    idMunicipio: "08143"
+                    modo: raw
+        responses:
+          "200":
+            description: Predicción obtenida exitosamente
+            content:
+              application/json:
+                schema:
+                  oneOf:
+                    - $ref: "#/components/schemas/PrediccionHorariaCompactResponse"
+                    - $ref: "#/components/schemas/PrediccionHorariaRawResponse"
+                examples:
+                  Modo compacto:
+                    value:
+                      ok: true
+                      tipo: prediccion_municipio_horaria
+                      req:
+                        idMunicipio: "07027"
+                        modo: compact
+                      meta:
+                        descripcion: exito
+                        estado: 200
+                      data:
+                        municipio: Inca
+                        provincia: Illes Balears (Mallorca)
+                        elaborado: "2026-02-06T09:02:13"
+                        enlace: https://www.aemet.es/es/eltiempo/prediccion/municipios/inca-id07027
+                        horas:
+                          - hora: "08"
+                            cielo:
+                              codigo: "12"
+                              desc: Despejado
+                            temp: 11
+                            sens: 11
+                            hum: 79
+                            prec_mm: 0
+                            viento_dir: SO
+                            viento_kmh: 19
+                            racha_kmh: 33
+                          - hora: "09"
+                            cielo:
+                              codigo: "12"
+                              desc: Despejado
+                            temp: 13
+                            sens: 13
+                            hum: 72
+                            prec_mm: 0
+                            viento_dir: SO
+                            viento_kmh: 20
+                            racha_kmh: 35
+          "400":
+            description: Error en la solicitud
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/ErrorResponse"
+                examples:
+                  Municipio inválido:
+                    value:
+                      ok: false
+                      error: "idMunicipio inválido (5 dígitos)"
+          "500":
+            description: Error del servidor o de la API de AEMET
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/ErrorResponse"
+
+    AvisosCap:
+      post:
+        tags:
+          - Weather
+        summary: Avisos meteorológicos CAP
+        description: |
+          Obtiene los avisos meteorológicos activos en formato CAP (Common Alerting Protocol).
+
+          Los avisos se devuelven ordenados por:
+          1. Nivel de riesgo (rojo > naranja > amarillo)
+          2. Fecha de expiración
+          3. Fecha de emisión
+
+          El backend convierte automáticamente XML CAP a JSON.
+        operationId: avisosCap
+        parameters: []
+        security: []
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  area:
+                    type: string
+                    default: esp
+                    description: Código de área (esp = España, bal = Baleares, etc.)
+                    example: esp
+                  include_xml:
+                    type: boolean
+                    default: false
+                    description: Incluir XML original en la respuesta
+                    example: false
+              examples:
+                España:
+                  value:
+                    area: esp
+                Baleares:
+                  value:
+                    area: bal
+        responses:
+          "200":
+            description: Avisos obtenidos exitosamente
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/AvisosCapResponse"
+                examples:
+                  Con avisos:
+                    value:
+                      ok: true
+                      tipo: avisos_cap
+                      req:
+                        area: esp
+                      meta:
+                        descripcion: exito
+                        estado: 200
+                      data:
+                        count: 2
+                        alerts:
+                          - identifier: "ES-AE-20260205120000-AVI"
+                            sent: "2026-02-05T12:00:00+01:00"
+                            status: Actual
+                            event: Viento
+                            headline: Aviso amarillo por vientos
+                            description: Se esperan rachas de viento de hasta 80 km/h
+                            instruction: Evite actividades al aire libre
+                            web: https://www.aemet.es
+                            effective: "2026-02-05T12:00:00+01:00"
+                            onset: "2026-02-05T15:00:00+01:00"
+                            expires: "2026-02-05T23:59:59+01:00"
+                            level: amarillo
+                            level_rank: 1
+                            probabilidad: "40-70%"
+                            parametro: Viento
+                            area_desc: Costa de Barcelona
+                            zone_code: BAR01
+                            polygon:
+                              - [41.3, 2.1]
+                              - [41.4, 2.2]
+                              - [41.3, 2.3]
+                  Sin avisos:
+                    value:
+                      ok: true
+                      tipo: avisos_cap
+                      req:
+                        area: esp
+                      meta:
+                        descripcion: exito
+                        estado: 200
+                      data:
+                        count: 0
+                        alerts: []
+          "500":
+            description: Error del servidor o de la API de AEMET
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/ErrorResponse"
+
+    Rayos:
+      post:
+        tags:
+          - Weather
+        summary: Mapa de rayos
+        description: |
+          Obtiene el mapa de rayos de AEMET en formato GIF.
+
+          Puede devolver:
+          - URL directa al GIF (recomendado para frontend)
+          - Imagen codificada en base64 (para embeber directamente)
+        operationId: rayos
+        parameters: []
+        security: []
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  embed_base64:
+                    type: boolean
+                    default: false
+                    description: Si es true, descarga y codifica la imagen en base64
+                    example: false
+              examples:
+                URL:
+                  value:
+                    embed_base64: false
+                Base64:
+                  value:
+                    embed_base64: true
+        responses:
+          "200":
+            description: Mapa de rayos obtenido exitosamente
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/RayosResponse"
+                examples:
+                  Modo URL:
+                    value:
+                      ok: true
+                      tipo: rayos
+                      meta:
+                        descripcion: exito
+                        estado: 200
+                        datos: https://opendata.aemet.es/opendata/sh/abc123
+                      data:
+                        mode: url
+                        mime: image/gif
+                        datos_url: https://opendata.aemet.es/opendata/sh/abc123
+                  Modo Base64:
+                    value:
+                      ok: true
+                      tipo: rayos
+                      meta:
+                        descripcion: exito
+                        estado: 200
+                      data:
+                        mode: base64
+                        mime: image/gif
+                        base64: R0lGODlhAQABAIAAAP...
+          "500":
+            description: Error del servidor o de la API de AEMET
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/ErrorResponse"
+
+    Incendios:
+      post:
+        tags:
+          - Weather
+        summary: Mapas de riesgo de incendios
+        description: |
+          Obtiene los mapas de riesgo de incendios forestales.
+
+          **Importante**: Este servicio puede no estar disponible temporalmente. 
+          El campo `available` indica si hay datos disponibles.
+
+          Productos disponibles:
+          - `previsto`: Predicción de riesgo
+          - `observado`: Riesgo observado
+        operationId: incendios
+        parameters: []
+        security: []
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  area:
+                    type: string
+                    default: esp
+                    description: Código de área
+                    example: esp
+                  dia:
+                    type: string
+                    format: date
+                    pattern: '^\d{4}-\d{2}-\d{2}$'
+                    description: Fecha en formato YYYY-MM-DD (por defecto fecha actual)
+                    example: "2026-02-09"
+                  producto:
+                    type: string
+                    enum:
+                      - previsto
+                      - observado
+                    default: previsto
+                    description: Tipo de mapa de riesgo
+                    example: previsto
+              examples:
+                Previsto hoy:
+                  value:
+                    area: esp
+                    dia: "2026-02-09"
+                    producto: previsto
+                Observado:
+                  value:
+                    area: esp
+                    dia: "2026-02-08"
+                    producto: observado
+        responses:
+          "200":
+            description: Respuesta del servicio de incendios
+            content:
+              application/json:
+                schema:
+                  oneOf:
+                    - $ref: "#/components/schemas/IncendiosAvailableResponse"
+                    - $ref: "#/components/schemas/IncendiosUnavailableResponse"
+                examples:
+                  Disponible:
+                    value:
+                      ok: true
+                      tipo: incendios
+                      available: true
+                      req:
+                        area: esp
+                        dia: "2026-02-09"
+                        producto: previsto
+                      meta:
+                        descripcion: exito
+                        estado: 200
+                      data:
+                        mode: url
+                        mime: image/png
+                        datos_url: https://opendata.aemet.es/opendata/sh/def456
+                  No disponible:
+                    value:
+                      ok: true
+                      tipo: incendios
+                      available: false
+                      req:
+                        area: esp
+                        dia: "2026-02-09"
+                        producto: previsto
+                      warning: "El servicio de incendios no responde (conexión cerrada/vacía). Puede ser caída temporal o bloqueo de red."
+                      error_original: "HTTP error en..."
+                      data: null
+          "400":
+            description: Error en la solicitud
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/ErrorResponse"
+          "500":
+            description: Error del servidor
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/ErrorResponse"
+
+    RedesEspeciales:
+      post:
+        tags:
+          - Weather
+        summary: Redes especiales
+        description: |
+          Obtiene datos de las redes de observación especiales de AEMET:
+
+          - **radiacion**: Red de radiación solar (GL, DF, DT, UVB, IR)
+          - **ozono**: Red de ozono
+          - **perfilozono**: Perfil vertical de ozono (requiere estación)
+          - **contaminacionfondo**: Contaminación de fondo (requiere estación)
+
+          Para radiación, el modo `compact` convierte CSV a JSON estructurado.
+        operationId: redesEspeciales
+        parameters: []
+        security: []
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  tipo:
+                    type: string
+                    enum:
+                      - radiacion
+                      - ozono
+                      - perfilozono
+                      - contaminacionfondo
+                    default: radiacion
+                    description: Tipo de red especial
+                    example: radiacion
+                  estacion:
+                    type: string
+                    description: Código de estación (requerido para perfilozono y contaminacionfondo, opcional para radiacion)
+                    example: "8178D"
+                  modo:
+                    type: string
+                    enum:
+                      - raw
+                      - compact
+                    default: raw
+                    description: Modo de respuesta (compact solo para radiacion)
+                    example: compact
+              examples:
+                Radiación todas:
+                  value:
+                    tipo: radiacion
+                    modo: compact
+                Radiación filtrada:
+                  value:
+                    tipo: radiacion
+                    estacion: "8178D"
+                    modo: compact
+                Ozono:
+                  value:
+                    tipo: ozono
+                    modo: raw
+                Perfil ozono:
+                  value:
+                    tipo: perfilozono
+                    estacion: "E001"
+                    modo: raw
+        responses:
+          "200":
+            description: Datos obtenidos exitosamente
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/RedesEspecialesResponse"
+                examples:
+                  Radiación compacta:
+                    value:
+                      ok: true
+                      tipo: redes_especiales
+                      req:
+                        tipo: radiacion
+                        estacion: "8178D"
+                        modo: compact
+                      meta:
+                        descripcion: exito
+                        estado: 200
+                      data:
+                        fecha: "2026-02-05"
+                        producto: RADIACION SOLAR
+                        estaciones:
+                          - nombre: Albacete
+                            indicativo: "8178D"
+                            series:
+                              GL:
+                                horas:
+                                  "05": 1
+                                  "06": 5
+                                  "07": 15
+                                  "08": 30
+                                suma: 883
+                              DF:
+                                horas:
+                                  "05": 0.5
+                                  "06": 2
+                                suma: 450
+          "400":
+            description: Error en la solicitud
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/ErrorResponse"
+                examples:
+                  Estación requerida:
+                    value:
+                      ok: false
+                      error: "perfilozono requiere estacion"
+          "500":
+            description: Error del servidor o de la API de AEMET
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/ErrorResponse"
+
+  schemas:
+    ErrorResponse:
+      type: object
+      required:
+        - ok
+        - error
+      properties:
+        ok:
+          type: boolean
+          enum:
+            - false
+          example: false
+        error:
+          type: string
+          description: Descripción del error
+          example: "idMunicipio inválido (5 dígitos)"
+
+    PrediccionHorariaCompactResponse:
+      type: object
+      required:
+        - ok
+        - tipo
+        - req
+        - meta
+        - data
+      properties:
+        ok:
+          type: boolean
+          example: true
+        tipo:
+          type: string
+          example: prediccion_municipio_horaria
+        req:
+          type: object
+          properties:
+            idMunicipio:
+              type: string
+            modo:
+              type: string
+        meta:
+          type: object
+          properties:
+            descripcion:
+              type: string
+            estado:
+              type: integer
+            datos:
+              type: string
+        data:
+          type: object
+          properties:
+            municipio:
+              type: string
+              example: Inca
+            provincia:
+              type: string
+              example: Illes Balears (Mallorca)
+            elaborado:
+              type: string
+              format: date-time
+              example: "2026-02-06T09:02:13"
+            enlace:
+              type: string
+              format: uri
+              example: https://www.aemet.es/es/eltiempo/prediccion/municipios/inca-id07027
+            horas:
+              type: array
+              items:
+                type: object
+                properties:
+                  hora:
+                    type: string
+                    example: "08"
+                  cielo:
+                    type: object
+                    properties:
+                      codigo:
+                        type: string
+                      desc:
+                        type: string
+                  temp:
+                    type: integer
+                    nullable: true
+                  sens:
+                    type: integer
+                    nullable: true
+                  hum:
+                    type: integer
+                    nullable: true
+                  prec_mm:
+                    type: number
+                    nullable: true
+                  viento_dir:
+                    type: string
+                    nullable: true
+                  viento_kmh:
+                    type: integer
+                    nullable: true
+                  racha_kmh:
+                    type: integer
+                    nullable: true
+
+    PrediccionHorariaRawResponse:
+      type: object
+      required:
+        - ok
+        - tipo
+        - req
+        - meta
+        - data
+      properties:
+        ok:
+          type: boolean
+          example: true
+        tipo:
+          type: string
+          example: prediccion_municipio_horaria
+        req:
+          type: object
+        meta:
+          type: object
+        data:
+          type: array
+          items:
+            type: object
+          description: Estructura original de AEMET
+
+    AvisosCapResponse:
+      type: object
+      required:
+        - ok
+        - tipo
+        - req
+        - meta
+        - data
+      properties:
+        ok:
+          type: boolean
+          example: true
+        tipo:
+          type: string
+          example: avisos_cap
+        req:
+          type: object
+          properties:
+            area:
+              type: string
+        meta:
+          type: object
+        data:
+          type: object
+          properties:
+            count:
+              type: integer
+              example: 1
+            alerts:
+              type: array
+              items:
+                type: object
+                properties:
+                  identifier:
+                    type: string
+                  sent:
+                    type: string
+                    format: date-time
+                  status:
+                    type: string
+                  event:
+                    type: string
+                  headline:
+                    type: string
+                  description:
+                    type: string
+                  instruction:
+                    type: string
+                  web:
+                    type: string
+                  effective:
+                    type: string
+                    format: date-time
+                  onset:
+                    type: string
+                    format: date-time
+                  expires:
+                    type: string
+                    format: date-time
+                  level:
+                    type: string
+                    enum:
+                      - amarillo
+                      - naranja
+                      - rojo
+                  level_rank:
+                    type: integer
+                    minimum: 0
+                    maximum: 3
+                  probabilidad:
+                    type: string
+                  parametro:
+                    type: string
+                  area_desc:
+                    type: string
+                  zone_code:
+                    type: string
+                  polygon:
+                    type: array
+                    items:
+                      type: array
+                      items:
+                        type: number
+                      minItems: 2
+                      maxItems: 2
+
+    RayosResponse:
+      type: object
+      required:
+        - ok
+        - tipo
+        - meta
+        - data
+      properties:
+        ok:
+          type: boolean
+          example: true
+        tipo:
+          type: string
+          example: rayos
+        meta:
+          type: object
+        data:
+          type: object
+          oneOf:
+            - type: object
+              properties:
+                mode:
+                  type: string
+                  enum:
+                    - url
+                mime:
+                  type: string
+                datos_url:
+                  type: string
+                  format: uri
+            - type: object
+              properties:
+                mode:
+                  type: string
+                  enum:
+                    - base64
+                mime:
+                  type: string
+                base64:
+                  type: string
+
+    IncendiosAvailableResponse:
+      type: object
+      required:
+        - ok
+        - tipo
+        - available
+        - req
+        - meta
+        - data
+      properties:
+        ok:
+          type: boolean
+          example: true
+        tipo:
+          type: string
+          example: incendios
+        available:
+          type: boolean
+          enum:
+            - true
+        req:
+          type: object
+          properties:
+            area:
+              type: string
+            dia:
+              type: string
+            producto:
+              type: string
+        meta:
+          type: object
+        data:
+          type: object
+          properties:
+            mode:
+              type: string
+              enum:
+                - url
+            mime:
+              type: string
+            datos_url:
+              type: string
+              format: uri
+
+    IncendiosUnavailableResponse:
+      type: object
+      required:
+        - ok
+        - tipo
+        - available
+        - req
+        - warning
+        - data
+      properties:
+        ok:
+          type: boolean
+          example: true
+        tipo:
+          type: string
+          example: incendios
+        available:
+          type: boolean
+          enum:
+            - false
+        req:
+          type: object
+          properties:
+            area:
+              type: string
+            dia:
+              type: string
+            producto:
+              type: string
+        warning:
+          type: string
+          example: El servicio de incendios no responde temporalmente
+        error_original:
+          type: string
+        diagnostico:
+          type: object
+        data:
+          nullable: true
+          type: array
+          items:
+            type: object
+
+    RedesEspecialesResponse:
+      type: object
+      required:
+        - ok
+        - tipo
+        - req
+        - meta
+        - data
+      properties:
+        ok:
+          type: boolean
+          example: true
+        tipo:
+          type: string
+          example: redes_especiales
+        req:
+          type: object
+          properties:
+            tipo:
+              type: string
+            estacion:
+              type: string
+              nullable: true
+            modo:
+              type: string
+        meta:
+          type: object
+        data:
+          oneOf:
+            - type: object
+              description: Radiación en modo compact
+              properties:
+                fecha:
+                  type: string
+                  format: date
+                producto:
+                  type: string
+                estaciones:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      nombre:
+                        type: string
+                      indicativo:
+                        type: string
+                      series:
+                        type: object
+                        additionalProperties:
+                          type: object
+                          properties:
+                            horas:
+                              type: object
+                              additionalProperties:
+                                type: number
+                            suma:
+                              type: number
+                              nullable: true
+            - type: object
+              description: Modo raw (texto o JSON original)
+            - type: array
+              description: Modo raw (JSON array)

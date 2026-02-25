@@ -1,0 +1,402 @@
+openapi: 3.0.0
+info:
+  title: Operaciones de naves industriales
+  version: 1.0.0
+
+components:
+  x-routes:
+    Obtener:
+      post:
+        tags:
+          - Naves
+        summary: Obtener
+        description: retorna todas las naves con sus dispositivos
+        operationId: obtenerNaves
+        parameters: []
+        requestBody:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/naves_obtener_body"
+        responses:
+          "200":
+            description: Info Nave
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/NavesInfo"
+          "401":
+            description: Usuario inválido o no autorizado
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "498":
+            description: Token expirado o inválido
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "500":
+            description: Unexpected error
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+        security:
+          - bearerAuth: []
+
+    Insertar:
+      post:
+        tags:
+          - Naves
+        summary: Insertar
+        description: Registra nuevas naves industriales
+        operationId: insertarNaves
+        parameters: []
+        requestBody:
+          required: true
+          content:
+            "multipart/form-data":
+              schema:
+                type: object
+                required:
+                  - nombre_nave
+                  - coordenadas
+                  - cod_distribuidora
+                  - cups
+                  - planos
+                properties:
+                  nombre_nave:
+                    type: string
+                  coordenadas:
+                    $ref: "../../utils/fields.yaml#/components/schemas/Coordenadas"
+                  cod_dispositivo:
+                    $ref: "../../utils/fields.yaml#/components/schemas/CodDispositivo"
+                  cod_distribuidora:
+                    type: string
+                  cups:
+                    type: string
+                  planos:
+                    type: array
+                    description: |
+                      Conjunto de imágenes (png) de los planos a insertar en la nave.<br/>
+                      El nombre del fichero será el nombre del plano a registrar.
+                    items:
+                      type: string
+                      format: binary
+        responses:
+          "200":
+            description: Successful operation
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    cod_nave:
+                      type: string
+                      example: "000001"
+                    planos:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          cod_plano:
+                            type: string
+                          nombre_plano:
+                            type: string
+          "401":
+            description: Usuario inválido o no autorizado
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "498":
+            description: Token expirado o inválido
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "500":
+            description: Unexpected error
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+        security:
+          - bearerAuth: []
+
+    Modificar:
+      post:
+        tags:
+          - Naves
+        summary: Modificar
+        description: Modifica una nave industrial existente
+        operationId: modificarNaves
+        parameters: []
+        requestBody:
+          required: true
+          content:
+            "multipart/form-data":
+              schema:
+                type: object
+                required:
+                  - cod_nave
+                properties:
+                  cod_nave:
+                    type: string
+                    example: "000001"
+                  nombre_nave:
+                    type: string
+                  coordenadas:
+                    $ref: "../../utils/fields.yaml#/components/schemas/Coordenadas"
+                  cod_dispositivo:
+                    $ref: "../../utils/fields.yaml#/components/schemas/CodDispositivo"
+                  cod_distribuidora:
+                    type: string
+                  cups:
+                    type: string
+        responses:
+          "200":
+            description: Successful operation
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/SuccessResult"
+          "401":
+            description: Usuario inválido o no autorizado
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "498":
+            description: Token expirado o inválido
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "500":
+            description: Unexpected error
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+        security:
+          - bearerAuth: []
+
+    ModificarPlanos:
+      post:
+        tags:
+          - Naves
+        summary: Modificar planos
+        description: Modifica los planos de una nave industrial existente
+        operationId: modificarPlanos
+        parameters: []
+        requestBody:
+          required: true
+          content:
+            "multipart/form-data":
+              schema:
+                type: object
+                required:
+                  - cod_nave
+                  - planos
+                  - imagenes
+                properties:
+                  cod_nave:
+                    type: string
+                    example: "000001"
+                  planos:
+                    type: array
+                    description: Array de Objeto Serializado
+                    items:
+                      type: object
+                      properties:
+                        nombre_plano:
+                          type: string
+                          description: "nombre del fichero.png"
+                        cod_plano:
+                          type: string
+                          description: "Si está presente y el campo eliminar es false, se usará para modificar"
+                          example: "000001"
+                        eliminar:
+                          type: boolean
+                          description: "Si es true, se eliminará el plano con código coincidente"
+                  imagenes:
+                    type: array
+                    description: |
+                      Conjunto de imágenes (png) de los planos a insertar en la nave.<br/>
+                      El nombre del fichero será el nombre del plano a registrar.
+                    items:
+                      type: string
+                      format: binary
+        responses:
+          "200":
+            description: Successful operation
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    insert:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          cod_plano:
+                            type: string
+                            example: "000001"
+                          nombre_plano:
+                            type: string
+                    update:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          cod_plano:
+                            type: string
+                            example: "000001"
+                          update:
+                            type: boolean
+                    delete:
+                      type: boolean
+          "401":
+            description: Usuario inválido o no autorizado
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "498":
+            description: Token expirado o inválido
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "500":
+            description: Unexpected error
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+        security:
+          - bearerAuth: []
+
+    Eliminar:
+      post:
+        tags:
+          - Naves
+        summary: Eliminar
+        description: Elimina una nave industrial existente
+        operationId: eliminarNaves
+        parameters: []
+        requestBody:
+          required: true
+          content:
+            "application/json":
+              schema:
+                type: object
+                required:
+                  - cod_nave
+                properties:
+                  cod_nave:
+                    type: string
+                    example: "000001"
+        responses:
+          "200":
+            description: Successful operation
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/SuccessResult"
+          "401":
+            description: Usuario inválido o no autorizado
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "498":
+            description: Token expirado o inválido
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "500":
+            description: Unexpected error
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+        security:
+          - bearerAuth: []
+
+  schemas:
+    NavesInfo:
+      type: object
+      properties:
+        rows:
+          type: array
+          items:
+            $ref: "#/components/schemas/NavesInfo_rows"
+        total:
+          type: integer
+    naves_obtener_body:
+      type: object
+      properties:
+        cod_nave:
+          type: string
+        nombre_nave:
+          type: string
+        cod_distribuidora:
+          type: string
+        cups:
+          type: string
+        limit:
+          type: integer
+        full:
+          type: boolean
+      x-examples:
+        Example 1:
+          cod_nave: string
+          nombre_nave: string
+          cod_distribuidora: string
+          cups: string
+          limit: 200
+          full: true
+    NavesInfo_planos:
+      type: object
+      properties:
+        cod_plano:
+          type: string
+        cod_nave:
+          type: string
+        nombre_plano:
+          type: string
+        imagen:
+          type: string
+    NavesInfo_rows:
+      type: object
+      properties:
+        cod_nave:
+          type: string
+        nombre_nave:
+          type: string
+        cups:
+          type: string
+        cod_distribuidora:
+          type: string
+        direccion:
+          type: string
+        coordenadas:
+          $ref: "../../utils/fields.yaml#/components/schemas/Coordenadas"
+        cod_dispositivo:
+          $ref: "../../utils/fields.yaml#/components/schemas/CodDispositivo"
+        cod_usuario:
+          type: string
+        nombre_distribuidora:
+          type: string
+        planos:
+          type: array
+          items:
+            $ref: "#/components/schemas/NavesInfo_planos"
+        dispositivos:
+          $ref: "../industry/dispositivos.yaml#/components/schemas/DevicesInfo"

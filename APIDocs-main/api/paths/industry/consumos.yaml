@@ -1,0 +1,164 @@
+openapi: 3.0.0
+info:
+  title: Operaciones de consumos
+  version: 1.0.0
+components:
+  x-routes:
+    Obtener:
+      post:
+        tags:
+          - Consumos
+        description: Obtiene el consumo de la nave según los parámetros
+        summary: Obtener
+        operationId: obtenerConsumo
+        parameters: []
+        requestBody:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/consumos_obtener_body"
+        responses:
+          "200":
+            description: Successful operation
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/ConsumosInfo"
+          "401":
+            description: Usuario inválido o no autorizado
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "498":
+            description: Token expirado o inválido
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "500":
+            description: Unexpected error
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+        security:
+          - bearerAuth: []
+
+    Obtener24:
+      post:
+        tags:
+          - Consumos
+        description: Obtiene el consumo de la nave registrado en las últimas 24 horas según los parámetros
+        summary: Obtener 24h
+        operationId: obtenerConsumo24
+        parameters: []
+        requestBody:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/consumos_obtener24_body"
+        responses:
+          "200":
+            description: Successful operation
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/ConsumosInfo"
+          "401":
+            description: Usuario inválido o no autorizado
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "498":
+            description: Token expirado o inválido
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "500":
+            description: Unexpected error
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+        security:
+          - bearerAuth: []
+
+  schemas:
+    consumos_obtener_body:
+      type: object
+      properties:
+        cod_consumo:
+          type: string
+        cod_nave:
+          type: string
+        nombre_nave:
+          type: string
+        cod_distribuidora:
+          type: string
+        fecha_ini:
+          $ref: "../../utils/fields.yaml#/components/schemas/Fecha"
+        fecha_fin:
+          $ref: "../../utils/fields.yaml#/components/schemas/Fecha"
+        hora_ini:
+          $ref: "../../utils/fields.yaml#/components/schemas/Hora"
+        hora_fin:
+          $ref: "../../utils/fields.yaml#/components/schemas/Hora"
+        limit:
+          type: integer
+
+    consumos_obtener24_body:
+      type: object
+      properties:
+        cod_consumo:
+          type: string
+        cod_nave:
+          type: string
+        nombre_nave:
+          type: string
+        cod_distribuidora:
+          type: string
+        hora_ini:
+          $ref: "../../utils/fields.yaml#/components/schemas/Hora"
+        hora_fin:
+          $ref: "../../utils/fields.yaml#/components/schemas/Hora"
+        limit:
+          type: integer
+
+    ConsumosInfo:
+      type: array
+      items:
+        type: object
+        properties:
+          cod_nave:
+            type: string
+          nombre_nave:
+            type: string
+          cups:
+            type: string
+          fecha:
+            $ref: "../../utils/fields.yaml#/components/schemas/Fecha"
+          hora:
+            $ref: "../../utils/fields.yaml#/components/schemas/Hora"
+          consumoKWh:
+            type: string
+            example: "0.134"
+          excesoEnergiaKWh:
+            type: string
+            example: "0.000"
+          generacionEnergiaKWh:
+            type: string
+            example: "0.000"
+          consumoPropioEnergiaKWh:
+            type: string
+            example: "0.000"
+          tipo_punto:
+            type: string
+            example: "0005"
+          nombre_distribuidora:
+            type: string
+            example: "E-distribución"
+          creado:
+            $ref: "../../utils/fields.yaml#/components/schemas/FechaHora"

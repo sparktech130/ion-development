@@ -1,0 +1,246 @@
+openapi: 3.0.0
+info:
+  title: Operaciones de autenticación
+  version: 1.0.0
+
+components:
+  x-routes:
+    Login:
+      post:
+        tags:
+          - Authorization
+        description: Inicia sesión
+        operationId: login
+        parameters: []
+        responses:
+          "200":
+            description: Successful operation
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/LoginInfo"
+          "500":
+            description: Failed to login
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorResult"
+          default:
+            description: Unexpected error
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+        requestBody:
+          content:
+            application/json:
+              schema:
+                required:
+                  - login
+                  - password
+                type: object
+                properties:
+                  login:
+                    type: string
+                  password:
+                    type: string
+        security: []
+
+    Comprobar2FA:
+      post:
+        tags:
+          - Authorization
+        description: Inicia sesión
+        operationId: comprobar2FA
+        parameters: []
+        responses:
+          "200":
+            description: Successful operation
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/2FAInfo"
+          "500":
+            description: Failed to login
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/NotSucceded2FAInfo"
+          default:
+            description: Unexpected error
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+        requestBody:
+          content:
+            application/json:
+              schema:
+                required:
+                  - cod_usuario
+                  - cod_autenticacion
+                type: object
+                properties:
+                  cod_usuario:
+                    type: string
+                  cod_autenticacion:
+                    type: string
+        security: []
+
+    Logout:
+      post:
+        tags:
+          - Authorization
+        description: Cierra sesión
+        operationId: logout
+        security:
+          - bearerAuth: []
+        parameters: []
+        responses:
+          "200":
+            description: Successful operation
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/SuccessResult"
+          "500":
+            description: Failed to login
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorResult"
+          default:
+            description: Unexpected error
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+
+  schemas:
+    LoginInfo:
+      type: object
+      properties:
+        cod_usuario:
+          type: string
+        email:
+          type: string
+        permisos:
+          type: string
+        username:
+          type: string
+        idioma:
+          type: string
+        foto_perfil:
+          type: string
+        ioncop_access:
+          type: boolean
+      x-examples:
+        Example 1:
+          cod_usuario: "000020"
+          email: test@ionsmart.eu
+          permisos: "000001"
+          username: name
+          idioma: es
+          foto_perfil: fotos/fotoPerfil.jpg
+    2FAInfo:
+      type: object
+      properties:
+        success:
+          type: boolean
+        server:
+          type: string
+        token:
+          type: string
+        permisos:
+          type: array
+          items:
+            type: object
+            properties:
+              cod_permiso:
+                type: string
+                example: "000001"
+              acceso:
+                type: boolean
+              consultas:
+                type: boolean
+              editar:
+                type: boolean
+              compartir:
+                type: boolean
+              cod_seccion:
+                type: string
+                example: "0001"
+              abreviacion:
+                type: string
+                example: "LIV"
+              cod_front:
+                type: string
+                example: "traffic-live"
+              nombre_seccion:
+                type: string
+                example: "LIVE"
+              cod_modulo:
+                type: string
+                example: "0015"
+              nombre_modulo:
+                type: string
+                example: "Traffic"
+              cod_sector:
+                type: string
+                example: "0001"
+              nombre_sector:
+                type: string
+                example: "SmartCity"
+        coordenadas:
+          $ref: "../../utils/fields.yaml#/components/schemas/Coordenadas"
+        licencias:
+          type: array
+          items:
+            type: object
+            properties:
+              fecha_activacion:
+                $ref: "../../utils/fields.yaml#/components/schemas/FechaHora"
+              fecha_expiracion:
+                $ref: "../../utils/fields.yaml#/components/schemas/FechaHora"
+              duracion_dias:
+                type: integer
+              canales:
+                type: integer
+              cod_sector:
+                type: string
+              cod_modulo:
+                type: string
+              estado:
+                type: string
+      x-examples:
+        Example 1:
+          success: true
+          server: test.cat
+          token: ""
+          permisos: []
+          coordenadas: "41.3741365,2.1509192"
+          licencias:
+            - fecha_activacion: "2024-10-24 12:13:42"
+              fecha_expiracion: "2025-10-24 12:13:42"
+              duracion_dias: 365
+              canales: 100
+              cod_sector: "000002"
+              cod_modulo: "0102"
+              estado: EN USO
+            - fecha_activacion: "2024-10-28 15:15:05"
+              fecha_expiracion: "2025-10-28 15:15:05"
+              duracion_dias: 365
+              canales: 15
+              cod_sector: "000001"
+              cod_modulo: "0011"
+              estado: EN USO
+        Example 2:
+          success: false
+    NotSucceded2FAInfo:
+      type: object
+      properties:
+        success:
+          type: boolean
+      x-examples:
+        Example:
+          success: false

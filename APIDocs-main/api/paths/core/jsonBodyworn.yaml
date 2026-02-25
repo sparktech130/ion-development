@@ -1,0 +1,310 @@
+openapi: 3.0.0
+info:
+  title: WS - Inserción de reconocimientos (Bodyworn)
+  version: 1.0.0
+
+components:
+  schemas:
+    CodDispositivoFlexible:
+      description: |
+        Código de dispositivo.
+        En esta ruta se acepta tanto numérico como string (en otros endpoints suele venir con ceros a la izquierda).
+      oneOf:
+        - $ref: "../../utils/fields.yaml#/components/schemas/CodDispositivo"
+        - type: integer
+          example: 1
+
+    JsonBodywornListaAction:
+      type: string
+      enum: [insert, delete]
+      description: Acción a realizar sobre la lista para la matrícula detectada.
+
+    JsonBodywornListaItem:
+      type: object
+      additionalProperties: false
+      required: [cod_lista, accion]
+      properties:
+        cod_lista:
+          description: Código de lista existente en el sistema.
+          oneOf:
+            - type: integer
+              example: 3
+            - type: string
+              example: "000003"
+        accion:
+          $ref: "#/components/schemas/JsonBodywornListaAction"
+
+    JsonBodywornCoordenadasMatricula:
+      type: object
+      additionalProperties: false
+      description: |
+        Coordenadas del recorte de matrícula dentro de la imagen original.
+        Si se envía, el backend espera `x`, `y`, `width`, `height` (valores no nulos / no vacíos).
+      required: [x, y, width, height]
+      properties:
+        x:
+          type: integer
+          minimum: 1
+        y:
+          type: integer
+          minimum: 1
+        width:
+          type: integer
+          minimum: 1
+        height:
+          type: integer
+          minimum: 1
+
+    JsonBodywornReconocimiento:
+      type: object
+      description: Reconocimiento individual.
+      properties:
+        matricula:
+          $ref: "../../utils/fields.yaml#/components/schemas/Matricula"
+        fecha_hora:
+          description: Fecha y hora del reconocimiento (formato `Y-m-d H:i:s`).
+          type: string
+          example: "2025-12-16 16:03:00"
+        lat:
+          type: number
+          format: decimal
+          example: 41.480742
+        lon:
+          type: number
+          format: decimal
+          example: 1.909991
+        imagen:
+          type: string
+          format: byte
+          description: |
+            Imagen original en Base64 (sin prefijo `data:image/...;base64,`).
+            Debe poder decodificarse correctamente.
+          example: "BASE64_JPEG_SIN_PREFIJO"
+
+        # Opcionales
+        coordenadas_matricula:
+          $ref: "#/components/schemas/JsonBodywornCoordenadasMatricula"
+        observaciones:
+          type: string
+          description: Observaciones del reconocimiento (se usa también como descripción al insertar matrícula en listas).
+          example: "Vehículo a investigar, ruta sospechosa."
+        marca:
+          type: string
+          example: "Toyota"
+        modelo:
+          type: string
+          example: "Supra"
+        color:
+          type: string
+          example: "White"
+        tipo_vh:
+          type: string
+          example: "turismo"
+        pais:
+          $ref: "../../utils/fields.yaml#/components/schemas/Pais"
+        velocidad_vehiculo:
+          type: number
+          format: decimal
+          example: 54.2
+        orientacion:
+          $ref: "../../utils/fields.yaml#/components/schemas/Orientacion"
+        listas:
+          type: array
+          description: |
+            Operaciones opcionales sobre listas para la matrícula detectada.
+            Cada `cod_lista` debe existir y `accion` debe ser `insert` o `delete`.
+          items:
+            $ref: "#/components/schemas/JsonBodywornListaItem"
+      required: [matricula, fecha_hora, lat, lon, imagen]
+
+    JsonBodywornReconocimientos:
+      description: |
+        Conjunto de reconocimientos.
+        Se acepta tanto:
+        - Un **objeto** indexado por una id (se devuelve la misma id en la respuesta).
+        - Un **array** de reconocimientos (se devuelve por índice).
+      oneOf:
+        - type: object
+          additionalProperties:
+            $ref: "#/components/schemas/JsonBodywornReconocimiento"
+          example:
+            id_personalizada:
+              matricula: "1234BCD"
+              fecha_hora: "2025-12-16 16:03:00"
+              lat: 41.480742
+              lon: 1.909991
+              observaciones: "vehículo de prueba bodyworn"
+              imagen: "BASE64_JPEG_SIN_PREFIJO"
+              coordenadas_matricula: { x: 1, y: 25, height: 114, width: 50 }
+              listas:
+                - { cod_lista: 1, accion: "delete" }
+                - { cod_lista: 3, accion: "insert" }
+        - type: array
+          items:
+            $ref: "#/components/schemas/JsonBodywornReconocimiento"
+          example:
+            - matricula: "1234BKW"
+              fecha_hora: "2025-12-16 16:03:00"
+              lat: 41.480742
+              lon: 1.909991
+              observaciones: "Vehículo a investigar, ruta sospechosa."
+              imagen: "BASE64_JPEG_SIN_PREFIJO"
+              coordenadas_matricula: { x: 1, y: 25, height: 114, width: 50 }
+
+    JsonBodywornRequest:
+      type: object
+      additionalProperties: false
+      required: [cod_dispositivo, reconocimientos]
+      properties:
+        cod_dispositivo:
+          $ref: "#/components/schemas/CodDispositivoFlexible"
+        reconocimientos:
+          $ref: "#/components/schemas/JsonBodywornReconocimientos"
+
+    JsonBodywornItemOK:
+      type: object
+      additionalProperties: true
+      properties:
+        message:
+          type: string
+          example: "Reconocimiento insertado correctamente"
+        cod_reconoc:
+          $ref: "../../utils/fields.yaml#/components/schemas/CodReconoc"
+        error:
+          type: boolean
+          example: false
+
+    JsonBodywornItemValidationError:
+      type: object
+      additionalProperties: true
+      description: Fallo de validación del reconocimiento antes de insertar.
+      properties:
+        valid:
+          type: boolean
+          example: false
+        message:
+          type: string
+          example: "fecha_hora inválida: '2025-99-99 99:99:99'"
+
+    JsonBodywornItemError:
+      type: object
+      additionalProperties: true
+      description: Error durante el procesamiento/insertado del reconocimiento.
+      properties:
+        message:
+          type: string
+          example: "Error al procesar listas: Lista no encontrada o inválida."
+        error:
+          type: boolean
+          example: true
+
+    JsonBodywornReconocimientosResult:
+      description: Resultado por reconocimiento (manteniendo el índice/clave enviada).
+      oneOf:
+        - type: object
+          additionalProperties:
+            oneOf:
+              - $ref: "#/components/schemas/JsonBodywornItemOK"
+              - $ref: "#/components/schemas/JsonBodywornItemValidationError"
+              - $ref: "#/components/schemas/JsonBodywornItemError"
+        - type: array
+          items:
+            oneOf:
+              - $ref: "#/components/schemas/JsonBodywornItemOK"
+              - $ref: "#/components/schemas/JsonBodywornItemValidationError"
+              - $ref: "#/components/schemas/JsonBodywornItemError"
+
+    JsonBodywornResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        reconocimientos:
+          $ref: "#/components/schemas/JsonBodywornReconocimientosResult"
+        request_seconds:
+          type: integer
+          description: Segundos que ha tardado el endpoint en responder.
+          example: 1
+      required: [reconocimientos, request_seconds]
+      example:
+        reconocimientos:
+          id_personalizada:
+            message: "Reconocimiento insertado correctamente"
+            cod_reconoc: "000001"
+            error: false
+          id_personalizada_2:
+            valid: false
+            message: "matricula inválida: ''"
+        request_seconds: 1
+
+    JsonBodywornBadRequest:
+      type: object
+      properties:
+        message:
+          type: string
+        campos:
+          type: object
+          description: Diagnóstico de campos recibidos.
+          additionalProperties: true
+        error:
+          type: boolean
+          example: true
+      required: [message, error]
+      x-examples:
+        Falta cod_dispositivo:
+          message: "Bad request: cod_dispositivo o cod_usuario inválido"
+          campos:
+            cod_dispositivo: null
+            cod_usuario: null
+          error: true
+        Reconocimientos invalidos:
+          message: "Bad request: reconocimientos inválidos"
+          error: true
+        Dispositivo no encontrado:
+          message: "Dispositivo no encontrado"
+          error: true
+
+  x-routes:
+    JsonBodyworn:
+      post:
+        tags: [Reconocimientos]
+        summary: Insertar reconocimientos (Bodyworn)
+        description: |
+          Endpoint para **insertar uno o varios reconocimientos** provenientes de dispositivos tipo bodyworn.
+
+          - Valida cada reconocimiento individualmente y devuelve el resultado por **índice/clave**.
+          - Opcionalmente permite **insertar/eliminar** la matrícula en listas mediante el campo `listas`.
+          - Guarda la imagen original y, si se envían `coordenadas_matricula`, genera además la imagen recortada.
+
+          Nota: algunas condiciones de error (por ejemplo, “El dispositivo no tiene los módulos necesarios”) pueden devolverse con HTTP 200 y `error: true`, siguiendo el comportamiento del script legacy.
+        operationId: jsonBodyworn
+        security: [{ bearerAuth: [] }]
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JsonBodywornRequest"
+        responses:
+          "200":
+            description: OK
+            content:
+              application/json:
+                schema:
+                  oneOf:
+                    - $ref: "#/components/schemas/JsonBodywornResponse"
+                    - $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "400":
+            description: Bad request / validación de request
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/JsonBodywornBadRequest"
+          "401":
+            $ref: "../../utils/responses.yaml#/components/x-responses/401"
+          "498":
+            $ref: "../../utils/responses.yaml#/components/x-responses/498"
+          "500":
+            $ref: "../../utils/responses.yaml#/components/x-responses/500"
+
+
+

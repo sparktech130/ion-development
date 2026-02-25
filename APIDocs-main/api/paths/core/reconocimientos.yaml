@@ -1,0 +1,664 @@
+openapi: 3.0.0
+info:
+  title: Operaciones de reconocimientos vehiculares
+  version: 1.0.0
+
+components:
+  schemas:
+    ObtenerReconocimientosRequest:
+      type: object
+      properties:
+        cod_reconoc:
+          $ref: "../../utils/fields.yaml#/components/schemas/CodReconoc"
+        matricula:
+          $ref: "../../utils/fields.yaml#/components/schemas/Matricula"
+        color:
+          $ref: "../../utils/fields.yaml#/components/schemas/Color"
+        marca:
+          type: string
+        modelo:
+          type: string
+        fecha_ini:
+          $ref: "../../utils/fields.yaml#/components/schemas/Fecha"
+        fecha_fin:
+          $ref: "../../utils/fields.yaml#/components/schemas/Fecha"
+        hora_ini:
+          $ref: "../../utils/fields.yaml#/components/schemas/Hora"
+        hora_fin:
+          $ref: "../../utils/fields.yaml#/components/schemas/Hora"
+        datetime_inicial:
+          $ref: "../../utils/fields.yaml#/components/schemas/FechaHora"
+        datetime_final:
+          $ref: "../../utils/fields.yaml#/components/schemas/FechaHora"
+        cod_dispositivo:
+          $ref: "../../utils/fields.yaml#/components/schemas/CodDispositivo"
+        cod_alerta_gest:
+          $ref: "../../utils/fields.yaml#/components/schemas/Cod4Fill"
+        nombre_alerta:
+          type: string
+        pais:
+          $ref: "../../utils/fields.yaml#/components/schemas/Pais"
+        confidence:
+          type: number
+          format: decimal
+        orientacion:
+          $ref: "../../utils/fields.yaml#/components/schemas/Orientacion"
+        order:
+          type: array
+          items:
+            type: string
+          example: ["fecha DESC", "hora ASC"]
+        modulos:
+          $ref: "../../utils/fields.yaml#/components/schemas/Modulos"
+        nom_dispositivo:
+          $ref: "../../utils/fields.yaml#/components/schemas/NomDispositivo"
+        tipo_vh:
+          type: string
+        velocidad_vehiculo:
+          type: number
+        nombre_lista:
+          type: string
+        limit:
+          type: integer
+        ultimo_cod_reconoc:
+          $ref: "../../utils/fields.yaml#/components/schemas/CodReconoc"
+        cop:
+          type: boolean
+          description: Filtrar por reconocimientos de usuario cop
+        marcado:
+          type: boolean
+          description: Filtrar por estado de marcado del reconocimiento
+
+    ObtenerReconocimientosItem:
+      type: object
+      properties:
+        cod_reconoc:
+          $ref: "../../utils/fields.yaml#/components/schemas/CodReconoc"
+        fecha:
+          $ref: "../../utils/fields.yaml#/components/schemas/Fecha"
+        hora:
+          $ref: "../../utils/fields.yaml#/components/schemas/Hora"
+        matricula:
+          $ref: "../../utils/fields.yaml#/components/schemas/Matricula"
+        pais:
+          $ref: "../../utils/fields.yaml#/components/schemas/Pais"
+        confidence:
+          type: number
+          format: decimal
+        foto:
+          $ref: "../../utils/fields.yaml#/components/schemas/Foto"
+        fotop:
+          $ref: "../../utils/fields.yaml#/components/schemas/Foto"
+        cod_dispositivo:
+          $ref: "../../utils/fields.yaml#/components/schemas/CodDispositivo"
+        nom_dispositivo:
+          $ref: "../../utils/fields.yaml#/components/schemas/NomDispositivo"
+        marca:
+          type: string
+        modelo:
+          type: string
+        color:
+          $ref: "../../utils/fields.yaml#/components/schemas/Color"
+        tipo_vh:
+          type: string
+        estado:
+          type: string
+        velocidad_vehiculo:
+          type: number
+        orientacion:
+          $ref: "../../utils/fields.yaml#/components/schemas/Orientacion"
+        cod_alertagest:
+          $ref: "../../utils/fields.yaml#/components/schemas/MultipleCod4Fill"
+        modulos:
+          $ref: "../../utils/fields.yaml#/components/schemas/ModulosString"
+        cod_usuario:
+          $ref: "../../utils/fields.yaml#/components/schemas/Cod6Fill"
+        marcado:
+          type: boolean
+
+    ObtenerReconocimientosResponse:
+      type: object
+      properties:
+        rows:
+          type: array
+          items:
+            $ref: "#/components/schemas/ObtenerReconocimientosItem"
+        total:
+          type: integer
+
+    ObtenerReconocimientosGroupRequest:
+      type: object
+      properties:
+        matricula:
+          $ref: "../../utils/fields.yaml#/components/schemas/Matricula"
+        color:
+          $ref: "../../utils/fields.yaml#/components/schemas/Color"
+        marca:
+          type: string
+        modelo:
+          type: string
+        fecha_ini:
+          $ref: "../../utils/fields.yaml#/components/schemas/Fecha"
+        fecha_fin:
+          $ref: "../../utils/fields.yaml#/components/schemas/Fecha"
+        hora_ini:
+          $ref: "../../utils/fields.yaml#/components/schemas/Hora"
+        hora_fin:
+          $ref: "../../utils/fields.yaml#/components/schemas/Hora"
+        dispositivos:
+          type: array
+          items:
+            $ref: "../../utils/fields.yaml#/components/schemas/CodDispositivo"
+        alertas:
+          type: array
+          items:
+            $ref: "../../utils/fields.yaml#/components/schemas/Cod4Fill"
+        pais:
+          $ref: "../../utils/fields.yaml#/components/schemas/Pais"
+        confidence:
+          type: number
+          format: decimal
+        orientacion:
+          $ref: "../../utils/fields.yaml#/components/schemas/Orientacion"
+        modulos:
+          $ref: "../../utils/fields.yaml#/components/schemas/Modulos"
+        tipo_vh:
+          type: string
+        velocidad_vehiculo:
+          type: number
+        cod_lista:
+          $ref: "../../utils/fields.yaml#/components/schemas/Cod6Fill"
+        cod_campaign:
+          $ref: "../../utils/fields.yaml#/components/schemas/Cod6Fill"
+        campos:
+          type: array
+          items:
+            type: string
+            enum:
+              - fecha
+              - hora
+              - dispositivo
+              - tipo_vh
+              - velocidad
+              - distintivo
+              - zona
+              - pais
+        order:
+          type: array
+          items:
+            type: string
+          example: ["fecha DESC", "hora ASC"]
+
+    ObtenerReconocimientosGroupItem:
+      type: object
+      properties:
+        fecha:
+          $ref: "../../utils/fields.yaml#/components/schemas/Fecha"
+        hora:
+          type: integer
+        cod_dispositivo:
+          $ref: "../../utils/fields.yaml#/components/schemas/CodDispositivo"
+        coordenadas:
+          $ref: "../../utils/fields.yaml#/components/schemas/Coordenadas"
+        tipo_vh:
+          type: string
+        velocidad_media:
+          type: number
+        total:
+          type: integer
+
+    ObtenerReconocimientosGroupResponse:
+      type: array
+      items:
+        $ref: "#/components/schemas/ObtenerReconocimientosGroupItem"
+
+    ObtenerReconocimientosAlertasRequest:
+      type: object
+      properties:
+        cod_dispositivo:
+          $ref: "../../utils/fields.yaml#/components/schemas/CodDispositivo"
+        nom_dispositivo:
+          $ref: "../../utils/fields.yaml#/components/schemas/NomDispositivo"
+        cod_alertagest:
+          $ref: "../../utils/fields.yaml#/components/schemas/Cod4Fill"
+        nombre_lista:
+          type: string
+        modulos:
+          $ref: "../../utils/fields.yaml#/components/schemas/Modulos"
+
+    ObtenerReconocimientosAlertasItem:
+      type: object
+      properties:
+        cod_reconoc:
+          $ref: "../../utils/fields.yaml#/components/schemas/CodReconoc"
+        cod_provincia:
+          $ref: "../../utils/fields.yaml#/components/schemas/Cod2Fill"
+        cod_poblacion:
+          $ref: "../../utils/fields.yaml#/components/schemas/Cod6Fill"
+        fecha:
+          $ref: "../../utils/fields.yaml#/components/schemas/Fecha"
+        hora:
+          $ref: "../../utils/fields.yaml#/components/schemas/Hora"
+        matricula:
+          $ref: "../../utils/fields.yaml#/components/schemas/Matricula"
+        pais:
+          $ref: "../../utils/fields.yaml#/components/schemas/Pais"
+        confidence:
+          type: number
+          format: decimal
+        foto:
+          $ref: "../../utils/fields.yaml#/components/schemas/Foto"
+        foto2:
+          $ref: "../../utils/fields.yaml#/components/schemas/Foto"
+        fotop:
+          $ref: "../../utils/fields.yaml#/components/schemas/Foto"
+        incidencia:
+          type: string
+        cod_dispositivo:
+          $ref: "../../utils/fields.yaml#/components/schemas/CodDispositivo"
+        nom_dispositivo:
+          $ref: "../../utils/fields.yaml#/components/schemas/NomDispositivo"
+        fecha_modif:
+          $ref: "../../utils/fields.yaml#/components/schemas/FechaHora"
+        marca:
+          type: string
+        modelo:
+          type: string
+        color:
+          $ref: "../../utils/fields.yaml#/components/schemas/Color"
+        tipo_vh:
+          type: string
+        estado:
+          type: string
+        velocidad_vehiculo:
+          type: number
+        latitud:
+          type: number
+          format: decimal
+        longitud:
+          type: number
+          format: decimal
+        orientacion:
+          $ref: "../../utils/fields.yaml#/components/schemas/Orientacion"
+        cod_alertagest:
+          $ref: "../../utils/fields.yaml#/components/schemas/Cod4Fill"
+        modulos:
+          $ref: "../../utils/fields.yaml#/components/schemas/ModulosString"
+        nombre_alerta:
+          type: string
+
+    ObtenerReconocimientosAlertasResponse:
+      type: array
+      items:
+        $ref: "#/components/schemas/ObtenerReconocimientosAlertasItem"
+
+    ObtenerReconocimientosGridRequest:
+      type: object
+      properties:
+        modulos:
+          $ref: "../../utils/fields.yaml#/components/schemas/Modulos"
+
+    # ========= MARCAR =========
+    MarcarReconocimientoRequest:
+      type: object
+      required:
+        - cod_reconoc
+      properties:
+        cod_reconoc:
+          $ref: "../../utils/fields.yaml#/components/schemas/CodReconoc"
+
+    MarcarReconocimientoResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        success:
+          type: boolean
+          description: Indica si la operación se realizó correctamente
+        action:
+          type: string
+          enum: ["mark", "unmark"]
+          description: Indica la acción realizada
+      example:
+        success: true
+        action: "mark"
+
+    # ========= Observaciones =========
+    ModificarObservacionesReconocimientoRequest:
+      type: object
+      required:
+        - cod_reconoc
+        - observaciones
+      properties:
+        cod_reconoc:
+          $ref: "../../utils/fields.yaml#/components/schemas/CodReconoc"
+        observaciones:
+          type: string
+
+  x-routes:
+    Obtener:
+      post:
+        tags: [Reconocimientos]
+        summary: Obtener
+        description: Devuelve datos de reconocimientos
+        operationId: obtenerReconocimientos
+        security: [{ bearerAuth: [] }]
+        requestBody:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ObtenerReconocimientosRequest"
+
+        responses:
+          "200":
+            description: OK
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/ObtenerReconocimientosResponse"
+          "401":
+            description: Usuario inválido o no autorizado
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "498":
+            description: Token expirado o inválido,
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "500":
+            description: Error inesperado,
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+
+    Obtener24:
+      post:
+        tags: [Reconocimientos]
+        summary: Obtener últimas 24h
+        operationId: obtenerReconocimientos24
+        security: [{ bearerAuth: [] }]
+        requestBody:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ObtenerReconocimientosRequest"
+        responses:
+          "200":
+            description: OK
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/ObtenerReconocimientosResponse"
+
+    ObtenerAlertas24:
+      post:
+        tags: [Reconocimientos]
+        summary: Obtener
+        description: Devuelve datos de las alertas con reconocimiento en las ultimas 24h
+        operationId: obtenerReconocimientosAlertas24
+        security: [{ bearerAuth: [] }]
+        requestBody:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ObtenerReconocimientosAlertasRequest"
+
+        responses:
+          "200":
+            description: OK
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/ObtenerReconocimientosAlertasResponse"
+          "401":
+            description: Usuario inválido o no autorizado
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "498":
+            description: Token expirado o inválido,
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "500":
+            description: Error inesperado,
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+
+    ObtenerGrid:
+      post:
+        tags: [Reconocimientos]
+        summary: Obtener
+        description: Devuelve datos de reconocimientos
+        operationId: obtenerReconocimientosGrid
+        security: [{ bearerAuth: [] }]
+        requestBody:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ObtenerReconocimientosGridRequest"
+
+        responses:
+          "200":
+            description: OK
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/ObtenerReconocimientosResponse"
+          "401":
+            description: Usuario inválido o no autorizado
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "498":
+            description: Token expirado o inválido,
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "500":
+            description: Error inesperado,
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+
+    ObtenerNx:
+      post:
+        tags: [Reconocimientos]
+        summary: Obtener
+        description: Devuelve datos de reconocimientos de NX Witness
+        operationId: obtenerReconocimientosNx
+        security: [{ bearerAuth: [] }]
+        requestBody:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ObtenerReconocimientosRequest"
+
+        responses:
+          "200":
+            description: OK
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/ObtenerReconocimientosResponse"
+          "401":
+            description: Usuario inválido o no autorizado
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "498":
+            description: Token expirado o inválido,
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "500":
+            description: Error inesperado,
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+
+    Group:
+      post:
+        tags: [Reconocimientos]
+        summary: Group
+        operationId: groupReconocimientos
+        security: [{ bearerAuth: [] }]
+        requestBody:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ObtenerReconocimientosGroupRequest"
+
+        responses:
+          "200":
+            description: OK
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/ObtenerReconocimientosGroupResponse"
+          "401":
+            description: Usuario inválido o no autorizado
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "498":
+            description: Token expirado o inválido,
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "500":
+            description: Error inesperado,
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+
+    Group24:
+      post:
+        tags: [Reconocimientos]
+        summary: Group 24h
+        operationId: groupReconocimientos24
+        security: [{ bearerAuth: [] }]
+
+        requestBody:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ObtenerReconocimientosGroupRequest"
+
+        responses:
+          "200":
+            description: OK
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/ObtenerReconocimientosGroupResponse"
+          "401":
+            description: Usuario inválido o no autorizado
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "498":
+            description: Token expirado o inválido,
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "500":
+            description: Error inesperado,
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+
+    Marcar:
+      post:
+        tags: [Reconocimientos]
+        summary: Marcar reconocimiento
+        description: Marca o desmarca un reconocimiento vehicular mediante su código
+        operationId: marcarReconocimiento
+        security: [{ bearerAuth: [] }]
+        requestBody:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MarcarReconocimientoRequest"
+        responses:
+          "200":
+            description: OK
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/MarcarReconocimientoResponse"
+          "401":
+            description: Usuario inválido o no autorizado
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "498":
+            description: Token expirado o inválido,
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "500":
+            description: Error inesperado,
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+
+    Observaciones:
+      post:
+        tags: [Reconocimientos]
+        summary: Modificar observaciones reconocimiento
+        description: Modifica las observaciones de un reconocimiento vehicular mediante su código
+        operationId: observacionesReconocimiento
+        security: [{ bearerAuth: [] }]
+        requestBody:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ModificarObservacionesReconocimientoRequest"
+        responses:
+          "200":
+            description: OK
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ActionResult"
+          "401":
+            description: Usuario inválido o no autorizado
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "498":
+            description: Token expirado o inválido,
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "500":
+            description: Error inesperado,
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"

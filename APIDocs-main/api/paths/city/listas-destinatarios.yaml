@@ -1,0 +1,582 @@
+openapi: 3.0.0
+info: { title: Listas Destinatarios, version: 1.1.0 }
+components:
+  schemas:
+    # ======== HORARIO (reutilizable) ========
+    HorarioDia:
+      type: object
+      description: Configuración de disponibilidad para un día de la semana
+      properties:
+        enabled:
+          type: boolean
+          description: Si el destinatario está disponible este día
+        rangos:
+          type: array
+          description: Rangos horarios de disponibilidad (solo si enabled=true)
+          items:
+            type: object
+            properties:
+              from:
+                type: string
+                pattern: "^([01]?[0-9]|2[0-3]):[0-5][0-9]$"
+                example: "09:00"
+                description: Hora de inicio del rango (formato HH:MM)
+              to:
+                type: string
+                pattern: "^([01]?[0-9]|2[0-3]):[0-5][0-9]$"
+                example: "18:00"
+                description: Hora de fin del rango (formato HH:MM)
+
+    Horario:
+      type: object
+      nullable: true
+      description: |
+        Horario de disponibilidad del destinatario por día de la semana.
+        Si es NULL, el destinatario puede recibir notificaciones 24/7.
+        La validación de horarios se realiza según la TIME_ZONE del sistema.
+      properties:
+        lunes:
+          $ref: "#/components/schemas/HorarioDia"
+        martes:
+          $ref: "#/components/schemas/HorarioDia"
+        miercoles:
+          $ref: "#/components/schemas/HorarioDia"
+        jueves:
+          $ref: "#/components/schemas/HorarioDia"
+        viernes:
+          $ref: "#/components/schemas/HorarioDia"
+        sabado:
+          $ref: "#/components/schemas/HorarioDia"
+        domingo:
+          $ref: "#/components/schemas/HorarioDia"
+      example:
+        lunes:
+          enabled: true
+          rangos:
+            - from: "09:00"
+              to: "13:30"
+            - from: "15:00"
+              to: "18:00"
+        martes:
+          enabled: true
+          rangos:
+            - from: "09:00"
+              to: "18:00"
+        miercoles:
+          enabled: true
+          rangos:
+            - from: "09:00"
+              to: "18:00"
+        jueves:
+          enabled: true
+          rangos:
+            - from: "09:00"
+              to: "18:00"
+        viernes:
+          enabled: true
+          rangos:
+            - from: "09:00"
+              to: "16:00"
+        sabado:
+          enabled: false
+        domingo:
+          enabled: false
+
+    # ======== INSERTAR ========
+    InsertarDestinatarioRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - cod_lista
+        - nombre
+      properties:
+        cod_lista:
+          $ref: "../../utils/fields.yaml#/components/schemas/Cod4Fill"
+          description: Código de la lista a la que pertenece el destinatario
+        nombre:
+          type: string
+          maxLength: 120
+          description: Nombre del destinatario (obligatorio)
+        email:
+          type: string
+          format: email
+          maxLength: 255
+          description: Dirección de correo electrónico
+        telefono:
+          type: string
+          maxLength: 20
+          description: Número de teléfono (para SMS, WhatsApp y llamadas)
+        email_enabled:
+          type: boolean
+          default: false
+          description: Activar notificaciones por email
+        sms_enabled:
+          type: boolean
+          default: false
+          description: Activar notificaciones por SMS
+        whatsapp_enabled:
+          type: boolean
+          default: false
+          description: Activar notificaciones por WhatsApp
+        call_enabled:
+          type: boolean
+          default: false
+          description: Activar notificaciones por llamada telefónica
+        horario_email:
+          $ref: "#/components/schemas/Horario"
+        horario_telefono:
+          $ref: "#/components/schemas/Horario"
+
+    # ======== OBTENER ========
+    ObtenerDestinatariosRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: integer
+          description: ID específico del destinatario
+        cod_lista:
+          $ref: "../../utils/fields.yaml#/components/schemas/Cod4Fill"
+          description: Código de la lista
+        nombre:
+          type: string
+          description: Filtrar por nombre del destinatario
+        soloActivos:
+          type: boolean
+          default: false
+          description: Si true, devuelve solo destinatarios activos
+
+    DestinatarioItem:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: integer
+        cod_lista:
+          $ref: "../../utils/fields.yaml#/components/schemas/Cod4Fill"
+        nombre:
+          type: string
+        email:
+          type: string
+          format: email
+          nullable: true
+        telefono:
+          type: string
+          nullable: true
+        email_enabled:
+          type: boolean
+          description: Notificaciones por email activadas
+        sms_enabled:
+          type: boolean
+          description: Notificaciones por SMS activadas
+        whatsapp_enabled:
+          type: boolean
+          description: Notificaciones por WhatsApp activadas
+        call_enabled:
+          type: boolean
+          description: Notificaciones por llamada activadas
+        horario_email:
+          $ref: "#/components/schemas/Horario"
+        horario_telefono:
+          $ref: "#/components/schemas/Horario"
+        activo:
+          type: boolean
+          description: Indica si el destinatario está activo para recibir notificaciones
+        creado_en:
+          type: string
+          format: date-time
+        actualizado_en:
+          type: string
+          format: date-time
+
+    ObtenerDestinatariosResponse:
+      type: array
+      items:
+        $ref: "#/components/schemas/DestinatarioItem"
+
+    # ======== MODIFICAR ========
+    ModificarDestinatarioRequest:
+      type: object
+      additionalProperties: false
+      required: [id]
+      properties:
+        id:
+          type: integer
+          description: ID del destinatario a modificar
+        nombre:
+          type: string
+          maxLength: 120
+        email:
+          type: string
+          format: email
+          maxLength: 255
+        telefono:
+          type: string
+          maxLength: 20
+        email_enabled:
+          type: boolean
+        sms_enabled:
+          type: boolean
+        whatsapp_enabled:
+          type: boolean
+        call_enabled:
+          type: boolean
+        horario_email:
+          $ref: "#/components/schemas/Horario"
+        horario_telefono:
+          $ref: "#/components/schemas/Horario"
+        activo:
+          type: boolean
+          description: Activar o desactivar el destinatario
+
+    # ======== CAMBIAR ESTADO ========
+    CambiarEstadoDestinatarioRequest:
+      type: object
+      additionalProperties: false
+      required: [id, activo]
+      properties:
+        id:
+          type: integer
+          description: ID del destinatario
+        activo:
+          type: boolean
+          description: true para activar, false para desactivar
+
+    # ======== ELIMINAR ========
+    EliminarDestinatarioRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: integer
+          description: ID del destinatario a eliminar
+        cod_lista:
+          $ref: "../../utils/fields.yaml#/components/schemas/Cod4Fill"
+          description: Eliminar todos los destinatarios de una lista
+
+    # ======= IMPORT =======
+    ImportarDestinatariosListasResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        insert:
+          type: array
+          items:
+            type: string
+        errors:
+          type: array
+          items:
+            type: string
+      example:
+        insert: ["Juan García", "María López"]
+        errors: ["Fila 3: email inválido"]
+
+  x-routes:
+    Insertar:
+      post:
+        tags: ["Destinatarios listas"]
+        summary: Insertar destinatario a lista
+        description: |
+          Añade un destinatario de notificaciones a una lista específica.
+
+          **Campos de contacto:**
+          - `email`: Para notificaciones por correo electrónico
+          - `telefono`: Para SMS, WhatsApp y llamadas telefónicas
+
+          **Canales de notificación (flags):**
+          - `email_enabled`: Activa notificaciones por email (requiere `email`)
+          - `sms_enabled`: Activa notificaciones por SMS (requiere `telefono`)
+          - `whatsapp_enabled`: Activa notificaciones por WhatsApp (requiere `telefono`)
+          - `call_enabled`: Activa notificaciones por llamada (requiere `telefono`)
+
+          **Horario de disponibilidad:**
+          - Si `horario` (`horario_email`, `horario_telefono`) es NULL, el destinatario puede recibir notificaciones 24/7
+          - Si se especifica, las notificaciones solo se envían durante los rangos horarios configurados
+          - La validación horaria se realiza según la TIME_ZONE del sistema
+
+          **Notificaciones históricas automáticas:**
+          - Respuesta HTTP inmediata con ID del destinatario creado
+          - Post-respuesta: busca reconocimientos de todos los vehículos de la lista (últimos 30 días)
+          - Si hay reconocimientos, envía notificación automática al nuevo destinatario
+          - El proceso no bloquea la respuesta de la API
+        operationId: insertarDestinatarioLista
+        security:
+          - bearerAuth: []
+          - userAndPassword: []
+        parameters: []
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InsertarDestinatarioRequest"
+              examples:
+                basico:
+                  summary: Destinatario con email
+                  value:
+                    cod_lista: 1
+                    nombre: "Juan García"
+                    email: "juan@ejemplo.com"
+                    email_enabled: true
+                completo:
+                  summary: Destinatario con todos los canales
+                  value:
+                    cod_lista: 1
+                    nombre: "María López"
+                    email: "maria@ejemplo.com"
+                    telefono: "612345678"
+                    email_enabled: true
+                    sms_enabled: true
+                    whatsapp_enabled: true
+                    call_enabled: false
+                    horario_email: null
+                    horario_telefono:
+                      lunes:
+                        enabled: true
+                        rangos:
+                          - from: "09:00"
+                            to: "18:00"
+                      martes:
+                        enabled: true
+                        rangos:
+                          - from: "09:00"
+                            to: "18:00"
+                      miercoles:
+                        enabled: true
+                        rangos:
+                          - from: "09:00"
+                            to: "18:00"
+                      jueves:
+                        enabled: true
+                        rangos:
+                          - from: "09:00"
+                            to: "18:00"
+                      viernes:
+                        enabled: true
+                        rangos:
+                          - from: "09:00"
+                            to: "16:00"
+                      sabado:
+                        enabled: false
+                      domingo:
+                        enabled: false
+        responses:
+          "200":
+            description: OK - Destinatario creado. Notificaciones históricas procesándose en background.
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      description: ID del destinatario insertado
+          "400":
+            description: Bad Request - Campos requeridos faltantes o inválidos
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    error:
+                      type: boolean
+                    message:
+                      type: string
+          "401":
+            $ref: "../../utils/responses.yaml#/components/x-responses/401"
+          "498":
+            $ref: "../../utils/responses.yaml#/components/x-responses/498"
+          "500":
+            $ref: "../../utils/responses.yaml#/components/x-responses/500"
+
+    Obtener:
+      post:
+        tags: ["Destinatarios listas"]
+        summary: Obtener destinatarios de listas
+        description: |
+          Devuelve los destinatarios configurados para notificaciones de listas.
+
+          Se puede filtrar por:
+          - `id`: Obtener un destinatario específico
+          - `cod_lista`: Todos los destinatarios de una lista
+          - `nombre`: Buscar por nombre
+          - `soloActivos`: Solo destinatarios activos
+        operationId: obtenerDestinatariosLista
+        security:
+          - bearerAuth: []
+          - userAndPassword: []
+        parameters: []
+        requestBody:
+          required: false
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ObtenerDestinatariosRequest"
+        responses:
+          "200":
+            description: OK
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/ObtenerDestinatariosResponse"
+          "401":
+            $ref: "../../utils/responses.yaml#/components/x-responses/401"
+          "498":
+            $ref: "../../utils/responses.yaml#/components/x-responses/498"
+          "500":
+            $ref: "../../utils/responses.yaml#/components/x-responses/500"
+
+    Modificar:
+      post:
+        tags: ["Destinatarios listas"]
+        summary: Modificar destinatario de lista
+        description: |
+          Actualiza los datos de un destinatario existente.
+
+          Todos los campos son opcionales excepto `id`. Solo se actualizan los campos proporcionados.
+
+          **Nota sobre canales:**
+          - Para activar un canal, el campo de contacto correspondiente debe estar configurado
+          - `email_enabled` requiere que `email` esté configurado
+          - `sms_enabled`, `whatsapp_enabled`, `call_enabled` requieren que `telefono` esté configurado
+        operationId: modificarDestinatarioLista
+        security:
+          - bearerAuth: []
+          - userAndPassword: []
+        parameters: []
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ModificarDestinatarioRequest"
+        responses:
+          "200":
+            description: OK
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ActionResult"
+          "401":
+            $ref: "../../utils/responses.yaml#/components/x-responses/401"
+          "498":
+            $ref: "../../utils/responses.yaml#/components/x-responses/498"
+          "500":
+            $ref: "../../utils/responses.yaml#/components/x-responses/500"
+
+    CambiarEstado:
+      post:
+        tags: ["Destinatarios listas"]
+        summary: Cambiar estado de destinatario
+        description: Activa o desactiva un destinatario. Los destinatarios inactivos no reciben notificaciones por ningún canal.
+        operationId: cambiarEstadoDestinatarioLista
+        security:
+          - bearerAuth: []
+          - userAndPassword: []
+        parameters: []
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CambiarEstadoDestinatarioRequest"
+        responses:
+          "200":
+            description: OK
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    success:
+                      type: boolean
+                    message:
+                      type: string
+          "401":
+            $ref: "../../utils/responses.yaml#/components/x-responses/401"
+          "498":
+            $ref: "../../utils/responses.yaml#/components/x-responses/498"
+          "500":
+            $ref: "../../utils/responses.yaml#/components/x-responses/500"
+
+    Eliminar:
+      post:
+        tags: ["Destinatarios listas"]
+        summary: Eliminar destinatario de lista
+        description: Elimina un destinatario por su ID o todos los destinatarios de una lista.
+        operationId: eliminarDestinatarioLista
+        security:
+          - bearerAuth: []
+          - userAndPassword: []
+        parameters: []
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EliminarDestinatarioRequest"
+        responses:
+          "200":
+            description: OK
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ActionResult"
+          "401":
+            $ref: "../../utils/responses.yaml#/components/x-responses/401"
+          "498":
+            $ref: "../../utils/responses.yaml#/components/x-responses/498"
+          "500":
+            $ref: "../../utils/responses.yaml#/components/x-responses/500"
+
+    Importar:
+      post:
+        tags: ["Destinatarios listas"]
+        summary: Importar destinatarios a una lista
+        description: |
+          Importa destinatarios a una lista desde CSV.
+
+          **Columnas del CSV:**
+          - `nombre` (obligatorio): Nombre del destinatario
+          - `email` (opcional): Dirección de correo electrónico
+          - `telefono` (opcional): Número de teléfono
+          - `email_enabled` (opcional): 1/0 o true/false
+          - `sms_enabled` (opcional): 1/0 o true/false
+          - `whatsapp_enabled` (opcional): 1/0 o true/false
+          - `call_enabled` (opcional): 1/0 o true/false
+
+          **Nota:** El campo `horario` no se puede importar desde CSV. Se configura como NULL (24/7) por defecto.
+        operationId: importarListasDestinatarios
+        security:
+          - bearerAuth: []
+        parameters: []
+        requestBody:
+          required: true
+          content:
+            multipart/form-data:
+              schema:
+                type: object
+                additionalProperties: false
+                required:
+                  - cod_lista
+                  - archivo_csv
+                properties:
+                  cod_lista:
+                    $ref: "../../utils/fields.yaml#/components/schemas/Cod4Fill"
+                  archivo_csv:
+                    type: string
+                    format: binary
+                    description: Fichero CSV con columnas `nombre`, `email`, `telefono`, `*_enabled`.
+        responses:
+          "200":
+            description: OK
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/ImportarDestinatariosListasResponse"
+          "401":
+            $ref: "../../utils/responses.yaml#/components/x-responses/401"
+          "498":
+            $ref: "../../utils/responses.yaml#/components/x-responses/498"
+          "500":
+            $ref: "../../utils/responses.yaml#/components/x-responses/500"

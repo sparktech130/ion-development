@@ -1,0 +1,472 @@
+openapi: 3.0.0
+info:
+  title: Operaciones de Clouds Nx
+  version: 1.0.0
+
+paths:
+
+components:
+  x-routes:
+    Obtener:
+      post:
+        tags:
+          - NX Clouds
+        summary: Obtener
+        description: Devuelve todos los clouds registrados
+        operationId: obtenerClouds
+        security:
+          - bearerAuth: []
+        parameters: []
+        responses:
+          "200":
+            description: Successful operation
+            content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/CloudInfo"
+          "401":
+            description: Usuario inválido o no autorizado
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "498":
+            description: Token expirado o inválido
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "500":
+            description: Unexpected error
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+        requestBody:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  cod_cloud:
+                    type: string
+                    example: "000015"
+                  nombre:
+                    type: string
+                    example: "Monitores"
+                  systemId:
+                    type: string
+                    format: uuid
+                  user:
+                    type: string
+                  cloud_user:
+                    type: string
+                  cod_sector:
+                    type: string
+                    example: "000015"
+    Insertar:
+      post:
+        tags:
+          - NX Clouds
+        summary: Insertar
+        description: Registra un cloud nuevo
+        operationId: insertarCloud
+        security:
+          - bearerAuth: []
+        parameters: []
+        responses:
+          "200":
+            description: Successful operation
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    cod_cloud:
+                      type: string
+                      example: "000015"
+                    dispositivos:
+                      $ref: "#/components/schemas/CloudDevicesSync"
+          "401":
+            description: Usuario inválido o no autorizado
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "498":
+            description: Token expirado o inválido
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "500":
+            description: Unexpected error
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+        requestBody:
+          content:
+            application/json:
+              schema:
+                required:
+                  - nombre
+                  - systemId
+                  - user
+                  - password
+                  - cod_sector
+                type: object
+                properties:
+                  nombre:
+                    type: string
+                  systemId:
+                    type: string
+                    format: uuid
+                  ip:
+                    type: string
+                    example: "192.168.10.4"
+                  puerto:
+                    type: string
+                    example: "7001"
+                  user:
+                    type: string
+                  password:
+                    type: string
+                  cloud_user:
+                    type: string
+                  cloud_password:
+                    type: string
+                  cod_sector:
+                    type: string
+                    example: "000015"
+                  getDevices:
+                    type: boolean
+
+    Modificar:
+      post:
+        tags:
+          - NX Clouds
+        summary: Modificar
+        description: Modifica los clouds
+        operationId: modificarClouds
+        parameters: []
+        requestBody:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  cod_cloud:
+                    type: string
+                    example: "000015"
+                  nombre:
+                    type: string
+                  systemId:
+                    type: string
+                    format: uuid
+                  ip:
+                    type: string
+                    example: "192.168.10.4"
+                  puerto:
+                    type: string
+                    example: "7001"
+                  user:
+                    type: string
+                  password:
+                    type: string
+                  cloud_user:
+                    type: string
+                  cloud_password:
+                    type: string
+                  cod_sector:
+                    type: string
+                    example: "000015"
+                required:
+                  - cod_cloud
+        responses:
+          "200":
+            description: Successful operation
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/SuccessResult"
+          "401":
+            description: Usuario inválido o no autorizado
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "498":
+            description: Token expirado o inválido
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "500":
+            description: Unexpected error
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+        security:
+          - bearerAuth: []
+
+    Eliminar:
+      post:
+        tags:
+          - NX Clouds
+        summary: Eliminar
+        description: Elimina los clouds
+        operationId: eliminarClouds
+        parameters: []
+        requestBody:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  cod_cloud:
+                    type: string
+                    example: "000015"
+                required:
+                  - cod_cloud
+        responses:
+          "200":
+            description: Successful operation
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/SuccessResult"
+          "401":
+            description: Usuario inválido o no autorizado
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "498":
+            description: Token expirado o inválido
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "500":
+            description: Unexpected error
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+        security:
+          - bearerAuth: []
+
+    ObtenerDispositivosSincronizar:
+      post:
+        tags:
+          - NX Clouds
+        summary: Obtener dispositivos
+        description: Devuelve los dispositivos pendientes de sincronizar
+        operationId: obtenerDispositivosSincronizar
+        security:
+          - bearerAuth: []
+        parameters: []
+        responses:
+          "200":
+            description: Successful operation
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/CloudDevicesSync"
+          "401":
+            description: Usuario inválido o no autorizado
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "498":
+            description: Token expirado o inválido
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "500":
+            description: Unexpected error
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+        requestBody:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  cod_cloud:
+                    type: string
+                    example: "000015"
+
+    InsertarDispositivosSincronizar:
+      post:
+        tags:
+          - NX Clouds
+        summary: Insertar dispositivos para la sincronización
+        description: Registra los dispositivos pendientes de sincronizar
+        operationId: insertarDispositivosSincronizar
+        security:
+          - bearerAuth: []
+        parameters: []
+        responses:
+          "200":
+            description: Successful operation
+            content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      deviceId:
+                        type: string
+                        format: uuid
+                      serverId:
+                        type: string
+                        format: uuid
+                      serverUrl:
+                        type: string
+                        format: uri
+                        example: "192.168.10.4:7001"
+                      insert:
+                        type: boolean
+          "401":
+            description: Usuario inválido o no autorizado
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "498":
+            description: Token expirado o inválido
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "500":
+            description: Unexpected error
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+        requestBody:
+          content:
+            application/json:
+              schema:
+                required:
+                  - dispositivos
+                  - cod_cloud
+                type: object
+                properties:
+                  cod_cloud:
+                    type: string
+                    example: "000015"
+                  dispositivos:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        deviceId:
+                          type: string
+                          format: uuid
+                        nom_dispositivo:
+                          $ref: "../../utils/fields.yaml#/components/schemas/NomDispositivo"
+                        serial_number:
+                          type: string
+                        cod_modelo:
+                          type: string
+                          example: "000015"
+                        coordenadas:
+                          $ref: "../../utils/fields.yaml#/components/schemas/Coordenadas"
+                        modulos:
+                          type: array
+                          items:
+                            type: integer
+                          example: [101, 102]
+                        cod_nave:
+                          type: string
+                          nullable: true
+                          description: Campo necesario en industry para cámaras y monitores
+                          example: "000015"
+                        reconocimientos:
+                          description: "Cámaras industry"
+                          type: boolean
+                        pasillos:
+                          type: array
+                          items:
+                            $ref: "../industry/dispositivos.yaml#/components/schemas/dispositivosinsertar_pasillos"
+                          description: "Cámaras industry"
+                          nullable: true
+                        id_estacion:
+                          type: string
+                          description: "Monitores industry"
+                          format: uuid
+                          nullable: true
+
+  schemas:
+    CloudInfo:
+      type: object
+      properties:
+        cod_cloud:
+          type: string
+          example: "00001"
+        nombre:
+          type: string
+          example: "Cloud"
+        systemId:
+          type: string
+          example: "0b8d289a-34ec-4838-9f20-6cc986e6f9e0"
+        ip:
+          type: string
+          example: "192.168.10.4"
+        puerto:
+          type: string
+          example: "7001"
+        user:
+          type: string
+          example: "admin"
+        password:
+          type: string
+          example: "*****"
+        cloud_user:
+          type: string
+          example: "user@cloud.com"
+        cloud_password:
+          type: string
+          example: "*****"
+        cod_sector:
+          type: string
+          example: "001"
+        nombre_sector:
+          type: string
+          example: "SmartCity"
+    CloudDevicesSync:
+      type: array
+      items:
+        type: object
+        properties:
+          deviceId:
+            type: string
+            format: uuid
+          name:
+            type: string
+          mac:
+            $ref: "../../utils/fields.yaml#/components/schemas/MAC"
+          stream:
+            type: object
+            properties:
+              tipos_stream:
+                type: array
+                example: ["low", "high"]
+                items:
+                  type: string
+              mp4_url:
+                $ref: "../../utils/fields.yaml#/components/schemas/DeviceInfo_streams"
+              mkv_url:
+                $ref: "../../utils/fields.yaml#/components/schemas/DeviceInfo_streams"

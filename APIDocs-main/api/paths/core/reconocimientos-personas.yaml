@@ -1,0 +1,438 @@
+openapi: 3.0.0
+info:
+  title: Operaciones de reconocimientos de personas
+  version: 1.0.0
+
+components:
+  schemas:
+    # ========= OBTENER =========
+    ObtenerReconocimientosPersonasRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        refTrackingId:
+          type: string
+          format: uuid
+          description: Identificador de tracking (UUID)
+        fecha_ini:
+          $ref: "../../utils/fields.yaml#/components/schemas/Fecha"
+        fecha_fin:
+          $ref: "../../utils/fields.yaml#/components/schemas/Fecha"
+        hora_ini:
+          $ref: "../../utils/fields.yaml#/components/schemas/Hora"
+        hora_fin:
+          $ref: "../../utils/fields.yaml#/components/schemas/Hora"
+        cod_dispositivo:
+          $ref: "../../utils/fields.yaml#/components/schemas/CodDispositivo"
+        edad:
+          type: array
+          items:
+            type: string
+            enum: ["unknown", "young", "middle", "adult", "senior"]
+        genero:
+          type: array
+          items:
+            type: string
+            enum: ["male", "female", "unknown"]
+        ropa_superior:
+          type: array
+          items:
+            $ref: "../../utils/fields.yaml#/components/schemas/Color"
+        ropa_inferior:
+          type: array
+          items:
+            $ref: "../../utils/fields.yaml#/components/schemas/Color"
+        fumando:
+          type: boolean
+        tatuado:
+          type: boolean
+        telefono:
+          type: boolean
+        cara_tapada:
+          type: boolean
+        gafas:
+          type: boolean
+        asistido:
+          type: boolean
+        carga_bolsa:
+          type: boolean
+        limit:
+          type: integer
+          minimum: 1
+          default: 200
+        marcado:
+          type: boolean
+          description: Filtrar por estado de marcado del reconocimiento
+
+    ObtenerReconocimientosPersonasItem:
+      type: object
+      additionalProperties: false
+      properties:
+        genero:
+          type: string
+          enum: ["male", "female", "unknown"]
+        asistido:
+          type: boolean
+        cara_tapada:
+          type: boolean
+        ropa_superior:
+          $ref: "../../utils/fields.yaml#/components/schemas/Color"
+        ropa_inferior:
+          $ref: "../../utils/fields.yaml#/components/schemas/Color"
+        telefono:
+          type: boolean
+        gafas:
+          type: boolean
+        edad:
+          type: string
+          enum: ["unknown", "young", "middle", "adult", "senior"]
+        tatuado:
+          type: boolean
+        carga_bolsa:
+          type: boolean
+        fumando:
+          type: boolean
+        instanceId:
+          type: string
+        refTrackingId:
+          type: string
+          format: uuid
+        fecha_hora:
+          $ref: "../../utils/fields.yaml#/components/schemas/FechaHora"
+        foto:
+          $ref: "../../utils/fields.yaml#/components/schemas/Foto"
+        cod_dispositivo:
+          $ref: "../../utils/fields.yaml#/components/schemas/CodDispositivo"
+        nom_dispositivo:
+          $ref: "../../utils/fields.yaml#/components/schemas/NomDispositivo"
+        deviceId:
+          type: string
+          format: uuid
+        modulo:
+          type: string
+          example: "mobility"
+        marcado:
+          type: boolean
+      example:
+        genero: "male"
+        asistido: false
+        cara_tapada: false
+        ropa_superior: "blue"
+        ropa_inferior: "black"
+        telefono: true
+        gafas: false
+        edad: "adult"
+        tatuado: false
+        carga_bolsa: true
+        fumando: false
+        instanceId: "aci_001234"
+        refTrackingId: "6ad2f3bc-2f8b-4a2e-9f43-0f6a5d4a1e9e"
+        fecha_hora: "2025-09-30 12:27:11"
+        foto: "2025-09-30_12-27-11_face.jpg"
+        cod_dispositivo: "000001"
+        nom_dispositivo: "INCA001"
+        deviceId: "dev-123"
+        modulo: "mobility"
+        marcado: false
+
+    ObtenerReconocimientosPersonasResponse:
+      type: array
+      items:
+        $ref: "#/components/schemas/ObtenerReconocimientosPersonasItem"
+
+    # ========= GROUP =========
+    GroupReconocimientosPersonasRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        fecha_ini:
+          $ref: "../../utils/fields.yaml#/components/schemas/Fecha"
+        fecha_fin:
+          $ref: "../../utils/fields.yaml#/components/schemas/Fecha"
+        hora_ini:
+          $ref: "../../utils/fields.yaml#/components/schemas/Hora"
+        hora_fin:
+          $ref: "../../utils/fields.yaml#/components/schemas/Hora"
+        cod_dispositivo:
+          $ref: "../../utils/fields.yaml#/components/schemas/CodDispositivo"
+        edad:
+          type: array
+          items:
+            type: string
+            enum: ["unknown", "young", "middle", "adult", "senior"]
+        genero:
+          type: array
+          items:
+            type: string
+            enum: ["male", "female", "unknown"]
+        ropa_superior:
+          type: array
+          items:
+            $ref: "../../utils/fields.yaml#/components/schemas/Color"
+        ropa_inferior:
+          type: array
+          items:
+            $ref: "../../utils/fields.yaml#/components/schemas/Color"
+        fumando:
+          type: boolean
+        tatuado:
+          type: boolean
+        telefono:
+          type: boolean
+        cara_tapada:
+          type: boolean
+        gafas:
+          type: boolean
+        asistido:
+          type: boolean
+        carga_bolsa:
+          type: boolean
+        marcado:
+          type: boolean
+        group:
+          type: array
+          description: |
+            Lista de campos por los que agrupar. Admite:
+            `fecha`, `hora`, `cod_dispositivo` (o `dispositivo`), `genero`, `fumando`, `tatuado`, `telefono`, `edad`.
+          items:
+            type: string
+            enum:
+              [
+                "fecha",
+                "hora",
+                "cod_dispositivo",
+                "dispositivo",
+                "genero",
+                "fumando",
+                "tatuado",
+                "telefono",
+                "edad",
+              ]
+
+    GroupReconocimientosPersonasItem:
+      type: object
+      additionalProperties: false
+      properties:
+        # Estos campos aparecerán si se incluyen en 'group'
+        fecha:
+          $ref: "../../utils/fields.yaml#/components/schemas/Fecha"
+        hora:
+          type: integer
+          minimum: 0
+          maximum: 23
+        cod_dispositivo:
+          $ref: "../../utils/fields.yaml#/components/schemas/CodDispositivo"
+        nom_dispositivo:
+          $ref: "../../utils/fields.yaml#/components/schemas/NomDispositivo"
+        coordenadas:
+          type: string
+          description: "Coordenadas del dispositivo"
+        genero:
+          type: string
+          enum: ["male", "female", "unknown"]
+        fumando:
+          type: boolean
+        tatuado:
+          type: boolean
+        telefono:
+          type: boolean
+        edad:
+          type: string
+        total:
+          type: integer
+          minimum: 0
+      example:
+        fecha: "2025-09-30"
+        hora: 12
+        cod_dispositivo: "000001"
+        nom_dispositivo: "INCA001"
+        coordenadas: "39.722134,2.912756"
+        genero: "male"
+        fumando: false
+        tatuado: false
+        telefono: true
+        total: 7
+
+    GroupReconocimientosPersonasResponse:
+      type: array
+      items:
+        $ref: "#/components/schemas/GroupReconocimientosPersonasItem"
+
+    # ========= OBTENER FOTO ORIGINAL =========
+    ObtenerFotoOriginalRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - refTrackingId
+      properties:
+        refTrackingId:
+          type: string
+          format: uuid
+          description: Identificador de tracking (UUID) del reconocimiento
+
+    ObtenerFotoOriginalResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        foto:
+          type: string
+          description: Nombre del archivo de la foto original
+          example: "2025-09-30_12-27-11_original.jpg"
+        refTrackingId:
+          type: string
+          format: uuid
+          description: Identificador de tracking (UUID) del reconocimiento
+      example:
+        foto: "2025-09-30_12-27-11_original.jpg"
+        refTrackingId: "6ad2f3bc-2f8b-4a2e-9f43-0f6a5d4a1e9e"
+
+    # ========= MARCAR =========
+    MarcarReconocimientoPersonaRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - refTrackingId
+      properties:
+        refTrackingId:
+          type: string
+          format: uuid
+          description: Identificador de tracking (UUID) del reconocimiento
+
+    MarcarReconocimientoPersonaResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        success:
+          type: boolean
+          description: Indica si la operación se realizó correctamente
+        action:
+          type: string
+          enum: ["mark", "unmark"]
+          description: Indica la acción realizada
+      example:
+        success: true
+        action: "mark"
+
+  x-routes:
+    Obtener:
+      post:
+        tags: ["Reconocimientos personas"]
+        summary: Obtener reconocimientos de personas
+        description: >
+          Devuelve reconocimientos de personas filtrando por `refTrackingId` (UUID),
+          rango de fecha/hora y dispositivo. Ordenado por `fecha_hora` descendente.
+        operationId: obtenerReconocimientosPersonas
+        security:
+          - bearerAuth: []
+        parameters: []
+        requestBody:
+          required: false
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ObtenerReconocimientosPersonasRequest"
+        responses:
+          "200":
+            description: OK
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/ObtenerReconocimientosPersonasResponse"
+          "401":
+            $ref: "../../utils/responses.yaml#/components/x-responses/401"
+          "498":
+            $ref: "../../utils/responses.yaml#/components/x-responses/498"
+          "500":
+            $ref: "../../utils/responses.yaml#/components/x-responses/500"
+
+    Group:
+      post:
+        tags: ["Reconocimientos personas"]
+        summary: Agrupar reconocimientos de personas
+        description: >
+          Devuelve agregaciones de reconocimientos según los campos indicados en `group`.
+          Se puede filtrar por rango de fecha/hora y dispositivo.
+        operationId: groupReconocimientosPersonas
+        security:
+          - bearerAuth: []
+        parameters: []
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GroupReconocimientosPersonasRequest"
+        responses:
+          "200":
+            description: OK
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/GroupReconocimientosPersonasResponse"
+          "401":
+            $ref: "../../utils/responses.yaml#/components/x-responses/401"
+          "498":
+            $ref: "../../utils/responses.yaml#/components/x-responses/498"
+          "500":
+            $ref: "../../utils/responses.yaml#/components/x-responses/500"
+
+    ObtenerFotoOriginal:
+      post:
+        tags: ["Reconocimientos personas"]
+        summary: Obtener foto original de reconocimiento
+        description: >
+          Devuelve el nombre del archivo de la foto original asociada a un reconocimiento
+          de personas mediante su `refTrackingId`.
+        operationId: obtenerFotoOriginalReconocimientoPersona
+        security:
+          - bearerAuth: []
+        parameters: []
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ObtenerFotoOriginalRequest"
+        responses:
+          "200":
+            description: OK
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/ObtenerFotoOriginalResponse"
+          "401":
+            $ref: "../../utils/responses.yaml#/components/x-responses/401"
+          "498":
+            $ref: "../../utils/responses.yaml#/components/x-responses/498"
+          "500":
+            $ref: "../../utils/responses.yaml#/components/x-responses/500"
+
+    Marcar:
+      post:
+        tags: ["Reconocimientos personas"]
+        summary: Marcar reconocimiento de persona
+        description: >
+          Marca o desmarca un reconocimiento de persona mediante su `refTrackingId`.
+        operationId: marcarReconocimientoPersona
+        security:
+          - bearerAuth: []
+        parameters: []
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MarcarReconocimientoPersonaRequest"
+        responses:
+          "200":
+            description: OK
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/MarcarReconocimientoPersonaResponse"
+          "401":
+            $ref: "../../utils/responses.yaml#/components/x-responses/401"
+          "498":
+            $ref: "../../utils/responses.yaml#/components/x-responses/498"
+          "500":
+            $ref: "../../utils/responses.yaml#/components/x-responses/500"

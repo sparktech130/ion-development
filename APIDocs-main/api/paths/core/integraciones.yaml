@@ -1,0 +1,69 @@
+openapi: 3.0.0
+info:
+  title: Operaciones de integraciones
+  version: 1.0.0
+
+components:
+  schemas:
+    ObtenerIntegracionesRequest:
+      type: object
+      properties:
+        cod_integracion:
+          type: string
+        nombre:
+          type: string
+
+    ObtenerIntegracionesItem:
+      type: object
+      properties:
+        cod_integracion:
+          type: string
+          example: "dgt"
+        nombre:
+          type: string
+          example: "DGT"
+        cod_tipo:
+          $ref: "../../utils/fields.yaml#/components/schemas/Cod2Fill"
+        estado:
+          type: string
+          enum:
+            - linked
+            - unlinked
+            - pending
+          example: pending
+
+    ObtenerIntegracionesResponse:
+      type: array
+      items:
+        $ref: "#/components/schemas/ObtenerIntegracionesItem"
+
+  x-routes:
+    Obtener:
+      post:
+        tags:
+          - Integraciones
+        summary: Obtener
+        description: Devuelve todas las integraciones registradas, las imágenes están en la ruta `/core/integraciones/iconos/`
+        operationId: obtenerIntegraciones
+        security:
+          - bearerAuth: []
+        parameters: []
+        requestBody:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ObtenerIntegracionesRequest"
+
+        responses:
+          "200":
+            description: OK
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/ObtenerIntegracionesResponse"
+          "401":
+            $ref: "../../utils/responses.yaml#/components/x-responses/401"
+          "498":
+            $ref: "../../utils/responses.yaml#/components/x-responses/498"
+          "500":
+            $ref: "../../utils/responses.yaml#/components/x-responses/500"

@@ -1,0 +1,205 @@
+openapi: 3.0.0
+info:
+  title: Operaciones de alertas gestión
+  version: 1.0.0
+
+components:
+  schemas:
+    TipoAlerta:
+      type: string
+      example: "mail;sms"
+
+    InsertarAlertasGestionRequest:
+      type: object
+      required:
+        - nombre_alerta
+        - tipo_alerta
+      properties:
+        nombre_alerta:
+          type: string
+        desc_alerta:
+          type: string
+        tipo_alerta:
+          $ref: "#/components/schemas/TipoAlerta"
+        destinatarios_mail:
+          type: string
+        destinatarios_sms:
+          type: string
+        destinatarios_llamada:
+          type: string
+        cod_provincia:
+          $ref: "../../utils/fields.yaml#/components/schemas/Cod2Fill"
+        cod_poblacion:
+          $ref: "../../utils/fields.yaml#/components/schemas/Cod6Fill"
+
+    ModificarAlertasGestionRequest:
+      type: object
+      required:
+        - cod_alerta
+      properties:
+        cod_alerta:
+          $ref: "../../utils/fields.yaml#/components/schemas/Cod4Fill"
+        nombre_alerta:
+          type: string
+        desc_alerta:
+          type: string
+        tipo_alerta:
+          $ref: "#/components/schemas/TipoAlerta"
+        destinatarios_mail:
+          type: string
+        destinatarios_sms:
+          type: string
+        destinatarios_llamada:
+          type: string
+        cod_provincia:
+          $ref: "../../utils/fields.yaml#/components/schemas/Cod2Fill"
+        cod_poblacion:
+          $ref: "../../utils/fields.yaml#/components/schemas/Cod6Fill"
+
+    EliminarAlertasGestionRequest:
+      type: object
+      required:
+        - cod_alerta
+      properties:
+        cod_alerta:
+          $ref: "../../utils/fields.yaml#/components/schemas/Cod4Fill"
+
+    ObtenerAlertasGestionRequest:
+      type: object
+      properties:
+        cod_alertagest:
+          $ref: "../../utils/fields.yaml#/components/schemas/Cod4Fill"
+        nombre_alerta:
+          type: string
+        tipo_alerta:
+          $ref: "#/components/schemas/TipoAlerta"
+
+    ObtenerAlertasGestionItem:
+      type: object
+      properties:
+        cod_alertagest:
+          $ref: "../../utils/fields.yaml#/components/schemas/Cod4Fill"
+        nombre_alerta:
+          type: string
+          example: "Exceso de velocidad"
+        desc_alerta:
+          type: string
+        tipo_alerta:
+          type: string
+          example: "mail;sms"
+        destinatarios_mail:
+          type: string
+          example: "destinatario@example.com"
+        destinatarios_sms:
+          type: string
+          example: "612345678"
+        destinatarios_llamada:
+          type: string
+        cod_modulo:
+          $ref: "../../utils/fields.yaml#/components/schemas/CodModulo"
+
+    ObtenerAlertasGestionResponse:
+      type: array
+      items:
+        $ref: "#/components/schemas/ObtenerAlertasGestionItem"
+
+  x-routes:
+    GestionObtener:
+      post:
+        tags: [Alertas gestión]
+        summary: Obtener gestión
+        operationId: alertas_gestion_obtener
+        security: [{ bearerAuth: [] }]
+        requestBody:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ObtenerAlertasGestionRequest"
+        responses:
+          "200":
+            description: OK
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/ObtenerAlertasGestionResponse"
+          "401":
+            $ref: "../../utils/responses.yaml#/components/x-responses/401"
+          "498":
+            $ref: "../../utils/responses.yaml#/components/x-responses/498"
+          "500":
+            $ref: "../../utils/responses.yaml#/components/x-responses/500"
+
+    GestionInsertar:
+      post:
+        tags: [Alertas gestión]
+        summary: Insertar gestión
+        operationId: alertas_gestion_insertar
+        security: [{ bearerAuth: [] }]
+        requestBody:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InsertarAlertasGestionRequest"
+        responses:
+          "200":
+            description: OK
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ActionResult"
+          "401":
+            $ref: "../../utils/responses.yaml#/components/x-responses/401"
+          "498":
+            $ref: "../../utils/responses.yaml#/components/x-responses/498"
+          "500":
+            $ref: "../../utils/responses.yaml#/components/x-responses/500"
+
+    GestionModificar:
+      post:
+        tags: [Alertas gestión]
+        summary: Modificar gestión
+        operationId: alertas_gestion_modificar
+        security: [{ bearerAuth: [] }]
+        requestBody:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ModificarAlertasGestionRequest"
+        responses:
+          "200":
+            description: OK
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ActionResult"
+          "401":
+            $ref: "../../utils/responses.yaml#/components/x-responses/401"
+          "498":
+            $ref: "../../utils/responses.yaml#/components/x-responses/498"
+          "500":
+            $ref: "../../utils/responses.yaml#/components/x-responses/500"
+
+    GestionEliminar:
+      post:
+        tags: [Alertas gestión]
+        summary: Eliminar gestión
+        operationId: alertas_gestion_eliminar
+        security: [{ bearerAuth: [] }]
+        requestBody:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EliminarAlertasGestionRequest"
+        responses:
+          "200":
+            description: OK
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ActionResult"
+          "401":
+            $ref: "../../utils/responses.yaml#/components/x-responses/401"
+          "498":
+            $ref: "../../utils/responses.yaml#/components/x-responses/498"
+          "500":
+            $ref: "../../utils/responses.yaml#/components/x-responses/500"

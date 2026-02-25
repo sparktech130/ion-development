@@ -1,0 +1,309 @@
+openapi: 3.0.0
+
+info:
+  version: 1.0.0
+  title: ion-admin-api
+  description: |
+    ION Smart Admin API (Cloud Central)<br/><br/>
+
+    API del panel administrativo del cloud central (ionsmart.eu) para gestión de:
+    - Licencias del sistema (creación, activación, revocación)
+    - Clientes y sus instalaciones
+    - API pública para interacción cliente-cloud
+
+    **Nota**: Los endpoints en `/api/*` NO requieren autenticación (acceso público).
+    Los endpoints administrativos requieren autenticación `bearerAuth`.
+
+servers:
+  - description: ION Smart Cloud Production
+    url: "https://ionsmart.eu/ionadmin"
+  - description: ION Smart Development
+    url: "http://localhost:8101/ionadmin"
+
+tags:
+  - name: API Licencias
+    description: Endpoints públicos para que los clientes gestionen sus licencias (sin autenticación)
+  - name: API Clientes
+    description: Endpoints públicos para consultas de clientes (sin autenticación)
+  - name: API Integraciones
+    description: Endpoints públicos para integraciones externas como AEMET (sin autenticación)
+  - name: Licencias Admin
+    description: Gestión administrativa de licencias (requiere autenticación)
+  - name: Clientes Admin
+    description: Gestión administrativa de clientes (requiere autenticación)
+
+paths:
+  # ===== API Pública - Licencias =====
+  /api/licencias/activar:
+    $ref: "paths/ionadmin/api-licencias.yaml#/components/x-routes/Activar"
+
+  /api/licencias/activarMultiple:
+    $ref: "paths/ionadmin/api-licencias.yaml#/components/x-routes/ActivarMultiple"
+
+  /api/licencias/obtener:
+    $ref: "paths/ionadmin/api-licencias.yaml#/components/x-routes/Obtener"
+
+  /api/licencias/obtenerActivas:
+    $ref: "paths/ionadmin/api-licencias.yaml#/components/x-routes/ObtenerActivas"
+
+  /api/licencias/obtenerCanales:
+    $ref: "paths/ionadmin/api-licencias.yaml#/components/x-routes/ObtenerCanales"
+
+  /api/licencias/regenerarToken:
+    $ref: "paths/ionadmin/api-licencias.yaml#/components/x-routes/RegenerarToken"
+
+  # ===== API Pública - Clientes =====
+  /api/clientes/coordenadas:
+    $ref: "paths/ionadmin/api-clientes.yaml#/components/x-routes/Coordenadas"
+
+  # ===== API Pública - Integraciones =====
+  /api/integraciones/aemet/obtener:
+    $ref: "paths/ionadmin/api-integraciones-aemet.yaml#/components/x-routes/Obtener"
+
+  # ===== Gestión Administrativa - Licencias =====
+  /licencias/generar:
+    $ref: "paths/ionadmin/licencias.yaml#/components/x-routes/Generar"
+
+  /licencias/obtener:
+    $ref: "paths/ionadmin/licencias.yaml#/components/x-routes/ObtenerAdmin"
+
+  /licencias/modificar:
+    $ref: "paths/ionadmin/licencias.yaml#/components/x-routes/Modificar"
+
+  /licencias/eliminar:
+    $ref: "paths/ionadmin/licencias.yaml#/components/x-routes/Eliminar"
+
+  /licencias/revocar:
+    $ref: "paths/ionadmin/licencias.yaml#/components/x-routes/Revocar"
+
+  # ===== Gestión Administrativa - Clientes =====
+  /clientes/insertar:
+    $ref: "paths/ionadmin/clientes.yaml#/components/x-routes/Insertar"
+
+  /clientes/obtener:
+    $ref: "paths/ionadmin/clientes.yaml#/components/x-routes/ObtenerAdmin"
+
+  /clientes/modificar:
+    $ref: "paths/ionadmin/clientes.yaml#/components/x-routes/Modificar"
+
+  /clientes/eliminar:
+    $ref: "paths/ionadmin/clientes.yaml#/components/x-routes/Eliminar"
+
+components:
+  securitySchemes:
+    bearerAuth:
+      $ref: "utils/fields.yaml#/components/securitySchemes/bearerAuth"
+
+  schemas:
+    # ===== Licencias =====
+    LicenciaInfo:
+      type: object
+      description: Información completa de una licencia
+      properties:
+        clave_licencia:
+          type: string
+          description: Clave única de la licencia
+          example: "ABCD-1234-EFGH-5678"
+        cod_modulo:
+          type: string
+          description: Código del módulo licenciado
+          example: "0015"
+        nombre_modulo:
+          type: string
+          description: Nombre del módulo
+          example: "Traffic"
+        cod_sector:
+          type: string
+          description: Código del sector
+          example: "000001"
+        canales:
+          type: integer
+          description: Número de canales de esta licencia
+          example: 100
+        estado:
+          type: string
+          description: Estado actual de la licencia
+          enum:
+            - VALIDA
+            - EN USO
+            - EXPIRADA
+            - REVOCADA
+            - ELIMINADA
+          example: "EN USO"
+        fecha_creacion:
+          type: string
+          format: date-time
+          description: Fecha de creación de la licencia
+          example: "2024-01-15 10:30:00"
+        fecha_expiracion:
+          type: string
+          format: date-time
+          description: Fecha de expiración (null si es perpetua)
+          example: "2025-01-15 10:30:00"
+          nullable: true
+        duracion_dias:
+          type: integer
+          description: Duración en días desde la activación
+          example: 365
+        activaciones_max:
+          type: integer
+          description: Número máximo de instalaciones simultáneas
+          example: 1
+        nombre_cliente:
+          type: string
+          description: Nombre del cliente propietario
+          example: "Cliente Demo"
+        cod_cliente:
+          type: string
+          description: Código del cliente
+          example: "000123"
+
+    LicenciaActivationInfo:
+      type: object
+      description: Información de una activación de licencia
+      properties:
+        activation_id:
+          type: string
+          description: ID único de activación (UUID)
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        clave_licencia:
+          type: string
+          example: "ABCD-1234-EFGH-5678"
+        installation_id:
+          type: string
+          description: ID de instalación del cliente
+          example: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+        created_at:
+          type: string
+          format: date-time
+          description: Fecha de activación
+          example: "2024-06-15 14:20:00"
+        last_seen_at:
+          type: string
+          format: date-time
+          description: Última vez que el cliente consultó al cloud
+          example: "2024-12-20 09:15:30"
+        revoked_at:
+          type: string
+          format: date-time
+          description: Fecha de revocación (null si está activa)
+          example: null
+          nullable: true
+        cod_modulo:
+          type: string
+          example: "0015"
+        nombre_modulo:
+          type: string
+          example: "Traffic"
+        cod_sector:
+          type: string
+          example: "000001"
+        canales:
+          type: integer
+          example: 100
+        estado:
+          type: string
+          example: "EN USO"
+
+    MultiLicenseToken:
+      type: object
+      description: Token JWT con múltiples licencias
+      properties:
+        token:
+          type: string
+          description: Token JWT firmado con todas las licencias activas
+          example: "eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9..."
+        offline_days:
+          type: integer
+          description: Días que el token es válido sin conexión
+          example: 30
+        server_time:
+          type: integer
+          description: Timestamp del servidor (para verificación de reloj)
+          example: 1704153600
+        licenses_count:
+          type: integer
+          description: Número de licencias incluidas en el token
+          example: 3
+        licenses:
+          type: array
+          description: Lista de licencias incluidas (para referencia)
+          items:
+            $ref: "#/components/schemas/LicenciaActivationInfo"
+
+    # ===== Clientes =====
+    ClienteInfo:
+      type: object
+      description: Información completa de un cliente
+      properties:
+        cod_cliente:
+          type: string
+          description: Código único del cliente
+          example: "000123"
+        nombre_cliente:
+          type: string
+          description: Nombre comercial del cliente
+          example: "Ayuntamiento de Barcelona"
+        razon_social:
+          type: string
+          description: Razón social legal
+          example: "Ajuntament de Barcelona"
+        nif:
+          type: string
+          description: NIF/CIF del cliente
+          example: "P0800000G"
+        direccion:
+          type: string
+          description: Dirección postal
+          example: "Plaça Sant Jaume, 1"
+        poblacion:
+          type: string
+          description: Población o ciudad
+          example: "Barcelona"
+        provincia:
+          type: string
+          description: Provincia
+          example: "Barcelona"
+        telefono:
+          type: string
+          description: Teléfono de contacto
+          example: "+34 934 027 000"
+        email:
+          type: string
+          format: email
+          description: Email de contacto
+          example: "contacto@barcelona.cat"
+        persona_contacto:
+          type: string
+          description: Nombre de la persona de contacto
+          example: "Juan Pérez"
+        servidor:
+          type: string
+          description: URL del servidor del cliente
+          example: "https://barcelona.ionsmart.eu"
+        coordenadas:
+          $ref: "utils/fields.yaml#/components/schemas/Coordenadas"
+        video:
+          type: boolean
+          description: Opción video habilitada para el cliente
+        foto_cliente:
+          type: string
+          description: Ruta de la foto/logo del cliente
+          example: "fotos_perfil/cl_20240115_123456-000123.png"
+          nullable: true
+
+    CoordenadasInfo:
+      type: object
+      description: Información de coordenadas de un cliente
+      properties:
+        coordenadas:
+          $ref: "utils/fields.yaml#/components/schemas/Coordenadas"
+        direccion:
+          type: string
+          example: "Plaça Sant Jaume, 1, Barcelona"
+        poblacion:
+          type: string
+          example: "Barcelona"
+        provincia:
+          type: string
+          example: "Barcelona"

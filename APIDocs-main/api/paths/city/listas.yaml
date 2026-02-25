@@ -1,0 +1,289 @@
+openapi: 3.0.0
+info: { title: Listas, version: 1.0.0 }
+components:
+  schemas:
+    # ======== INSERTAR ========
+    InsertarListasRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - cod_poblacion
+        - cod_provincia
+        - nombre_lista
+        - desc_lista
+      properties:
+        cod_poblacion:
+          $ref: "../../utils/fields.yaml#/components/schemas/Cod6Fill"
+        cod_provincia:
+          $ref: "../../utils/fields.yaml#/components/schemas/Cod2Fill"
+        nombre_lista:
+          type: string
+        desc_lista:
+          type: string
+          enum: ["b", "n"]
+        tipo_alerta:
+          $ref: "../../utils/fields.yaml#/components/schemas/Cod4Fill"
+        cod_infraccion:
+          type: string
+
+    ObtenerListasRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        cod_lista:
+          $ref: "../../utils/fields.yaml#/components/schemas/Cod4Fill"
+        nombre_lista:
+          type: string
+        desc_lista:
+          type: string
+          enum: ["b", "n"]
+        tipo_alerta:
+          $ref: "../../utils/fields.yaml#/components/schemas/Cod4Fill"
+        limit:
+          type: integer
+          minimum: 1
+        obtenerVehiculos:
+          type: boolean
+          description: Si es true, cada fila incluirá la colección `vehiculos`.
+
+    ObtenerListasItemBase:
+      type: object
+      additionalProperties: false
+      properties:
+        cod_lista:
+          $ref: "../../utils/fields.yaml#/components/schemas/Cod4Fill"
+        nombre_lista:
+          type: string
+        desc_lista:
+          type: string
+          enum: ["b", "n"]
+        tipo_alerta:
+          $ref: "../../utils/fields.yaml#/components/schemas/Cod4Fill"
+        nombre_alerta:
+          type: string
+        cod_infraccion:
+          type: string
+        desc_infraccion:
+          type: string
+        cod_provincia:
+          $ref: "../../utils/fields.yaml#/components/schemas/Cod2Fill"
+        cod_poblacion:
+          $ref: "../../utils/fields.yaml#/components/schemas/Cod6Fill"
+
+    ObtenerListasItemConVehiculos:
+      allOf:
+        - $ref: "#/components/schemas/ObtenerListasItemBase"
+        - type: object
+          properties:
+            vehiculos:
+              type: array
+              items:
+                $ref: "./listas-vehiculos.yaml#/components/schemas/VehiculoListaItem" # << referencia al nuevo fichero
+
+    ObtenerListasResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        rows:
+          type: array
+          items:
+            oneOf:
+              - $ref: "#/components/schemas/ObtenerListasItemBase"
+              - $ref: "#/components/schemas/ObtenerListasItemConVehiculos"
+        total:
+          type:
+            integer
+
+            # ======== MODIFICAR ========
+    ModificarListasRequest:
+      type: object
+      additionalProperties: false
+      required: [cod_lista]
+      properties:
+        cod_lista:
+          $ref: "../../utils/fields.yaml#/components/schemas/Cod4Fill"
+        cod_poblacion:
+          $ref: "../../utils/fields.yaml#/components/schemas/Cod6Fill"
+        cod_provincia:
+          $ref: "../../utils/fields.yaml#/components/schemas/Cod2Fill"
+        nombre_lista:
+          type: string
+        desc_lista:
+          type: string
+          enum: ["b", "n"]
+        tipo_alerta:
+          $ref: "../../utils/fields.yaml#/components/schemas/Cod4Fill"
+        cod_infraccion:
+          type: string
+
+    # ======== ELIMINAR ========
+    EliminarListasRequest:
+      type: object
+      additionalProperties: false
+      required: [cod_lista]
+      properties:
+        cod_lista:
+          $ref: "../../utils/fields.yaml#/components/schemas/Cod4Fill"
+
+  x-routes:
+    Insertar:
+      post:
+        tags: ["Listas"]
+        summary: Insertar lista
+        description: Crea una nueva lista.
+        operationId: insertarLista
+        security:
+          - bearerAuth: []
+        parameters: []
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InsertarListasRequest"
+        responses:
+          "200":
+            description: OK
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ActionResult"
+          "401":
+            $ref: "../../utils/responses.yaml#/components/x-responses/401"
+          "498":
+            $ref: "../../utils/responses.yaml#/components/x-responses/498"
+          "500":
+            $ref: "../../utils/responses.yaml#/components/x-responses/500"
+
+    Obtener:
+      post:
+        tags: ["Listas"]
+        summary: Obtener listas
+        description: Devuelve listas filtradas; si `obtenerVehiculos = true`, cada fila puede incluir `vehiculos`.
+        operationId: obtenerListas
+        security:
+          - bearerAuth: []
+        parameters: []
+        requestBody:
+          required: false
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ObtenerListasRequest"
+        responses:
+          "200":
+            description: OK
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/ObtenerListasResponse"
+          "401":
+            $ref: "../../utils/responses.yaml#/components/x-responses/401"
+          "498":
+            $ref: "../../utils/responses.yaml#/components/x-responses/498"
+          "500":
+            $ref: "../../utils/responses.yaml#/components/x-responses/500"
+
+    ComprobarMatricula:
+      post:
+        tags: ["Listas"]
+        summary: Obtener listas matricula
+        description: Devuelve listas filtradas para saber si coincide con la matricula recibida
+        operationId: comprobarListaMatriculas
+        security:
+          - bearerAuth: []
+        parameters: []
+        requestBody:
+          required: false
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  matricula:
+                    type: string
+        responses:
+          "200":
+            description: OK
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    matricula:
+                      type: string
+                    rows:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          cod_lista:
+                            $ref: "../../utils/fields.yaml#/components/schemas/Cod4Fill"
+                          tipo_alerta:
+                            $ref: "../../utils/fields.yaml#/components/schemas/Cod4Fill"
+                          cod_infraccion:
+                            type: string
+          "401":
+            $ref: "../../utils/responses.yaml#/components/x-responses/401"
+          "498":
+            $ref: "../../utils/responses.yaml#/components/x-responses/498"
+          "500":
+            $ref: "../../utils/responses.yaml#/components/x-responses/500"
+
+    Modificar:
+      post:
+        tags: ["Listas"]
+        summary: Modificar lista
+        description: Actualiza los datos de una lista existente.
+        operationId: modificarLista
+        security:
+          - bearerAuth: []
+        parameters: []
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ModificarListasRequest"
+        responses:
+          "200":
+            description: OK
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ActionResult"
+          "401":
+            $ref: "../../utils/responses.yaml#/components/x-responses/401"
+          "498":
+            $ref: "../../utils/responses.yaml#/components/x-responses/498"
+          "500":
+            $ref: "../../utils/responses.yaml#/components/x-responses/500"
+
+    Eliminar:
+      post:
+        tags: ["Listas"]
+        summary: Eliminar lista
+        description: Elimina una lista por su código.
+        operationId: eliminarLista
+        security:
+          - bearerAuth: []
+        parameters: []
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EliminarListasRequest"
+        responses:
+          "200":
+            description: OK
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ActionResult"
+          "401":
+            $ref: "../../utils/responses.yaml#/components/x-responses/401"
+          "498":
+            $ref: "../../utils/responses.yaml#/components/x-responses/498"
+          "500":
+            $ref: "../../utils/responses.yaml#/components/x-responses/500"

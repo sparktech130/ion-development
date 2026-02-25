@@ -1,0 +1,247 @@
+openapi: 3.0.0
+info:
+  title: Operaciones de fabricantes
+  version: 1.0.0
+
+components:
+  x-routes:
+    Obtener:
+      post:
+        tags:
+          - Fabricantes
+        summary: Obtener
+        description: Devuelve los fabricantes registrados
+        operationId: obtenerFabricantes
+        security:
+          - bearerAuth: []
+        parameters: []
+        responses:
+          "200":
+            description: Successful operation
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/FabricantesInfo"
+          "401":
+            description: Usuario inválido o no autorizado
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "498":
+            description: Token expirado o inválido
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "500":
+            description: Unexpected error
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+        requestBody:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  cod_fabricante:
+                    type: string
+                  nombre_fabricante:
+                    type: string
+                    example: "ION"
+                  descripcion_fabricante:
+                    type: string
+                  cod_categoria:
+                    type: string
+                    example: "000015"
+
+    ObtenerCategorias:
+      post:
+        tags:
+          - Fabricantes
+        summary: Obtener categorías
+        description: Devuelve las categorías registradas, con sus modelos
+        operationId: obtenerCategorias
+        security:
+          - bearerAuth: []
+        parameters: []
+        responses:
+          "200":
+            description: Successful operation
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/FabricantesCategoriasInfo"
+          "401":
+            description: Usuario inválido o no autorizado
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "498":
+            description: Token expirado o inválido
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "500":
+            description: Unexpected error
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+        requestBody:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  cod_categoria:
+                    type: string
+                  nombre_categoria:
+                    type: string
+                  cod_sector:
+                    type: string
+
+    ObtenerModelos:
+      post:
+        tags:
+          - Fabricantes
+        summary: Obtener modelos
+        description: Devuelve los modelos registrados
+        operationId: obtenerModelos
+        security:
+          - bearerAuth: []
+        parameters: []
+        responses:
+          "200":
+            description: Successful operation
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/FabricantesModelosInfo"
+          "401":
+            description: Usuario inválido o no autorizado
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "498":
+            description: Token expirado o inválido
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "500":
+            description: Unexpected error
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+        requestBody:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  cod_modelo:
+                    type: string
+                  nombre_modelo:
+                    type: string
+                  descripcion_modelo:
+                    type: string
+                  cod_fabricante:
+                    type: string
+                  cod_categoria:
+                    type: string
+
+  schemas:
+    FabricantesInfo:
+      type: object
+      properties:
+        cod_fabricante:
+          type: string
+        nombre_fabricante:
+          type: string
+        logo_fabricante:
+          type: string
+        descripcion_fabricante:
+          type: string
+        modelos:
+          type: array
+          items:
+            type: object
+            properties:
+              cod_modelo:
+                type: string
+              nombre_modelo:
+                type: string
+              foto_modelo:
+                type: string
+              descripcion_modelo:
+                type: string
+              tipo_nx:
+                type: string
+              cod_fabricante:
+                type: string
+              cod_categoria:
+                type: string
+              camara_motorizada:
+                type: integer
+                enum: [0, 1]
+
+    FabricantesModelosInfo:
+      type: object
+      properties:
+        cod_modelo:
+          type: string
+        nombre_modelo:
+          type: string
+        foto_modelo:
+          type: string
+        descripcion_modelo:
+          type: string
+          nullable: true
+        tipo_nx:
+          type: string
+          nullable: true
+        cod_fabricante:
+          type: string
+        cod_categoria:
+          type: string
+        "camara_motorizada":
+          type: integer
+          enum: [0, 1]
+        nombre_fabricante:
+          type: string
+        nombre_categoria:
+          type: string
+
+    FabricantesCategoriasInfo:
+      type: object
+      properties:
+        cod_categoria:
+          type: string
+        nombre_categoria:
+          type: string
+        sectores:
+          type: array
+          items:
+            type: string
+        fabricantes:
+          type: array
+          items:
+            type: object
+            properties:
+              cod_fabricante:
+                type: string
+              nombre_fabricante:
+                type: string
+              logo_fabricante:
+                type: string
+              descripcion_fabricante:
+                type: string
+              modelos:
+                $ref: "#/components/schemas/FabricantesModelosInfo"

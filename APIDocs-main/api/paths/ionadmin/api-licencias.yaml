@@ -1,0 +1,462 @@
+openapi: 3.0.0
+info:
+  title: API Pública de Licencias
+  version: 1.0.0
+  description: Endpoints públicos para que los clientes interactúen con el cloud (sin autenticación)
+
+components:
+  x-routes:
+    Activar:
+      post:
+        tags:
+          - API Licencias
+        summary: Activa una licencia individual
+        description: |
+          Activa una licencia usando su clave única y la asocia a un installation_id.
+
+          **Proceso**:
+          1. Valida la clave de licencia (estado VALIDA o EN_USO)
+          2. Verifica que no esté expirada
+          3. Comprueba el límite de activaciones máximas
+          4. Crea o actualiza la activación para el installation_id
+          5. Marca la licencia como "EN_USO"
+          6. Genera un token JWT con TODAS las licencias activas del installation_id
+
+          **Sistema multi-licencia**: El token resultante contiene todas las licencias activas, 
+          no solo la que se está activando. Si hay error pero existen licencias previas, 
+          devuelve un token parcial.
+
+          **Sin autenticación**: Endpoint público accesible desde el cliente.
+        operationId: activarLicencia
+        security: []
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - clave_licencia
+                  - installation_id
+                  - servidor
+                properties:
+                  clave_licencia:
+                    type: string
+                    description: Clave de la licencia a activar
+                    example: "ABCD-1234-EFGH-5678"
+                  installation_id:
+                    type: string
+                    description: UUID único de la instalación del cliente
+                    example: "550e8400-e29b-41d4-a716-446655440000"
+                  servidor:
+                    type: string
+                    description: URL del servidor del cliente
+                    example: "https://cliente.ionsmart.eu"
+        responses:
+          "200":
+            description: Licencia activada correctamente y token generado
+            content:
+              application/json:
+                schema:
+                  $ref: "../../ionadmin.yaml#/components/schemas/MultiLicenseToken"
+          "400":
+            description: |
+              Error en la activación. Posibles razones:
+              - missing_fields: Faltan parámetros requeridos
+              - invalid_or_inactive_key: Licencia inválida o inactiva
+              - key_expired: Licencia expirada
+              - max_activations_reached: Se alcanzó el límite de activaciones
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    error:
+                      type: boolean
+                      example: true
+                    message:
+                      type: string
+                      example: "max_activations_reached"
+                    licenses_failed:
+                      type: array
+                      items:
+                        type: string
+                      description: Licencias que fallaron (puede incluir token parcial)
+                    token:
+                      type: string
+                      description: Token parcial con licencias previas (si existen)
+                    licenses_active:
+                      type: integer
+                      description: Licencias en el token parcial
+          "403":
+            description: Licencia rechazada por el servidor
+          "500":
+            description: Error en el servidor o base de datos
+
+    ActivarMultiple:
+      post:
+        tags:
+          - API Licencias
+        summary: Activa múltiples licencias en una sola llamada
+        description: |
+          Activa un conjunto de licencias de forma atómica y genera un token unificado.
+
+          **Estrategia de token parcial**: Si algunas licencias fallan al activar, las que 
+          tienen éxito se incluyen en el token resultante. El endpoint devuelve información 
+          detallada de cuáles se activaron y cuáles fallaron.
+
+          **Códigos de respuesta HTTP**:
+          - 200: Todas las licencias activadas correctamente
+          - 207 Multi-Status: Algunas activadas, otras fallaron
+          - 400: Ninguna licencia pudo ser activada
+
+          **Sin autenticación**: Endpoint público accesible desde el cliente.
+        operationId: activarLicenciaMultiple
+        security: []
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - claves_licencia
+                  - installation_id
+                  - servidor
+                properties:
+                  claves_licencia:
+                    type: array
+                    description: Array de claves de licencia a activar
+                    items:
+                      type: string
+                    example: ["ABCD-1234-EFGH-5678", "IJKL-9012-MNOP-3456"]
+                  installation_id:
+                    type: string
+                    description: UUID de la instalación
+                    example: "550e8400-e29b-41d4-a716-446655440000"
+                  servidor:
+                    type: string
+                    description: URL del servidor del cliente
+                    example: "https://cliente.ionsmart.eu"
+        responses:
+          "200":
+            description: Todas las licencias activadas correctamente
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    activated:
+                      type: array
+                      description: Licencias activadas correctamente
+                      items:
+                        type: object
+                        properties:
+                          clave_licencia:
+                            type: string
+                          activation_id:
+                            type: string
+                          cod_modulo:
+                            type: string
+                          nombre_modulo:
+                            type: string
+                    activated_count:
+                      type: integer
+                      example: 2
+                    failed:
+                      type: array
+                      description: Licencias que fallaron (vacío si todo OK)
+                      items:
+                        type: object
+                        properties:
+                          clave_licencia:
+                            type: string
+                          error:
+                            type: string
+                    failed_count:
+                      type: integer
+                      example: 0
+                    token:
+                      type: string
+                      description: Token JWT con todas las licencias activas
+                    offline_days:
+                      type: integer
+                    server_time:
+                      type: integer
+                    licenses_count:
+                      type: integer
+          "207":
+            description: Multi-Status - Algunas licencias activadas, otras fallaron
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    activated:
+                      type: array
+                      items:
+                        type: object
+                    activated_count:
+                      type: integer
+                    failed:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          clave_licencia:
+                            type: string
+                          error:
+                            type: string
+                    failed_count:
+                      type: integer
+                    token:
+                      type: string
+                    licenses_count:
+                      type: integer
+          "400":
+            description: Error - Ninguna licencia pudo ser activada
+
+    Obtener:
+      post:
+        tags:
+          - API Licencias
+        summary: Obtiene licencias del cliente con filtros
+        description: |
+          Consulta licencias asociadas a un servidor del cliente con filtros opcionales.
+
+          Útil para que el cliente vea sus licencias disponibles, activas y expiradas.
+
+          **Requiere**: `servidor` (parámetro obligatorio para filtrar por cliente)
+
+          **Sin autenticación**: Endpoint público accesible desde el cliente.
+        operationId: obtenerLicenciasCliente
+        security: []
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - servidor
+                properties:
+                  servidor:
+                    type: string
+                    description: URL del servidor del cliente (obligatorio)
+                    example: "https://cliente.ionsmart.eu"
+                  clave_licencia:
+                    type: string
+                    description: Filtrar por clave específica
+                  modulo:
+                    type: string
+                    description: Filtrar por módulo
+                    example: "traffic"
+                  cod_sector:
+                    $ref: "../../utils/fields.yaml#/components/schemas/Cod4Fill"
+                  canales:
+                    type: integer
+                    description: Filtrar por número de canales
+                  estado:
+                    type: array
+                    items:
+                      type: string
+                      enum:
+                        - VALIDA
+                        - EN USO
+                        - EXPIRADA
+                        - REVOCADA
+                        - ELIMINADA
+                  nombre_cliente:
+                    type: string
+                  fecha_ini:
+                    $ref: "../../utils/fields.yaml#/components/schemas/Fecha"
+                  fecha_fin:
+                    $ref: "../../utils/fields.yaml#/components/schemas/Fecha"
+        responses:
+          "200":
+            description: Licencias del cliente
+            content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    $ref: "../../ionadmin.yaml#/components/schemas/LicenciaInfo"
+          "400":
+            description: Parámetros inválidos
+          "500":
+            description: Error del servidor
+
+    ObtenerActivas:
+      post:
+        tags:
+          - API Licencias
+        summary: Obtiene todas las licencias activas de una instalación
+        description: |
+          Consulta todas las licencias activas (no revocadas) asociadas a un installation_id.
+
+          Devuelve información detallada de cada licencia incluyendo fechas de activación 
+          y última conexión.
+
+          **Sin autenticación**: Endpoint público accesible desde el cliente.
+        operationId: obtenerLicenciasActivas
+        security: []
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - installation_id
+                properties:
+                  installation_id:
+                    type: string
+                    description: UUID de la instalación
+                    example: "550e8400-e29b-41d4-a716-446655440000"
+                  servidor:
+                    type: string
+                    description: URL del servidor (opcional, para validación)
+                    example: "https://cliente.ionsmart.eu"
+        responses:
+          "200":
+            description: Licencias activas de la instalación
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    licenses:
+                      type: array
+                      items:
+                        $ref: "../../ionadmin.yaml#/components/schemas/LicenciaActivationInfo"
+                    total:
+                      type: integer
+                      description: Número total de licencias activas
+                      example: 3
+                    server_time:
+                      type: integer
+                      description: Timestamp del servidor
+                      example: 1704153600
+          "400":
+            description: Falta installation_id
+          "500":
+            description: Error al obtener licencias
+
+    ObtenerCanales:
+      post:
+        tags:
+          - API Licencias
+        summary: Obtiene canales disponibles para módulos
+        description: |
+          Consulta el resumen de canales disponibles agrupados por módulo para un cliente.
+
+          Devuelve información de:
+          - Canales totales por módulo
+          - Canales válidos (no expirados)
+          - Canales en uso
+          - Dispositivos en prórroga
+
+          **Sin autenticación**: Endpoint público accesible desde el cliente.
+        operationId: obtenerCanalesModulos
+        security: []
+        requestBody:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  servidor:
+                    type: string
+                    description: URL del servidor del cliente
+                    example: "https://cliente.ionsmart.eu"
+                  cod_modulo:
+                    type: string
+                    description: Filtrar por módulo específico
+                    example: "0015"
+        responses:
+          "200":
+            description: Información de canales por módulo
+            content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      cod_modulo:
+                        type: string
+                      nombre_modulo:
+                        type: string
+                      cod_sector:
+                        type: string
+                      canales_totales:
+                        type: integer
+                      canales_validos:
+                        type: integer
+                      canales_en_uso:
+                        type: integer
+          "500":
+            description: Error del servidor
+
+    RegenerarToken:
+      post:
+        tags:
+          - API Licencias
+        summary: Regenera el token JWT sin activar nuevas licencias
+        description: |
+          Genera un nuevo token JWT con todas las licencias activas actuales del installation_id.
+
+          **Casos de uso**:
+          - Después de revocar licencias (para actualizar el token sin las revocadas)
+          - Para refrescar el token antes de que expire
+          - Después de modificar/renovar licencias
+
+          **Nota**: No activa nuevas licencias, solo genera el token con las ya activas.
+
+          **Sin autenticación**: Endpoint público accesible desde el cliente.
+        operationId: regenerarTokenLicencias
+        security: []
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - installation_id
+                properties:
+                  installation_id:
+                    type: string
+                    description: UUID de la instalación
+                    example: "550e8400-e29b-41d4-a716-446655440000"
+                  servidor:
+                    type: string
+                    description: URL del servidor (opcional, para auditoría)
+                    example: "https://cliente.ionsmart.eu"
+        responses:
+          "200":
+            description: Token regenerado correctamente
+            content:
+              application/json:
+                schema:
+                  $ref: "../../ionadmin.yaml#/components/schemas/MultiLicenseToken"
+          "404":
+            description: No hay licencias activas para este installation_id
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    error:
+                      type: boolean
+                      example: true
+                    message:
+                      type: string
+                      example: "no_active_licenses"
+                    licenses_count:
+                      type: integer
+                      example: 0
+          "400":
+            description: Falta installation_id
+          "500":
+            description: Error al generar token

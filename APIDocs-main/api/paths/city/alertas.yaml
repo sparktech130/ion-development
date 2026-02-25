@@ -1,0 +1,595 @@
+openapi: 3.0.0
+info:
+  title: Operaciones de alertas
+  version: 1.0.0
+
+components:
+  schemas:
+    ObtenerAlertasRequest:
+      type: object
+      properties:
+        cod_alerta:
+          type: string
+        fecha_ini:
+          $ref: "../../utils/fields.yaml#/components/schemas/Fecha"
+        fecha_fin:
+          $ref: "../../utils/fields.yaml#/components/schemas/Fecha"
+        hora_ini:
+          $ref: "../../utils/fields.yaml#/components/schemas/Hora"
+        hora_fin:
+          $ref: "../../utils/fields.yaml#/components/schemas/Hora"
+        matricula:
+          $ref: "../../utils/fields.yaml#/components/schemas/Matricula"
+        pais:
+          type: string
+        marca:
+          type: string
+        modelo:
+          type: string
+        color:
+          type: string
+        cod_dispositivo:
+          $ref: "../../utils/fields.yaml#/components/schemas/CodDispositivo"
+        nom_dispositivo:
+          $ref: "../../utils/fields.yaml#/components/schemas/NomDispositivo"
+        orientacion:
+          type: string
+        confidence:
+          type: string
+        alertas:
+          type: string
+        limit:
+          type: integer
+          minimum: 1
+        modulos:
+          type: string
+        tipo_vh:
+          type: string
+        velocidad_vehiculo:
+          type: string
+        nombre_lista:
+          type: string
+        cod_campaign:
+          type: string
+
+    ObtenerAlertasItem:
+      type: object
+      properties:
+        cod_reconoc:
+          type: string
+          example: "000002"
+        cod_provincia:
+          type: string
+          example: "01"
+        cod_poblacion:
+          type: string
+          example: "000001"
+        fecha:
+          $ref: "../../utils/fields.yaml#/components/schemas/Fecha"
+        hora:
+          $ref: "../../utils/fields.yaml#/components/schemas/Hora"
+        matricula:
+          $ref: "../../utils/fields.yaml#/components/schemas/Matricula"
+        pais:
+          type: string
+          example: "esp"
+        confidence:
+          type: string
+          example: "0.790000"
+        foto:
+          $ref: "../../utils/fields.yaml#/components/schemas/Foto"
+        foto2:
+          type: string
+          nullable: true
+        fotop:
+          $ref: "../../utils/fields.yaml#/components/schemas/Foto"
+        incidencia:
+          type: string
+          example: "Vehículo sin ITV"
+        cod_dispositivo:
+          $ref: "../../utils/fields.yaml#/components/schemas/CodDispositivo"
+        fecha_modif:
+          $ref: "../../utils/fields.yaml#/components/schemas/FechaHora"
+        marca:
+          type: string
+          example: "Audi"
+        modelo:
+          type: string
+          example: "R8"
+        color:
+          type: string
+          example: "black"
+        tipo_vh:
+          type: string
+          example: "Car"
+        estado:
+          type: string
+          example: " "
+        distintivo:
+          type: string
+          example: " "
+        velocidad_vehiculo:
+          type: string
+          nullable: true
+        latitud:
+          type: string
+          example: "1306"
+        longitud:
+          type: string
+          example: "80"
+        orientacion:
+          type: string
+          example: "Approach"
+        cod_alertagest:
+          type: string
+          example: "0004"
+        cod_alerta:
+          $ref: "../../utils/fields.yaml#/components/schemas/Cod4Fill"
+        cod_campaign:
+          $ref: "../../utils/fields.yaml#/components/schemas/Cod6Fill"
+        estat:
+          type: string
+          example: "p"
+        motivo:
+          type: string
+          nullable: true
+        usuario:
+          type: string
+          nullable: true
+        f_modif:
+          $ref: "../../utils/fields.yaml#/components/schemas/FechaHora"
+        imagen:
+          $ref: "../../utils/fields.yaml#/components/schemas/Foto"
+        zoneId:
+          $ref: "../../utils/fields.yaml#/components/schemas/ZoneId"
+        velocidad_max:
+          type: string
+          nullable: true
+        nombre_campaign:
+          type: string
+          nullable: true
+        nom_dispositivo:
+          $ref: "../../utils/fields.yaml#/components/schemas/NomDispositivo"
+        coordenadas:
+          $ref: "../../utils/fields.yaml#/components/schemas/Coordenadas"
+
+    ObtenerAlertasResponse:
+      type: array
+      items:
+        $ref: "#/components/schemas/ObtenerAlertasItem"
+
+    GroupAlertasRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        incidencia:
+          type: string
+        fecha_ini:
+          $ref: "../../utils/fields.yaml#/components/schemas/Fecha"
+        fecha_fin:
+          $ref: "../../utils/fields.yaml#/components/schemas/Fecha"
+        estat:
+          type: string
+          enum: ["v", "r", "c"]
+        limit:
+          type: integer
+          minimum: 1
+        modulos:
+          type: array
+          items:
+            $ref: "../../utils/fields.yaml#/components/schemas/Cod4Fill"
+        dispositivos:
+          type: array
+          items:
+            $ref: "../../utils/fields.yaml#/components/schemas/CodDispositivo"
+        campos:
+          type: array
+          items:
+            type: string
+            enum: ["fecha", "hora", "cod_dispositivo"]
+        order:
+          type: array
+          description: Lista de órdenes, p. ej. ["fecha DESC", "hora ASC"]
+          items:
+            type: string
+      required:
+        - campos
+
+    GroupAlertasItem:
+      type: object
+      additionalProperties: false
+      properties:
+        cod_dispositivo:
+          $ref: "../../utils/fields.yaml#/components/schemas/CodDispositivo"
+        fecha:
+          $ref: "../../utils/fields.yaml#/components/schemas/Fecha"
+        hora:
+          type: integer
+          minimum: 0
+          maximum: 23
+        total:
+          type: integer
+          minimum: 0
+      example:
+        cod_dispositivo: "000001"
+        fecha: "2025-09-30"
+        hora: 10
+        total: 2
+
+    GroupAlertasResponse:
+      type: array
+      items:
+        $ref: "#/components/schemas/GroupAlertasItem"
+
+    Group24AlertasRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        incidencia:
+          type: string
+        estat:
+          type: string
+          enum: ["v", "r", "c"]
+        limit:
+          type: integer
+          minimum: 1
+        modulos:
+          type: array
+          items:
+            $ref: "../../utils/fields.yaml#/components/schemas/Cod4Fill"
+        dispositivos:
+          type: array
+          items:
+            $ref: "../../utils/fields.yaml#/components/schemas/CodDispositivo"
+        campos:
+          type: array
+          items:
+            type: string
+            enum: ["fecha", "hora", "cod_dispositivo"]
+        order:
+          type: array
+          description: Lista de órdenes, p. ej. ["fecha DESC", "hora ASC"]
+          items:
+            type: string
+      required:
+        - campos
+
+    Group24AlertasResponse:
+      type: array
+      items:
+        $ref: "#/components/schemas/GroupAlertasItem"
+
+    ValidarAlertasRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - cod_alerta
+        - estat
+      properties:
+        cod_alerta:
+          $ref: "../../utils/fields.yaml#/components/schemas/Cod6Fill"
+        estat:
+          type: string
+          enum: ["v", "r", "c"]
+          description: Estado de validación (v=validada, r=rechazada, c=corregir)
+        motivo:
+          type: string
+        cod_infraccion:
+          type: string
+
+    ModificarAlertasRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - cod_alerta
+      properties:
+        cod_alerta:
+          $ref: "../../utils/fields.yaml#/components/schemas/Cod6Fill"
+        cod_reconoc:
+          $ref: "../../utils/fields.yaml#/components/schemas/Cod6Fill"
+        matricula:
+          $ref: "../../utils/fields.yaml#/components/schemas/Matricula"
+        incidencia:
+          type: string
+        cod_dispositivo:
+          $ref: "../../utils/fields.yaml#/components/schemas/CodDispositivo"
+        fecha:
+          $ref: "../../utils/fields.yaml#/components/schemas/Fecha"
+        hora:
+          $ref: "../../utils/fields.yaml#/components/schemas/Hora"
+        estat:
+          type: string
+        usuario:
+          type: string
+        motivo:
+          type: string
+        tipo_vh:
+          type: string
+        marca:
+          type: string
+        modelo:
+          type: string
+        color:
+          $ref: "../../utils/fields.yaml#/components/schemas/Color"
+        pais:
+          $ref: "../../utils/fields.yaml#/components/schemas/Pais"
+
+    EliminarAlertasRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - cod_alerta
+      properties:
+        cod_alerta:
+          $ref: "../../utils/fields.yaml#/components/schemas/Cod6Fill"
+
+  x-routes:
+    ObtenerAlertas:
+      post:
+        tags: [Alertas]
+        summary: Obtener
+        description: Devuelve datos de alertas
+        operationId: alertas_obtener
+        security: [{ bearerAuth: [] }]
+        requestBody:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ObtenerAlertasRequest"
+        responses:
+          "200":
+            description: OK
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/ObtenerAlertasResponse"
+          "401":
+            $ref: "../../utils/responses.yaml#/components/x-responses/401"
+          "498":
+            $ref: "../../utils/responses.yaml#/components/x-responses/498"
+          "500":
+            $ref: "../../utils/responses.yaml#/components/x-responses/500"
+
+    ObtenerAlertas24:
+      post:
+        tags: [Alertas]
+        summary: Obtener últimas 24h
+        operationId: alertas_obtener24
+        security: [{ bearerAuth: [] }]
+        requestBody:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ObtenerAlertasRequest"
+        responses:
+          "200":
+            description: OK
+            content:
+              {
+                application/json:
+                  {
+                    schema:
+                      { $ref: "#/components/schemas/ObtenerAlertasResponse" },
+                  },
+              }
+
+    ObtenerAlertasPendientes:
+      post:
+        tags: [Alertas]
+        summary: Obtener pendientes
+        operationId: alertas_obtenerPdtes
+        security: [{ bearerAuth: [] }]
+        requestBody:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ObtenerAlertasRequest"
+        responses:
+          "200":
+            description: OK
+            content:
+              {
+                application/json:
+                  {
+                    schema:
+                      { $ref: "#/components/schemas/ObtenerAlertasResponse" },
+                  },
+              }
+
+    ObtenerUltimaAlertaDispositivos:
+      post:
+        tags: [Alertas]
+        summary: Última alerta por dispositivos
+        operationId: alertas_obtenerUltimaAlertaDispositivos
+        security: [{ bearerAuth: [] }]
+        requestBody:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  obtenerClip:
+                    type: boolean
+                  cod_alertagest:
+                    $ref: "../../utils/fields.yaml#/components/schemas/Cod4Fill"
+        responses:
+          "200":
+            description: OK
+            content:
+              application/json:
+                {
+                  schema:
+                    { $ref: "#/components/schemas/ObtenerAlertasResponse" },
+                }
+
+    Group:
+      post:
+        tags:
+          - Alertas
+        summary: Agrupar alertas por campos
+        description: Devuelve agregaciones de alertas en el rango de fechas indicado según los campos solicitados.
+        operationId: groupAlertas
+        security:
+          - bearerAuth: []
+        parameters: []
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GroupAlertasRequest"
+        responses:
+          "200":
+            description: OK
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/GroupAlertasResponse"
+          "401":
+            $ref: "../../utils/responses.yaml#/components/x-responses/401"
+          "498":
+            $ref: "../../utils/responses.yaml#/components/x-responses/498"
+          "500":
+            $ref: "../../utils/responses.yaml#/components/x-responses/500"
+
+    Group24:
+      post:
+        tags:
+          - Alertas
+        summary: Agrupar alertas últimas 24h
+        description: Igual que `/alertas/group` pero sin `fecha_ini`/`fecha_fin` en la solicitud; agrupa sobre las últimas 24 horas.
+        operationId: group24Alertas
+        security:
+          - bearerAuth: []
+        parameters: []
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Group24AlertasRequest"
+        responses:
+          "200":
+            description: OK
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/Group24AlertasResponse"
+          "401":
+            $ref: "../../utils/responses.yaml#/components/x-responses/401"
+          "498":
+            $ref: "../../utils/responses.yaml#/components/x-responses/498"
+          "500":
+            $ref: "../../utils/responses.yaml#/components/x-responses/500"
+
+    InsertarAlerta:
+      post:
+        tags: [Alertas]
+        summary: Insertar alerta
+        operationId: alertas_insertar
+        security: [{ bearerAuth: [] }]
+        requestBody:
+          content: { application/json: { schema: { type: object } } }
+        responses:
+          "200":
+            description: Successful operation
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/SuccessResult"
+          "401":
+            $ref: "../../utils/responses.yaml#/components/x-responses/401"
+          "498":
+            $ref: "../../utils/responses.yaml#/components/x-responses/498"
+          "500":
+            $ref: "../../utils/responses.yaml#/components/x-responses/500"
+
+    Validar:
+      post:
+        tags:
+          - Alertas
+        summary: Validar alerta
+        description: Valida una alerta existente actualizando su estado.
+        operationId: validarAlertas
+        security:
+          - bearerAuth: []
+        parameters: []
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidarAlertasRequest"
+        responses:
+          "200":
+            description: OK
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ActionResult"
+          "401":
+            $ref: "../../utils/responses.yaml#/components/x-responses/401"
+          "498":
+            $ref: "../../utils/responses.yaml#/components/x-responses/498"
+          "500":
+            $ref: "../../utils/responses.yaml#/components/x-responses/500"
+
+    Modificar:
+      post:
+        tags:
+          - Alertas
+        summary: Modificar alerta
+        description: Modifica los datos de una alerta existente.
+        operationId: modificarAlertas
+        security:
+          - bearerAuth: []
+        parameters: []
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ModificarAlertasRequest"
+        responses:
+          "200":
+            description: OK
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ActionResult"
+          "401":
+            $ref: "../../utils/responses.yaml#/components/x-responses/401"
+          "498":
+            $ref: "../../utils/responses.yaml#/components/x-responses/498"
+          "500":
+            $ref: "../../utils/responses.yaml#/components/x-responses/500"
+
+    Eliminar:
+      post:
+        tags:
+          - Alertas
+        summary: Eliminar alerta
+        description: Elimina (o marca como eliminada) una alerta por su código.
+        operationId: eliminarAlertas
+        security:
+          - bearerAuth: []
+        parameters: []
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EliminarAlertasRequest"
+        responses:
+          "200":
+            description: OK
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ActionResult"
+          "401":
+            $ref: "../../utils/responses.yaml#/components/x-responses/401"
+          "498":
+            $ref: "../../utils/responses.yaml#/components/x-responses/498"
+          "500":
+            $ref: "../../utils/responses.yaml#/components/x-responses/500"

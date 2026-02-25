@@ -1,0 +1,68 @@
+openapi: 3.0.0
+info:
+  title: ION CVEDIA – API
+  version: 1.0.0
+  description: Todos los endpoints aceptan `application/json` en el cuerpo y responden JSON.
+
+servers:
+  - url: https://ionsmartest.eu/core/CVEDIA-API
+    description: Servidor base
+
+  - url: https://localhost:8101/core/CVEDIA-API
+    description: Servidor base local
+
+tags:
+  - name: Analisis
+    description: Gestión de tipos de análisis
+  - name: Instancias
+    description: Gestión de instancias y su ciclo de vida
+  - name: LPR Instancias
+    description: Gestión de atributos de metadatos en instancias
+  - name: Areas
+    description: Gestión de áreas de detección
+  - name: Líneas
+    description: Gestión de líneas de detección
+
+security:
+  - bearerAuth: []
+
+paths:
+  /ai_analysis:
+    $ref: "paths/cvedia/tipos.yaml#/components/x-routes/ObtenerTiposAnalisis"
+
+  /instancias/crear.php:
+    $ref: "paths/cvedia/instancias.yaml#/components/x-routes/Crear"
+  /instancias/modificar.php:
+    $ref: "paths/cvedia/instancias.yaml#/components/x-routes/Modificar"
+  /instancias/eliminar.php:
+    $ref: "paths/cvedia/instancias.yaml#/components/x-routes/Eliminar"
+  /instancias/load.php:
+    $ref: "paths/cvedia/instancias.yaml#/components/x-routes/Load"
+  /instancias/unload.php:
+    $ref: "paths/cvedia/instancias.yaml#/components/x-routes/Unload"
+  /instancias/start.php:
+    $ref: "paths/cvedia/instancias.yaml#/components/x-routes/Start"
+  /instancias/stop.php:
+    $ref: "paths/cvedia/instancias.yaml#/components/x-routes/Stop"
+  /instancias/obtener.php:
+    $ref: "paths/cvedia/instancias.yaml#/components/x-routes/Obtener"
+  /instancias/obtenerEstado.php:
+    $ref: "paths/cvedia/instancias.yaml#/components/x-routes/ObtenerEstado"
+  /instancias/obtenerEventos.php:
+    $ref: "paths/cvedia/instancias.yaml#/components/x-routes/ObtenerEventos"
+  /instancias/obtenerFrame.php:
+    $ref: "paths/cvedia/instancias.yaml#/components/x-routes/ObtenerFrame"
+
+  /instancias/lpr/habilitar:
+    $ref: "paths/cvedia/instancias.yaml#/components/x-routes/EnableLPR"
+  /instancias/lpr/deshabilitar:
+    $ref: "paths/cvedia/instancias.yaml#/components/x-routes/DisableLPR"
+  /instancias/lpr/obtener:
+    $ref: "paths/cvedia/instancias.yaml#/components/x-routes/ObtenerLPR"
+
+components:
+  securitySchemes:
+    bearerAuth:
+      $ref: "utils/fields.yaml#/components/securitySchemes/bearerAuth"
+    userAndPassword:
+      $ref: "utils/fields.yaml#/components/securitySchemes/userAndPassword"

@@ -1,0 +1,317 @@
+openapi: 3.0.0
+info:
+  title: Gestión de infracciones
+  version: 1.0.0
+
+components:
+  schemas:
+    GestionImportarInfraccionesResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        infraccionesInsert:
+          type: object
+          additionalProperties:
+            type: boolean
+          description: Mapa { cod_infraccion -> insertado }
+          example:
+            INF001: true
+            INF002: false
+        infraccionesFail:
+          type: array
+          items:
+            type: string
+          description: Códigos de infracción que fallaron en la importación
+          example:
+            - INF003
+
+    # ==============
+    # INSERTAR
+    # ==============
+    GestionInsertarInfraccionesRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - cod_infraccion
+        - desc_infraccion
+        - importe_infraccion
+        - importe_reducido
+        - puntos
+        - cod_modulo
+      properties:
+        cod_infraccion:
+          type: string
+        desc_infraccion:
+          type: string
+        importe_infraccion:
+          type: number
+          format: decimal
+          description: Importe total, con dos decimales (p. ej. "200.00")
+        importe_reducido:
+          type: number
+          format: decimal
+          description: Importe reducido, con dos decimales (p. ej. "100.00")
+        puntos:
+          type: integer
+        cod_modulo:
+          $ref: "../../utils/fields.yaml#/components/schemas/CodModulo"
+
+    # ==============
+    # OBTENER
+    # ==============
+    GestionObtenerInfraccionesRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        cod_infraccion:
+          type: string
+        desc_infraccion:
+          type: string
+        importe_infraccion:
+          type: string
+        importe_reducido:
+          type: string
+        puntos:
+          type: integer
+        cod_modulo:
+          $ref: "../../utils/fields.yaml#/components/schemas/CodModulo"
+
+    GestionObtenerInfraccionesItem:
+      type: object
+      additionalProperties: false
+      properties:
+        cod_infraccion:
+          type: string
+        desc_infraccion:
+          type: string
+        importe_infraccion:
+          type: string
+        importe_reducido:
+          type: string
+        puntos:
+          type: integer
+        cod_modulo:
+          $ref: "../../utils/fields.yaml#/components/schemas/CodModulo"
+      example:
+        cod_infraccion: "CIR151.53.5B"
+        desc_infraccion: "No detenerse en el lugar prescrito por la señal de STOP"
+        importe_infraccion: "200.00"
+        importe_reducido: "100.00"
+        puntos: 5
+        cod_modulo: "0015"
+
+    GestionObtenerInfraccionesResponse:
+      type: array
+      items:
+        $ref: "#/components/schemas/GestionObtenerInfraccionesItem"
+
+    # ==============
+    # MODIFICAR
+    # ==============
+    GestionModificarInfraccionesRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - cod_infraccion
+      properties:
+        cod_infraccion:
+          type: string
+        desc_infraccion:
+          type: string
+        importe_infraccion:
+          type: string
+        importe_reducido:
+          type: string
+        puntos:
+          type: integer
+        cod_modulo:
+          $ref: "../../utils/fields.yaml#/components/schemas/CodModulo"
+      description: >
+        `cod_infraccion` es obligatorio y, además, se requiere al menos
+        uno de los demás campos para actualizar.
+      anyOf:
+        - required: [desc_infraccion]
+        - required: [importe_infraccion]
+        - required: [importe_reducido]
+        - required: [puntos]
+        - required: [cod_modulo]
+
+    # ==============
+    # ELIMINAR
+    # ==============
+    GestionEliminarInfraccionesRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - cod_infraccion
+      properties:
+        cod_infraccion:
+          type: string
+
+  x-routes:
+    # INSERTAR
+    GestionInsertar:
+      post:
+        tags: ["Infracciones gestión"]
+        summary: Insertar infracción
+        description: Crea una nueva infracción en el módulo indicado.
+        operationId: gestionInsertarInfracciones
+        security:
+          - bearerAuth: []
+        parameters: []
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GestionInsertarInfraccionesRequest"
+        responses:
+          "200":
+            description: OK
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ActionResult"
+          "401":
+            $ref: "../../utils/responses.yaml#/components/x-responses/401"
+          "498":
+            $ref: "../../utils/responses.yaml#/components/x-responses/498"
+          "500":
+            $ref: "../../utils/responses.yaml#/components/x-responses/500"
+
+    # OBTENER
+    GestionObtener:
+      post:
+        tags: ["Infracciones gestión"]
+        summary: Obtener infracciones
+        description: Devuelve las infracciones filtradas por los criterios indicados.
+        operationId: gestionObtenerInfracciones
+        security:
+          - bearerAuth: []
+        parameters: []
+        requestBody:
+          required: false
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GestionObtenerInfraccionesRequest"
+        responses:
+          "200":
+            description: OK
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/GestionObtenerInfraccionesResponse"
+          "401":
+            $ref: "../../utils/responses.yaml#/components/x-responses/401"
+          "498":
+            $ref: "../../utils/responses.yaml#/components/x-responses/498"
+          "500":
+            $ref: "../../utils/responses.yaml#/components/x-responses/500"
+
+    # MODIFICAR
+    GestionModificar:
+      post:
+        tags: ["Infracciones gestión"]
+        summary: Modificar infracción
+        description: Actualiza los datos de una infracción. Requiere `cod_infraccion` y al menos un campo adicional.
+        operationId: gestionModificarInfracciones
+        security:
+          - bearerAuth: []
+        parameters: []
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GestionModificarInfraccionesRequest"
+        responses:
+          "200":
+            description: OK
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ActionResult"
+          "401":
+            $ref: "../../utils/responses.yaml#/components/x-responses/401"
+          "498":
+            $ref: "../../utils/responses.yaml#/components/x-responses/498"
+          "500":
+            $ref: "../../utils/responses.yaml#/components/x-responses/500"
+
+    # ELIMINAR
+    GestionEliminar:
+      post:
+        tags: ["Infracciones gestión"]
+        summary: Eliminar infracción
+        description: Elimina una infracción por su código.
+        operationId: gestionEliminarInfracciones
+        security:
+          - bearerAuth: []
+        parameters: []
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GestionEliminarInfraccionesRequest"
+        responses:
+          "200":
+            description: OK
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ActionResult"
+          "401":
+            $ref: "../../utils/responses.yaml#/components/x-responses/401"
+          "498":
+            $ref: "../../utils/responses.yaml#/components/x-responses/498"
+          "500":
+            $ref: "../../utils/responses.yaml#/components/x-responses/500"
+
+    GestionImportarInfracciones:
+      post:
+        tags:
+          - Infracciones gestión
+        summary: Importar infracciones
+        description: >
+          Importa infracciones asociadas a un módulo desde un CSV.
+          El CSV debe contener las columnas:
+          `cod_infraccion`, `desc_infraccion`, `importe_infraccion`,
+          `importe_reducido`, `puntos`.
+        operationId: importarInfraccionesGestion
+        security:
+          - bearerAuth: []
+        parameters: []
+        requestBody:
+          required: true
+          content:
+            multipart/form-data:
+              schema:
+                type: object
+                additionalProperties: false
+                required:
+                  - cod_modulo
+                  - archivo_csv
+                properties:
+                  cod_modulo:
+                    $ref: "../../utils/fields.yaml#/components/schemas/CodModulo"
+                  archivo_csv:
+                    type: string
+                    format: binary
+                    description: >
+                      Fichero CSV con columnas `cod_infraccion`, `desc_infraccion`,
+                      `importe_infraccion`, `importe_reducido`, `puntos`.
+        responses:
+          "200":
+            description: OK
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/GestionImportarInfraccionesResponse"
+          "401":
+            $ref: "../../utils/responses.yaml#/components/x-responses/401"
+          "498":
+            $ref: "../../utils/responses.yaml#/components/x-responses/498"
+          "500":
+            $ref: "../../utils/responses.yaml#/components/x-responses/500"

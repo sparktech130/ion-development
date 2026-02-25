@@ -1,0 +1,162 @@
+openapi: 3.0.0
+info:
+  title: Operaciones de estadísticas XFusion
+  version: 1.0.0
+
+components:
+  x-routes:
+    Obtener:
+      post:
+        tags:
+          - Estadísticas
+        summary: Obtener
+        operationId: obtenerEstadisticas
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ObtenerEstadisticasRequest"
+        responses:
+          "200":
+            description: Respuesta correcta
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/ObtenerEstadisticasResponse"
+          "401":
+            description: Usuario inválido o no autorizado
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "498":
+            description: Token expirado o inválido
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+          "500":
+            description: Unexpected error
+            content:
+              application/json:
+                schema:
+                  $ref: "../../utils/responses.yaml#/components/schemas/ErrorDefault"
+
+  schemas:
+    ObtenerEstadisticasRequest:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
+          format: uuid
+        StartTime:
+          $ref: "../../utils/fields.yaml#/components/schemas/FechaHora"
+        EndTime:
+          $ref: "../../utils/fields.yaml#/components/schemas/FechaHora"
+
+    ObtenerEstadisticasResponse:
+      type: array
+      items:
+        type: object
+        properties:
+          Category:
+            type: string
+            enum: ["power", "processor", "thermal", "drive", "memory"]
+            example: power
+          Metrics:
+            type: array
+            items:
+              type: object
+              properties:
+                CalMeasurement:
+                  type: object
+                  additionalProperties:
+                    type: object
+                    properties:
+                      AvgValue:
+                        type: number
+                      Count:
+                        type: integer
+                      MaxValue:
+                        type: integer
+                      MinValue:
+                        type: integer
+                      SumValue:
+                        type: integer
+                  example:
+                    "Disks Temp":
+                      {
+                        "AvgValue": 32.30434782608695,
+                        "Count": 23,
+                        "MaxValue": 33,
+                        "MinValue": 32,
+                        "SumValue": 743,
+                      }
+                    "GPU2 Temp":
+                      {
+                        "AvgValue": 43.34782608695652,
+                        "Count": 23,
+                        "MaxValue": 44,
+                        "MinValue": 43,
+                        "SumValue": 997,
+                      }
+
+                MetricInfo:
+                  type: object
+                  nullable: true
+                  properties:
+                    DeviceID:
+                      type: string
+                      format: uuid
+
+                    Stats:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          FechaHora:
+                            $ref: "../../utils/fields.yaml#/components/schemas/FechaHora"
+                        additionalProperties:
+                          type: number
+                      example:
+                        - PS2 Temp: 31
+                          PCH Temp: 42
+                          PS1 Temp: 33
+                          Disk BP1 Temp: 27
+                          PCIe RAID1 Temp: 62
+                          PCIe RAID3 Temp: 58
+                          FechaHora: "2025-10-22 08:00:00"
+                        - PS2 Temp: 31
+                          PCH Temp: 44
+                          PS1 Temp: 33
+                          Disk BP1 Temp: 27
+                          PCIe RAID1 Temp: 63
+                          PCIe RAID3 Temp: 59
+                          FechaHora: "2025-10-22 09:00:00"
+
+                MetricType:
+                  type: string
+                  example: temperaturereadingcelsius
+                  enum:
+                    - powerconsumedwatts
+                    - powerinputwatts
+                    - poweroutputwatts
+                    - cpuwatts
+                    - npuwatts
+                    - memorywatts
+                    - fanwatts
+                    - cpuusagepercent
+                    - fanreading
+                    - temperaturereadingcelsius
+                    - inlettemp
+                    - cputemp
+                    - fanspeedlevelpercents
+                    - diskusagepercent
+                    - diskusedcapacitygb
+                    - disktotalcapacitygb
+                    - physicaldisktotalcapacitygb
+                    - memoryusagepercent
+                    - memorysummary

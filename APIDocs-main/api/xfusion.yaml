@@ -1,0 +1,43 @@
+openapi: 3.0.0
+info:
+  title: ION XFUSION – API
+  version: 1.0.0
+  description: Todos los endpoints aceptan `application/json` en el cuerpo y responden JSON.
+
+servers:
+  - url: https://10.10.1.220/core/XFUSION-API
+    description: Servidor base bossauto
+
+  - url: https://ionsmartest.eu/core/XFUSION-API
+    description: Servidor base
+
+  - url: https://localhost:8101/core/XFUSION-API
+    description: Servidor base local
+
+tags:
+  - name: Nodos
+    description: Gestión de nodos
+
+  - name: Estadísticas
+    description: Estadísticas
+
+security:
+  - bearerAuth: []
+
+paths:
+  /nodos/obtener:
+    $ref: "paths/xfusion/nodos.yaml#/components/x-routes/Obtener"
+  /nodos/detalles:
+    $ref: "paths/xfusion/nodos.yaml#/components/x-routes/ObtenerDetalles"
+  /nodos/accion:
+    $ref: "paths/xfusion/nodos.yaml#/components/x-routes/EjecutarAccion"
+
+  /estadisticas/obtener:
+    $ref: "paths/xfusion/stats.yaml#/components/x-routes/Obtener"
+
+components:
+  securitySchemes:
+    bearerAuth:
+      $ref: "utils/fields.yaml#/components/securitySchemes/bearerAuth"
+    userAndPassword:
+      $ref: "utils/fields.yaml#/components/securitySchemes/userAndPassword"

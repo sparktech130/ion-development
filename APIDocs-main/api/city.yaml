@@ -1,0 +1,206 @@
+openapi: 3.0.0
+info:
+  title: ION CITY – API
+  version: 1.0.0
+  description: Todos los endpoints aceptan `application/json` en el cuerpo y responden JSON.
+
+servers:
+  - url: https://ionsmartest.eu/ioncity
+    description: Servidor base
+
+  - url: https://localhost:8101/ioncity
+    description: Servidor base local
+
+tags:
+  - name: Alertas
+    description: Obtención de datos de alertas
+  - name: Alertas gestión
+    description: Gestión de alertas
+
+  - name: Áreas autorizados
+    description: Gestión de matrículas permitidas en áreas restringidas
+  - name: Áreas restringidas
+    description: Gestión de áreas restringidas
+
+  # - name: Campañas
+  #   description: Gestión/consulta de campañas
+
+  - name: Dispositivos
+    description: Gestión de dispositivos
+
+  - name: Infracciones
+    description: Gestión de infracciones
+  - name: Infracciones gestión
+    description: Gestión (CRUD/import) de infracciones
+
+  - name: Listas
+    description: Gestión de listas de vehículos
+  - name: Destinatarios listas
+    description: Gestión de destinatarios listas de vehículos
+  - name: Vehículos listas
+    description: Gestión de vehículos dentro de listas
+
+  - name: Padrón
+    description: Gestión de padrón
+
+security:
+  - bearerAuth: []
+
+paths:
+  # --- Alertas ---
+  /alertas/insertar:
+    $ref: "paths/city/alertas.yaml#/components/x-routes/InsertarAlerta"
+  /alertas/obtener:
+    $ref: "paths/city/alertas.yaml#/components/x-routes/ObtenerAlertas"
+  /alertas/obtener24:
+    $ref: "paths/city/alertas.yaml#/components/x-routes/ObtenerAlertas24"
+  /alertas/obtenerPdtes:
+    $ref: "paths/city/alertas.yaml#/components/x-routes/ObtenerAlertasPendientes"
+  /alertas/obtenerUltimaAlertaDispositivos:
+    $ref: "paths/city/alertas.yaml#/components/x-routes/ObtenerUltimaAlertaDispositivos"
+  /alertas/group:
+    $ref: "paths/city/alertas.yaml#/components/x-routes/Group"
+  /alertas/group24:
+    $ref: "paths/city/alertas.yaml#/components/x-routes/Group24"
+  /alertas/validar:
+    $ref: "paths/city/alertas.yaml#/components/x-routes/Validar"
+  /alertas/modificar:
+    $ref: "paths/city/alertas.yaml#/components/x-routes/Modificar"
+  /alertas/eliminar:
+    $ref: "paths/city/alertas.yaml#/components/x-routes/Eliminar"
+
+  # --- Alertas Gestión ---
+  /alertas/gestion/insertar:
+    $ref: "paths/city/alertas-gestion.yaml#/components/x-routes/GestionInsertar"
+  /alertas/gestion/obtener:
+    $ref: "paths/city/alertas-gestion.yaml#/components/x-routes/GestionObtener"
+  /alertas/gestion/modificar:
+    $ref: "paths/city/alertas-gestion.yaml#/components/x-routes/GestionModificar"
+  /alertas/gestion/eliminar:
+    $ref: "paths/city/alertas-gestion.yaml#/components/x-routes/GestionEliminar"
+
+  # --- ÁREAS ---
+  /areas/autorizados/importar:
+    $ref: "paths/city/areas-autorizados.yaml#/components/x-routes/ImportarAutorizados"
+  /areas/autorizados/insertar:
+    $ref: "paths/city/areas-autorizados.yaml#/components/x-routes/InsertarAutorizado"
+  /areas/autorizados/obtener:
+    $ref: "paths/city/areas-autorizados.yaml#/components/x-routes/ObtenerAutorizados"
+  /areas/autorizados/modificar:
+    $ref: "paths/city/areas-autorizados.yaml#/components/x-routes/ModificarAutorizado"
+  /areas/autorizados/eliminar:
+    $ref: "paths/city/areas-autorizados.yaml#/components/x-routes/EliminarAutorizado"
+
+  /areas/restringidas/insertar:
+    $ref: "paths/city/areas-restringidas.yaml#/components/x-routes/Insertar"
+  /areas/restringidas/obtener:
+    $ref: "paths/city/areas-restringidas.yaml#/components/x-routes/Obtener"
+  /areas/restringidas/modificar:
+    $ref: "paths/city/areas-restringidas.yaml#/components/x-routes/Modificar"
+  /areas/restringidas/eliminar:
+    $ref: "paths/city/areas-restringidas.yaml#/components/x-routes/Eliminar"
+
+  # --- CAMPAÑAS ---
+  # /campaigns/insertar:
+  #   $ref: "paths/city/campaigns.yaml#/components/x-routes/Insertar"
+  # /campaigns/obtener:
+  #   $ref: "paths/city/campaigns.yaml#/components/x-routes/Obtener"
+  # /campaigns/modificar:
+  #   $ref: "paths/city/campaigns.yaml#/components/x-routes/Modificar"
+  # /campaigns/eliminar:
+  #   $ref: "paths/city/campaigns.yaml#/components/x-routes/Eliminar"
+  # /campaigns/busqueda:
+  #   $ref: "paths/city/campaigns.yaml#/components/x-routes/Busqueda"
+  # /campaigns/obtenerAlertas:
+  #   $ref: "paths/city/campaigns.yaml#/components/x-routes/ObtenerAlertas"
+  # /campaigns/obtenerReconocimientos:
+  #   $ref: "paths/city/campaigns.yaml#/components/x-routes/ObtenerReconocimientos"
+
+  # --- DISPOSITIVOS ---
+  /dispositivos/obtenerVelocidadLimite:
+    $ref: "paths/city/dispositivos.yaml#/components/x-routes/ObtenerVelocidadLimite"
+  /dispositivos/establecerVelocidadLimite:
+    $ref: "paths/city/dispositivos.yaml#/components/x-routes/EstablecerVelocidadLimite"
+
+  # --- INFRACCIONES ---
+  /infracciones/obtener:
+    $ref: "paths/city/infracciones.yaml#/components/x-routes/Obtener"
+  /infracciones/obtenerPdtes:
+    $ref: "paths/city/infracciones.yaml#/components/x-routes/ObtenerPendientes"
+  /infracciones/group:
+    $ref: "paths/city/infracciones.yaml#/components/x-routes/Group"
+  /infracciones/group24:
+    $ref: "paths/city/infracciones.yaml#/components/x-routes/Group24"
+  /infracciones/validar:
+    $ref: "paths/city/infracciones.yaml#/components/x-routes/Validar"
+  /infracciones/enviar:
+    $ref: "paths/city/infracciones.yaml#/components/x-routes/Enviar"
+  /infracciones/rechazar:
+    $ref: "paths/city/infracciones.yaml#/components/x-routes/Rechazar"
+
+  /infracciones/gestion/insertar:
+    $ref: "paths/city/infracciones-gestion.yaml#/components/x-routes/GestionInsertar"
+  /infracciones/gestion/importar:
+    $ref: "paths/city/infracciones-gestion.yaml#/components/x-routes/GestionImportarInfracciones"
+  /infracciones/gestion/obtener:
+    $ref: "paths/city/infracciones-gestion.yaml#/components/x-routes/GestionObtener"
+  /infracciones/gestion/modificar:
+    $ref: "paths/city/infracciones-gestion.yaml#/components/x-routes/GestionModificar"
+  /infracciones/gestion/eliminar:
+    $ref: "paths/city/infracciones-gestion.yaml#/components/x-routes/GestionEliminar"
+
+  # --- LISTAS ---
+  /listas/insertar:
+    $ref: "paths/city/listas.yaml#/components/x-routes/Insertar"
+  /listas/obtener:
+    $ref: "paths/city/listas.yaml#/components/x-routes/Obtener"
+  /listas/comprobarListasMatricula:
+    $ref: "paths/city/listas.yaml#/components/x-routes/ComprobarMatricula"
+  /listas/modificar:
+    $ref: "paths/city/listas.yaml#/components/x-routes/Modificar"
+  /listas/eliminar:
+    $ref: "paths/city/listas.yaml#/components/x-routes/Eliminar"
+
+  /listas/vehiculos/insertar:
+    $ref: "paths/city/listas-vehiculos.yaml#/components/x-routes/Insertar"
+  /listas/vehiculos/importar:
+    $ref: "paths/city/listas-vehiculos.yaml#/components/x-routes/Importar"
+  /listas/vehiculos/obtener:
+    $ref: "paths/city/listas-vehiculos.yaml#/components/x-routes/Obtener"
+  /listas/vehiculos/modificar:
+    $ref: "paths/city/listas-vehiculos.yaml#/components/x-routes/Modificar"
+  /listas/vehiculos/eliminar:
+    $ref: "paths/city/listas-vehiculos.yaml#/components/x-routes/Eliminar"
+
+  # --- DESTINATARIOS LISTAS ---
+  /listas/destinatarios/insertar:
+    $ref: "paths/city/listas-destinatarios.yaml#/components/x-routes/Insertar"
+  /listas/destinatarios/importar:
+    $ref: "paths/city/listas-destinatarios.yaml#/components/x-routes/Importar"
+  /listas/destinatarios/obtener:
+    $ref: "paths/city/listas-destinatarios.yaml#/components/x-routes/Obtener"
+  /listas/destinatarios/modificar:
+    $ref: "paths/city/listas-destinatarios.yaml#/components/x-routes/Modificar"
+  /listas/destinatarios/cambiarEstado:
+    $ref: "paths/city/listas-destinatarios.yaml#/components/x-routes/CambiarEstado"
+  /listas/destinatarios/eliminar:
+    $ref: "paths/city/listas-destinatarios.yaml#/components/x-routes/Eliminar"
+
+  # --- PADRÓN ---
+  /padron/insertar:
+    $ref: "paths/city/padron.yaml#/components/x-routes/Insertar"
+  /padron/importar:
+    $ref: "paths/city/padron.yaml#/components/x-routes/Importar"
+  /padron/obtener:
+    $ref: "paths/city/padron.yaml#/components/x-routes/Obtener"
+  /padron/modificar:
+    $ref: "paths/city/padron.yaml#/components/x-routes/Modificar"
+  /padron/eliminar:
+    $ref: "paths/city/padron.yaml#/components/x-routes/Eliminar"
+
+components:
+  securitySchemes:
+    bearerAuth:
+      $ref: "utils/fields.yaml#/components/securitySchemes/bearerAuth"
+    userAndPassword:
+      $ref: "utils/fields.yaml#/components/securitySchemes/userAndPassword"

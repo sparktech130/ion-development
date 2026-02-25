@@ -1,0 +1,163 @@
+openapi: 3.0.0
+info:
+  title: API Pública - Integración AEMET
+  version: 1.0.0
+  description: |
+    Endpoint público para consultar municipios de AEMET desde el cloud central.
+    **No requiere autenticación** - Accesible desde cualquier instalación cliente.
+
+components:
+  schemas:
+    # ===== Request =====
+    ObtenerMunicipiosAemetPublicRequest:
+      type: object
+      description: Filtros para buscar municipios AEMET
+      properties:
+        id:
+          type: number
+          description: ID del municipio (código único)
+          example: 8079
+        cod_auto:
+          type: string
+          description: Código de comunidad autónoma para filtrar
+          example: "13"
+        cod_pro:
+          type: string
+          description: Código de provincia para filtrar
+          example: "28"
+        nombre:
+          type: string
+          description: Nombre del municipio (búsqueda parcial, insensible a mayúsculas)
+          example: "Madrid"
+
+    # ===== Response =====
+    MunicipioAemetPublicInfo:
+      type: object
+      description: Información de un municipio de AEMET
+      properties:
+        id:
+          type: string
+          description: ID único del municipio en AEMET
+          example: "4363"
+        nombre:
+          type: string
+          description: Nombre del municipio
+          example: "Madrid"
+        cod_auto:
+          type: string
+          description: Código de comunidad autónoma
+          example: "13"
+        cod_pro:
+          type: string
+          description: Código de provincia
+          example: "28"
+        cod_mun:
+          type: string
+          description: Código de municipio dentro de la provincia
+          example: "079"
+
+    ObtenerMunicipiosAemetPublicResponse:
+      type: object
+      properties:
+        municipios:
+          type: array
+          items:
+            $ref: "#/components/schemas/MunicipioAemetPublicInfo"
+
+  x-routes:
+    # ===== Obtener Municipios =====
+    Obtener:
+      post:
+        tags:
+          - API Integraciones
+        summary: Obtener municipios AEMET (Público)
+        description: |
+          **Endpoint público** - Consulta municipios disponibles en AEMET desde el cloud central.
+
+          Se puede filtrar por:
+          - **id**: ID específico del municipio
+          - **cod_auto**: Código de comunidad autónoma
+          - **cod_pro**: Código de provincia
+          - **nombre**: Búsqueda parcial por nombre (insensible a mayúsculas)
+
+          Si no se envían parámetros, devuelve todos los municipios disponibles.
+
+          **Nota**: Este endpoint NO requiere autenticación y está disponible para todas las instalaciones.
+        operationId: obtenerMunicipiosAemetPublic
+        security: []
+        requestBody:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ObtenerMunicipiosAemetPublicRequest"
+              examples:
+                por_id:
+                  summary: Buscar por ID específico
+                  value:
+                    id: 8079
+                por_provincia:
+                  summary: Municipios de una provincia
+                  value:
+                    cod_pro: "28"
+                por_comunidad:
+                  summary: Municipios de una comunidad autónoma
+                  value:
+                    cod_auto: "13"
+                por_nombre:
+                  summary: Buscar por nombre
+                  value:
+                    nombre: "Barcelona"
+                combinado:
+                  summary: Filtros combinados
+                  value:
+                    cod_auto: "01"
+                    nombre: "Vitoria"
+                todos:
+                  summary: Obtener todos los municipios
+                  value: {}
+
+        responses:
+          "200":
+            description: Lista de municipios encontrados
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/ObtenerMunicipiosAemetPublicResponse"
+                examples:
+                  un_municipio:
+                    summary: Búsqueda específica
+                    value:
+                      municipios:
+                        - id: 4363
+                          nombre: "Madrid"
+                          cod_auto: "13"
+                          cod_pro: "28"
+                          cod_mun: "079"
+                  multiples_municipios:
+                    summary: Búsqueda por provincia
+                    value:
+                      municipios:
+                        - id: 8019
+                          nombre: "Barcelona"
+                          cod_auto: "09"
+                          cod_pro: "08"
+                          cod_mun: "019"
+                        - id: 8015
+                          nombre: "Badalona"
+                          cod_auto: "09"
+                          cod_pro: "08"
+                          cod_mun: "015"
+          "500":
+            description: Error interno del servidor
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                    error:
+                      type: boolean
+                example:
+                  message: "Error al consultar municipios"
+                  error: true

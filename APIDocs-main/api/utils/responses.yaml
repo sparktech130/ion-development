@@ -1,0 +1,47 @@
+openapi: 3.0.0
+info: { title: Respuestas comunes, version: 1.0.0 }
+components:
+  schemas:
+    ErrorDefault:
+      type: object
+      properties:
+        message:
+          type: string
+        error:
+          type: boolean
+      x-examples:
+        Example 1:
+          message: Error al obtener datos
+          error: true
+      description: Error que puede saltar al realizar operaciones CRUD
+    ErrorResult:
+      type: boolean
+      title: Resultado acción fallida
+      default: false
+    SuccessResult:
+      type: boolean
+      title: Resultado acción satisfactoria
+      default: true
+    ActionResult:
+      type: boolean
+      title: Resultado acción
+
+  x-responses:
+    401:
+      description: Usuario inválido o no autorizado
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorDefault"
+    498:
+      description: Token expirado o inválido
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorDefault"
+    500:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorDefault"
