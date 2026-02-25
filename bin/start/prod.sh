@@ -24,12 +24,12 @@ fi
 if command -v npm &>/dev/null; then
     log "Construyendo frontend city..."
     cd "$ROOT/city"
-    npm install --legacy-peer-deps --silent 2>/dev/null || true
+    npm install --legacy-peer-deps --silent || true
     npm run build
     log "Copiando build de city a monorepo/city/..."
     rm -rf "$ROOT/monorepo/city"
     mkdir -p "$ROOT/monorepo/city"
-    cp -r dist/* "$ROOT/monorepo/city/"
+    cp -ra dist/. "$ROOT/monorepo/city/"
     cat > "$ROOT/monorepo/city/.htaccess" << 'EOF'
 CGIPassAuth On
 Options -Indexes
